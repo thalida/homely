@@ -22,7 +22,7 @@ jobs:
     - name: Install poetry
       run: pipx install poetry
     - name: Set up Python 3.11
-      uses: actions/setup-python@v3
+      uses: actions/setup-python@v4
       with:
         python-version: "3.11"
         cache: poetry
@@ -31,16 +31,24 @@ jobs:
         cd api
         poetry install
     - name: pylint
-      run: poetry run pylint **/*.py
+      run: |
+        cd api
+        poetry run pylint **/*.py
     - name: Black
-      run: poetry run black .
+      run: |
+        cd api
+        poetry run black .
     - name: isort
-      run: poetry run isort .
+      run: |
+        cd api
+        poetry run isort .
     - name: flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
+        cd api
         poetry run flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
         poetry run flake8 . --count --max-complexity=10 --statistics
     - name: Test with pytest
       run: |
+        cd api
         poetry run pytest .
