@@ -1,19 +1,38 @@
-from typing import Union
+"""Main API module"""
 
+import requests
 import uvicorn
+from bs4 import BeautifulSoup
 from fastapi import FastAPI
 
 app = FastAPI()
 
 
-@app.get("/")
-def read_root():
-    return {"Hello": "World"}
+@app.get("/metadata")
+def get_metadata(url: str) -> dict:
+    """Get metadata from a URL"""
+    req = requests.get(url, timeout=5)
+    req.raise_for_status()
+
+    soup = BeautifulSoup(req.text, "html.parser")
+    meta_tags = soup.find_all("meta")
+
+    metadata = {}
+    for tag in meta_tags:
+        if not tag.get("property", "").startswith("og:"):
+            continue
+
+        key = tag.get("property").replace("og:", "")
+        value = tag.get("content")
+        metadata[key] = value
+
+    return metadata
 
 
-@app.get("/items/{item_id}")
-def read_item(item_id: int, query: Union[str, None] = None):
-    return {"item_id": item_id, "q": query}
+@app.get("/healthcheck")
+def healthcheck() -> dict:
+    """Health check"""
+    return {"status": "ok"}
 
 
 def start():
