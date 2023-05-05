@@ -7,5 +7,5 @@ set +o allexport
 cd /workspaces/homely/api
 poetry install
 
-# cd /workspaces/homely/app
-# npm install
+cd /workspaces/homely/app
+npm install
