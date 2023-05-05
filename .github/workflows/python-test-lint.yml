@@ -16,6 +16,10 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    
+    defaults:
+      run:
+        working-directory: ./api
 
     steps:
     - uses: actions/checkout@v3
@@ -27,28 +31,16 @@ jobs:
         python-version: "3.11"
         cache: poetry
     - name: Install deps
-      run: |
-        cd api
-        poetry install
+      run: poetry install
     - name: pylint
-      run: |
-        cd api
-        poetry run pylint **/*.py
-    - name: Black
-      run: |
-        cd api
-        poetry run black .
+      run: poetry run pylint **/*.py
+    - name: black
+      run: poetry run black .
     - name: isort
-      run: |
-        cd api
-        poetry run isort .
+      run: poetry run isort .
     - name: flake8
       run: |
-        # stop the build if there are Python syntax errors or undefined names
-        cd api
-        poetry run flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-        poetry run flake8 . --count --max-complexity=10 --statistics
-    - name: Test with pytest
-      run: |
-        cd api
-        poetry run pytest .
+        poetry run flake8 . --select=E9,F63,F7,F82 --show-source --statistics
+        poetry run flake8 . --statistics
+    - name: pytest
+      run: poetry run pytest .
