@@ -23,19 +23,39 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+
     - name: Set up Node 18.x
       uses: actions/setup-node@v3
+
+    - name: Install pnpm
+      uses: pnpm/action-setup@v2
+      id: pnpm-install
       with:
-        node-version: 18
-        cache: pnpm
-        cache-dependency-path: './app/pnpm-lock.yaml'
-    - name: Install deps
-      run: pnpm install
+        version: 7
+        run_install: false
+
+    - name: Get pnpm store directory
+      id: pnpm-cache
+      shell: bash
+      run: |
+        echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+    - name: Setup pnpm cache
+      uses: actions/cache@v3
+      with:
+        path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+        key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+        restore-keys: |
+          ${{ runner.os }}-pnpm-store-
+
     - name: format
       run: pnpm run format
+
     - name: typecheck
       run: pnpm run typecheck
+
     - name: lint
       run: npm run lint
+
     - name: test
       run: pnpm run test:unit
