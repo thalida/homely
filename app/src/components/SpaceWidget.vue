@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {ref, watch, reactive, watchEffect, onMounted, nextTick } from 'vue'
+import {ref, watch, reactive, watchEffect, onMounted, nextTick, toRefs } from 'vue'
 import { useSpring } from '@vueuse/motion'
 
 const widgetRef = ref()
@@ -10,24 +10,23 @@ const props = defineProps({
     required: true,
   },
 });
-
+const { widget } = toRefs(props)
 const transformValue = reactive({
-  translateX: props.widget.styles.x,
-  translateY: props.widget.styles.y,
+  translateX: widget.value.styles.x,
+  translateY: widget.value.styles.y,
 });
-
 const { set } = useSpring(transformValue)
 
 onMounted(() => {
-  watch(props.widget, async (w) => {
+  watch(widget, async (w) => {
     set({ translateX: w.styles.x, translateY: w.styles.y });
-  }, { immediate: true })
+  }, { immediate: true, deep: true })
 
   watch(transformValue, (tv) => {
-    if (props.widget.isSelectedGroup){
+    if (widget.value.isSelectedGroup){
       return
     }
-    const controlBoxes = Array.from(document.querySelectorAll('.space-layout > .moveable-control-box'))
+    const controlBoxes = Array.from(document.querySelectorAll('.space-layout__canvas > .moveable-control-box'))
     if (controlBoxes.length === 0) {
       return
     }

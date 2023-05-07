@@ -1,11 +1,12 @@
 
 <script setup lang="ts">
-import { type Ref, ref, onMounted, reactive } from 'vue';
+import { type Ref, ref, onMounted, reactive, nextTick } from 'vue';
 import Moveable from "moveable";
 import Selecto from "selecto";
 import SpaceWidget from './SpaceWidget.vue';
 
-const widgets = reactive({
+const isEditMode = ref(false);
+const widgets = ref({
   1: {
     id: 1,
     content: 'widget 1',
@@ -69,11 +70,26 @@ const widgets = reactive({
 });
 const widgetOrder: Ref<number[]> = ref([1, 2, 3, 4, 5]);
 
-onMounted(() => {
-  const container = document.querySelector(".space-layout") as HTMLElement;
-  let targets = []
+const editCopy = reactive({
+  widgets: {},
+  widgetOrder: [],
+});
 
-  const moveable = new Moveable(container, {
+let moveable: Moveable | null = null;
+let selecto: Selecto | null = null;
+let targets = []
+
+function startEditMode() {
+  editCopy.widgets = JSON.parse(JSON.stringify(widgets.value));
+  editCopy.widgetOrder = [...widgetOrder.value];
+
+  isEditMode.value = true;
+
+  const moveableContainer = document.querySelector(".space-layout__canvas") as HTMLElement;
+  const selectoContainer = document.querySelector(".space-layout__canvas__selecto") as HTMLElement;
+  targets = [];
+
+  moveable = new Moveable(moveableContainer, {
     target: targets,
 
     draggable: true,
@@ -101,9 +117,9 @@ onMounted(() => {
     elementSnapDirections: { "top": true, "left": true, "bottom": true, "right": true, "center": true, "middle": true },
   });
 
-  const selecto = new Selecto({
-    container: document.querySelector(`[data-croffle-ref="selecto"]`),
-    dragContainer: window,
+  selecto = new Selecto({
+    container: selectoContainer,
+    dragContainer: moveableContainer,
     selectableTargets: [".selecto-area .space-widget"],
     hitRate: 0,
     selectByClick: true,
@@ -112,54 +128,6 @@ onMounted(() => {
     ratio: 0
   });
 
-  async function setStyles(e) {
-    const widgetId = e.target.dataset.widgetId;
-    if (!widgetId) {
-      return;
-    }
-
-    if (Array.isArray(e.translate)) {
-      widgets[widgetId].styles.x = e.translate[0];
-      widgets[widgetId].styles.y = e.translate[1];
-    }
-
-
-    if (typeof e.width === "number") {
-      e.target.style.width = `${e.width}px`;
-      widgets[widgetId].styles.width = e.width;
-    }
-
-    if (typeof e.height === "number") {
-      e.target.style.height = `${e.height}px`;
-      widgets[widgetId].styles.height = e.height;
-    }
-  }
-
-  function setTargets(nextTargets) {
-    const currentTargets = [...targets];
-    targets = nextTargets;
-    moveable.target = targets;
-    moveable.elementGuidelines = Array.from(document.querySelectorAll(".selecto-area .space-widget")).filter(t => !t.classList.contains("selected"));
-
-    for (const target of currentTargets) {
-      const widgetId = target.dataset.widgetId;
-      if (!widgetId) {
-        continue;
-      }
-      widgets[widgetId].isSelected = false;
-      widgets[widgetId].isSelectedGroup = false;
-    }
-
-    const isGroup = targets.length > 1;
-    for (const target of targets) {
-      const widgetId = target.dataset.widgetId;
-      if (!widgetId) {
-        continue;
-      }
-      widgets[widgetId].isSelected = true;
-      widgets[widgetId].isSelectedGroup = isGroup;
-    }
-  }
   moveable.on("clickGroup", e => {
     selecto!.clickTarget(e.inputEvent, e.inputTarget);
   });
@@ -196,21 +164,116 @@ onMounted(() => {
     }
     setTargets(e.selected);
   });
-});
+}
+
+function stopEditMode() {
+  isEditMode.value = false;
+  if (moveable) {
+    moveable.destroy();
+    moveable = null;
+  }
+  if (selecto) {
+    selecto.destroy();
+    selecto = null;
+  }
+  setTargets([]);
+  editCopy.widgets = {};
+  editCopy.widgetOrder = [];
+}
+
+async function resetEditMode() {
+  widgets.value = JSON.parse(JSON.stringify(editCopy.widgets));
+  widgetOrder.value = [...editCopy.widgetOrder];
+}
+
+
+function setStyles(e) {
+  const widgetId = e.target.dataset.widgetId;
+  if (!widgetId) {
+    return;
+  }
+
+  if (Array.isArray(e.translate)) {
+    widgets.value[widgetId].styles.x = e.translate[0];
+    widgets.value[widgetId].styles.y = e.translate[1];
+  }
+
+
+  if (typeof e.width === "number") {
+    e.target.style.width = `${e.width}px`;
+    widgets.value[widgetId].styles.width = e.width;
+  }
+
+  if (typeof e.height === "number") {
+    e.target.style.height = `${e.height}px`;
+    widgets.value[widgetId].styles.height = e.height;
+  }
+}
+
+function setTargets(nextTargets) {
+  const currentTargets = [...targets];
+  targets = nextTargets;
+
+  if (moveable) {
+    moveable.target = targets;
+    moveable.elementGuidelines = Array.from(document.querySelectorAll(".selecto-area .space-widget")).filter(t => !t.classList.contains("selected"));
+  }
+
+  for (const target of currentTargets) {
+    const widgetId = target.dataset.widgetId;
+    if (!widgetId) {
+      continue;
+    }
+    widgets.value[widgetId].isSelected = false;
+    widgets.value[widgetId].isSelectedGroup = false;
+  }
+
+  const isGroup = targets.length > 1;
+  for (const target of targets) {
+    const widgetId = target.dataset.widgetId;
+    if (!widgetId) {
+      continue;
+    }
+    widgets.value[widgetId].isSelected = true;
+    widgets.value[widgetId].isSelectedGroup = isGroup;
+  }
+}
+
+function handleEditModeToggle() {
+  isEditMode.value = !isEditMode.value;
+  if (isEditMode.value) {
+    startEditMode();
+  } else {
+    stopEditMode();
+  }
+}
+
+function handleCancelEdit() {
+  resetEditMode();
+  stopEditMode();
+}
 
 </script>
 
 <template>
   <div class="space-layout">
-    <div data-croffle-ref="selecto"></div>
-    <div class="elements selecto-area scroll-area">
-      <SpaceWidget
-        v-for="widgetId in widgetOrder"
-        :data-widget-id="widgetId"
-        class="space-widget"
-        :key="widgetId"
-        :widget="widgets[widgetId]">
-      </SpaceWidget>
+    <div class="space-layout__menu">
+      <button v-if="isEditMode" @click="handleCancelEdit">Cancel</button>
+      <button @click="handleEditModeToggle">
+        {{  isEditMode ? 'Done' : 'Edit' }}
+      </button>
+    </div>
+    <div class="space-layout__canvas">
+      <div class="space-layout__canvas__selecto"></div>
+      <div class="elements selecto-area scroll-area">
+        <SpaceWidget
+          v-for="widgetId in widgetOrder"
+          :data-widget-id="widgetId"
+          class="space-widget"
+          :key="widgetId"
+          :widget="widgets[widgetId]">
+        </SpaceWidget>
+      </div>
     </div>
   </div>
 </template>
@@ -220,8 +283,23 @@ onMounted(() => {
   width: 100vw;
   height: 100vh;
   overflow: auto;
-  position: absolute;
+}
+.space-layout__menu {
+  position: fixed;
   top: 0;
+  left: 0;
+  z-index: 100;
+  background-color: #eee;
+  padding: 8px;
+  border-bottom: 1px solid #ddd;
+  width: 100%;
+  height: 32px;
+}
+.space-layout__canvas {
+  width: 100vw;
+  height: 100vh;
+  position: absolute;
+  top: 32px;
   left: 0;
 }
 </style>
