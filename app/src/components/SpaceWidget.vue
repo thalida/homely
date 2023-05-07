@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useGesture } from '@vueuse/gesture'
 import { type PermissiveMotionProperties, useMotionProperties, useSpring } from '@vueuse/motion'
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 
 const widgetRef = ref()
 
@@ -35,9 +35,11 @@ const gestureModule = useGesture(
   }
 )
 
-if (typeof gestureModule.config.drag !== 'undefined') {
-  gestureModule.config.drag.initial = [props.widget.x, props.widget.y];
-}
+onMounted(() => {
+  if (typeof gestureModule.config.drag !== 'undefined') {
+    gestureModule.config.drag.initial = [props.widget.x, props.widget.y];
+  }
+})
 
 function handleDrag({ movement: [x, y], dragging }) {
   if (!dragging) {
@@ -50,7 +52,6 @@ function handleDrag({ movement: [x, y], dragging }) {
   }
   gestureModule.config.drag.initial = [x, y];
 }
-
 </script>
 
 <template>

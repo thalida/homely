@@ -21,6 +21,18 @@ const widgets: Ref<any[]> = ref([
     x: 300,
     y: 200,
   },
+  {
+    id: 4,
+    content: 'widget 4',
+    x: 400,
+    y: 0,
+  },
+  {
+    id: 5,
+    content: 'widget 5',
+    x: 750,
+    y: 0,
+  },
 ]);
 </script>
 <template>
