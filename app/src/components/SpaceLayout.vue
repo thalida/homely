@@ -1,11 +1,28 @@
 <script setup lang="ts">
-import { type Ref, ref, onMounted, reactive, nextTick } from 'vue'
-import Moveable from 'moveable'
+import { type Ref, ref, reactive } from 'vue'
+import Moveable, { type OnDrag, type OnResize  } from 'moveable'
 import Selecto from 'selecto'
 import SpaceWidget from './SpaceWidget.vue'
 
 const isEditMode = ref(false)
-const widgets = ref({
+
+interface IWidget {
+  id: number
+  content: string
+  isSelected: boolean
+  isSelectedGroup: boolean
+  styles: {
+    x: number
+    y: number
+    width: number
+    height: number
+  }
+}
+interface IWidgets {
+  [key: number]: IWidget
+}
+
+const widgets: Ref<IWidgets> = ref({
   1: {
     id: 1,
     content: 'widget 1',
@@ -70,13 +87,13 @@ const widgets = ref({
 const widgetOrder: Ref<number[]> = ref([1, 2, 3, 4, 5])
 
 const editCopy = reactive({
-  widgets: {},
-  widgetOrder: []
+  widgets: {} as IWidgets,
+  widgetOrder: [] as number[]
 })
 
 let moveable: Moveable | null = null
 let selecto: Selecto | null = null
-let targets = []
+let targets: HTMLElement[] = []
 
 function startEditMode() {
   editCopy.widgets = JSON.parse(JSON.stringify(widgets.value))
@@ -162,6 +179,9 @@ function startEditMode() {
   })
 
   selecto.on('dragStart', (e) => {
+    if (moveable === null) {
+      return
+    }
     const target = e.inputEvent.target
     const isMoveable = moveable.isMoveableElement(target)
     if (isMoveable || targets.some((t) => t === target || t.contains(target))) {
@@ -169,13 +189,16 @@ function startEditMode() {
     }
   })
   selecto.on('selectEnd', (e) => {
+    if (moveable === null) {
+      return
+    }
     if (e.isDragStart) {
       e.inputEvent.preventDefault()
       moveable.waitToChangeTarget().then(() => {
-        moveable.dragStart(e.inputEvent)
+        moveable?.dragStart(e.inputEvent)
       })
     }
-    setTargets(e.selected)
+    setTargets(e.selected as HTMLElement[])
   })
 }
 
@@ -199,13 +222,22 @@ async function resetEditMode() {
   widgetOrder.value = [...editCopy.widgetOrder]
 }
 
-function setStyles(e) {
-  const widgetId = e.target.dataset.widgetId
+function getElementWidgetId(element: HTMLElement) {
+  const widgetId = element.dataset.widgetId
   if (!widgetId) {
     return
   }
 
-  if (Array.isArray(e.translate)) {
+  return parseInt(widgetId, 10)
+}
+
+function setStyles(e: OnDrag | OnResize) {
+  const widgetId = getElementWidgetId(e.target as HTMLElement)
+  if (!widgetId) {
+    return
+  }
+
+  if ("translate" in e && Array.isArray(e.translate)) {
     widgets.value[widgetId].styles.x = e.translate[0]
     widgets.value[widgetId].styles.y = e.translate[1]
   }
@@ -221,7 +253,7 @@ function setStyles(e) {
   }
 }
 
-function setTargets(nextTargets) {
+function setTargets(nextTargets: HTMLElement[]) {
   const currentTargets = [...targets]
   targets = nextTargets
 
@@ -233,7 +265,7 @@ function setTargets(nextTargets) {
   }
 
   for (const target of currentTargets) {
-    const widgetId = target.dataset.widgetId
+    const widgetId = getElementWidgetId(target)
     if (!widgetId) {
       continue
     }
@@ -243,7 +275,7 @@ function setTargets(nextTargets) {
 
   const isGroup = targets.length > 1
   for (const target of targets) {
-    const widgetId = target.dataset.widgetId
+    const widgetId = getElementWidgetId(target)
     if (!widgetId) {
       continue
     }

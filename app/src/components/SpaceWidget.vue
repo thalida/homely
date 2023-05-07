@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, reactive, watchEffect, onMounted, nextTick, toRefs } from 'vue'
+import { ref, watch, reactive, onMounted, toRefs } from 'vue'
 import { useSpring } from '@vueuse/motion'
 
 const widgetRef = ref()
@@ -32,7 +32,7 @@ onMounted(() => {
       if (widget.value.isSelectedGroup) {
         return
       }
-      const controlBoxes = Array.from(
+      const controlBoxes: HTMLElement[] = Array.from(
         document.querySelectorAll('.space-layout__canvas > .moveable-control-box')
       )
       if (controlBoxes.length === 0) {

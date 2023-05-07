@@ -58,7 +58,7 @@ jobs:
       run: pnpm run typecheck
 
     - name: lint
-      run: npm run lint
+      run: pnpm run lint
 
     - name: test
       run: pnpm run test:unit
