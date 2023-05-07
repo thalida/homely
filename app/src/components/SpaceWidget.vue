@@ -10,7 +10,7 @@ const { motionProperties } = useMotionProperties(widgetRef, {
 })
 const { set } = useSpring(motionProperties as Partial<PermissiveMotionProperties>)
 
-defineProps({
+const props = defineProps({
   widget: {
     type: Object,
     required: true,
@@ -23,8 +23,21 @@ const gestureModule = useGesture(
   },
   {
     domTarget: widgetRef,
+    drag: {
+      filterTaps: true,
+      bounds: {
+        left: 0,
+        top: 0,
+        right: Infinity,
+        bottom: Infinity,
+      },
+    },
   }
 )
+
+if (typeof gestureModule.config.drag !== 'undefined') {
+  gestureModule.config.drag.initial = [props.widget.x, props.widget.y];
+}
 
 function handleDrag({ movement: [x, y], dragging }) {
   if (!dragging) {
@@ -41,7 +54,9 @@ function handleDrag({ movement: [x, y], dragging }) {
 </script>
 
 <template>
-  <div ref="widgetRef">
+  <div ref="widgetRef" class="p-4 bg-slate-100 w-1/5 absolute" :style="{
+    transform: `translateX(${widget.x}px) translateY(${widget.y}px)`
+  }">
     {{ widget.content }}
   </div>
 </template>
