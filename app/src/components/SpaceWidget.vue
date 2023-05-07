@@ -12,15 +12,15 @@ const props = defineProps({
 });
 
 const transformValue = reactive({
-  translateX: props.widget.x,
-  translateY: props.widget.y,
+  translateX: props.widget.styles.x,
+  translateY: props.widget.styles.y,
 });
 
 const { set } = useSpring(transformValue)
 
 onMounted(() => {
   watch(props.widget, async (w) => {
-    set({ translateX: w.x, translateY: w.y });
+    set({ translateX: w.styles.x, translateY: w.styles.y });
   }, { immediate: true })
 
   watch(transformValue, (tv) => {
@@ -48,8 +48,8 @@ onMounted(() => {
     class="p-4 bg-slate-100 absolute"
     ref="widgetRef"
     :style="{
-      width: `${widget.width}px`,
-      height: `${widget.height}px`,
+      width: `${widget.styles.width}px`,
+      height: `${widget.styles.height}px`,
       transform: `translate(${transformValue.translateX}px, ${transformValue.translateY}px)`
     }">
       {{ widget.content }}

@@ -9,42 +9,52 @@ const widgets = reactive({
   1: {
     id: 1,
     content: 'widget 1',
-    x: 0,
-    y: 0,
-    width: 100,
-    height: 100,
+    styles: {
+      x: 0,
+      y: 0,
+      width: 100,
+      height: 100,
+    },
   },
   2: {
     id: 2,
     content: 'widget 2',
-    x: 100,
-    y: 100,
-    width: 200,
-    height: 200,
+    styles: {
+      x: 100,
+      y: 100,
+      width: 200,
+      height: 200,
+    },
   },
   3: {
     id: 3,
     content: 'widget 3',
-    x: 300,
-    y: 200,
-    width: 200,
-    height: 400,
+    styles: {
+      x: 300,
+      y: 200,
+      width: 200,
+      height: 400,
+    },
   },
   4: {
     id: 4,
     content: 'widget 4',
-    x: 400,
-    y: 0,
-    width: 200,
-    height: 200,
+    styles: {
+      x: 400,
+      y: 0,
+      width: 200,
+      height: 200,
+    },
   },
   5: {
     id: 5,
     content: 'widget 5',
-    x: 750,
-    y: 0,
-    width: 300,
-    height: 300,
+    styles: {
+      x: 750,
+      y: 0,
+      width: 300,
+      height: 300,
+    },
   },
 });
 const widgetOrder: Ref<number[]> = ref([1, 2, 3, 4, 5]);
@@ -99,19 +109,19 @@ onMounted(() => {
     }
 
     if (Array.isArray(e.translate)) {
-      widgets[widgetId].x = e.translate[0];
-      widgets[widgetId].y = e.translate[1];
+      widgets[widgetId].styles.x = e.translate[0];
+      widgets[widgetId].styles.y = e.translate[1];
     }
 
-    e.target.style.width = `${e.width}px`;
-    e.target.style.height = `${e.height}px`;
 
     if (typeof e.width === "number") {
-      widgets[widgetId].width = e.width;
+      e.target.style.width = `${e.width}px`;
+      widgets[widgetId].styles.width = e.width;
     }
 
     if (typeof e.height === "number") {
-      widgets[widgetId].height = e.height;
+      e.target.style.height = `${e.height}px`;
+      widgets[widgetId].styles.height = e.height;
     }
   }
 
