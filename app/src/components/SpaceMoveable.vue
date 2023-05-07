@@ -1,42 +1,53 @@
 
 <script setup lang="ts">
-import { type Ref, ref, onMounted } from 'vue';
+import { type Ref, ref, onMounted, reactive } from 'vue';
 import Moveable from "moveable";
 import Selecto from "selecto";
-// import SpaceMoveableWidget from './SpaceMoveableWidget.vue';
+import SpaceMoveableWidget from './SpaceMoveableWidget.vue';
 
-const widgets: Ref<any[]> = ref([
-  {
+const widgets = reactive({
+  1: {
     id: 1,
     content: 'widget 1',
     x: 0,
     y: 0,
+    width: 100,
+    height: 100,
   },
-  {
+  2: {
     id: 2,
     content: 'widget 2',
     x: 100,
     y: 100,
+    width: 200,
+    height: 200,
   },
-  {
+  3: {
     id: 3,
     content: 'widget 3',
     x: 300,
     y: 200,
+    width: 200,
+    height: 400,
   },
-  {
+  4: {
     id: 4,
     content: 'widget 4',
     x: 400,
     y: 0,
+    width: 200,
+    height: 200,
   },
-  {
+  5: {
     id: 5,
     content: 'widget 5',
     x: 750,
     y: 0,
+    width: 300,
+    height: 300,
   },
-]);
+});
+const widgetOrder: Ref<number[]> = ref([1, 2, 3, 4, 5]);
 
 onMounted(() => {
   const container = document.querySelector(".space-layout") as HTMLElement;
@@ -58,9 +69,8 @@ onMounted(() => {
     edge: true,
     edgeDraggable: true,
 
-    throttleDrag: 1,
-    throttleResize: 1,
-    throttleRotate: 1,
+    throttleDrag: 0,
+    throttleResize: 0,
 
     snappable: true,
     isDisplaySnapDigit: true,
@@ -82,6 +92,29 @@ onMounted(() => {
     ratio: 0
   });
 
+  async function setStyles(e) {
+    const widgetId = e.target.dataset.widgetId;
+    if (!widgetId) {
+      return;
+    }
+
+    if (Array.isArray(e.translate)) {
+      widgets[widgetId].x = e.translate[0];
+      widgets[widgetId].y = e.translate[1];
+    }
+
+    e.target.style.width = `${e.width}px`;
+    e.target.style.height = `${e.height}px`;
+
+    if (typeof e.width === "number") {
+      widgets[widgetId].width = e.width;
+    }
+
+    if (typeof e.height === "number") {
+      widgets[widgetId].height = e.height;
+    }
+  }
+
   function setTargets(nextTargets) {
     targets = nextTargets;
     moveable.target = targets;
@@ -91,23 +124,19 @@ onMounted(() => {
     selecto!.clickTarget(e.inputEvent, e.inputTarget);
   });
   moveable.on("drag", e => {
-    e.target.style.transform = e.transform;
+    setStyles(e)
   });
   moveable.on("dragGroup", e => {
     e.events.forEach(ev => {
-      ev.target.style.transform = ev.transform;
+      setStyles(ev);
     });
   });
   moveable.on("resize", e => {
-    e.target.style.width = `${e.width}px`;
-    e.target.style.height = `${e.height}px`;
-    e.target.style.transform = e.drag.transform;
+    setStyles(e);
   });
   moveable.on("resizeGroup", e => {
     e.events.forEach(ev => {
-      ev.target.style.width = `${ev.width}px`;
-      ev.target.style.height = `${ev.height}px`;
-      ev.target.style.transform = ev.drag.transform;
+      setStyles(ev);
     });
   });
 
@@ -147,15 +176,13 @@ onMounted(() => {
   <div class="space-layout">
     <div data-croffle-ref="selecto"></div>
     <div class="elements selecto-area scroll-area">
-      <div
-        v-for="widget in widgets"
-        class="space-widget p-4 bg-slate-100 w-1/5 absolute"
-        :key="widget.id"
-        :style="{
-          transform: `translateX(${widget.x}px) translateY(${widget.y}px)`
-        }">
-        {{ widget.content }}
-      </div>
+      <SpaceMoveableWidget
+        v-for="widgetId in widgetOrder"
+        :data-widget-id="widgetId"
+        class="space-widget"
+        :key="widgetId"
+        :widget="widgets[widgetId]">
+      </SpaceMoveableWidget>
     </div>
   </div>
 </template>
