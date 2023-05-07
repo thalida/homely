@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
+    "preinstall": "npx only-allow pnpm",
     "dev": "vite --port 3000",
     "build": "run-p type-check build-only",
     "preview": "vite preview",
@@ -13,7 +14,11 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "@vueuse/gesture": "2.0.0-beta.1",
+    "@vueuse/motion": "2.0.0-beta.12",
+    "moveable": "^0.47.2",
     "pinia": "^2.0.32",
+    "selecto": "^1.22.3",
     "vue": "^3.2.47"
   },
   "devDependencies": {
