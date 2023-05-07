@@ -24,6 +24,9 @@ onMounted(() => {
   }, { immediate: true })
 
   watch(transformValue, (tv) => {
+    if (props.widget.isSelectedGroup){
+      return
+    }
     const controlBoxes = Array.from(document.querySelectorAll('.space-layout > .moveable-control-box'))
     if (controlBoxes.length === 0) {
       return
@@ -36,17 +39,23 @@ onMounted(() => {
       if (!hasSize || !hasChildNodes) {
         continue
       }
+
       controlBox.style.transform = `translate3d(${tv.translateX}px, ${tv.translateY}px, 0)`;
     }
-  }, { immediate: true, flush: 'post' });
+  }, { immediate: true });
 });
 
 </script>
 
 <template>
   <div
-    class="p-4 bg-slate-100 absolute"
+    class="p-4 absolute"
     ref="widgetRef"
+    :class="{
+      'bg-red-100': widget.isSelected,
+      'bg-blue-100': widget.isSelectedGroup,
+      'bg-slate-100': !widget.isSelected && !widget.isSelectedGroup,
+    }"
     :style="{
       width: `${widget.styles.width}px`,
       height: `${widget.styles.height}px`,
@@ -57,5 +66,8 @@ onMounted(() => {
 </template>
 
 <style scoped>
+.space-widget.selected {
+  background-color: #ff0000;
+}
 
 </style>

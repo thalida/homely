@@ -9,6 +9,8 @@ const widgets = reactive({
   1: {
     id: 1,
     content: 'widget 1',
+    isSelected: false,
+    isSelectedGroup: false,
     styles: {
       x: 0,
       y: 0,
@@ -19,6 +21,8 @@ const widgets = reactive({
   2: {
     id: 2,
     content: 'widget 2',
+    isSelected: false,
+    isSelectedGroup: false,
     styles: {
       x: 100,
       y: 100,
@@ -29,6 +33,8 @@ const widgets = reactive({
   3: {
     id: 3,
     content: 'widget 3',
+    isSelected: false,
+    isSelectedGroup: false,
     styles: {
       x: 300,
       y: 200,
@@ -39,6 +45,8 @@ const widgets = reactive({
   4: {
     id: 4,
     content: 'widget 4',
+    isSelected: false,
+    isSelectedGroup: false,
     styles: {
       x: 400,
       y: 0,
@@ -49,6 +57,8 @@ const widgets = reactive({
   5: {
     id: 5,
     content: 'widget 5',
+    isSelected: false,
+    isSelectedGroup: false,
     styles: {
       x: 750,
       y: 0,
@@ -126,9 +136,29 @@ onMounted(() => {
   }
 
   function setTargets(nextTargets) {
+    const currentTargets = [...targets];
     targets = nextTargets;
     moveable.target = targets;
     moveable.elementGuidelines = Array.from(document.querySelectorAll(".selecto-area .space-widget")).filter(t => !t.classList.contains("selected"));
+
+    for (const target of currentTargets) {
+      const widgetId = target.dataset.widgetId;
+      if (!widgetId) {
+        continue;
+      }
+      widgets[widgetId].isSelected = false;
+      widgets[widgetId].isSelectedGroup = false;
+    }
+
+    const isGroup = targets.length > 1;
+    for (const target of targets) {
+      const widgetId = target.dataset.widgetId;
+      if (!widgetId) {
+        continue;
+      }
+      widgets[widgetId].isSelected = true;
+      widgets[widgetId].isSelectedGroup = isGroup;
+    }
   }
   moveable.on("clickGroup", e => {
     selecto!.clickTarget(e.inputEvent, e.inputTarget);
@@ -153,21 +183,9 @@ onMounted(() => {
   selecto.on("dragStart", e => {
     const target = e.inputEvent.target;
     const isMoveable = moveable.isMoveableElement(target);
-    if (isMoveable) {
+    if (isMoveable || targets.some(t => t === target || t.contains(target))) {
       e.stop();
     }
-
-    if (targets.some(t => t === target || t.contains(target))) {
-      e.stop();
-    }
-  });
-  selecto.on("select", e => {
-    e.added.forEach(el => {
-      el.classList.add("selected");
-    });
-    e.removed.forEach(el => {
-      el.classList.remove("selected");
-    });
   });
   selecto.on("selectEnd", e => {
     if (e.isDragStart) {
@@ -205,8 +223,5 @@ onMounted(() => {
   position: absolute;
   top: 0;
   left: 0;
-}
-.space-widget.selected {
-  background-color: #ff0000;
 }
 </style>
