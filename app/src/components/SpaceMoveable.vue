@@ -39,28 +39,36 @@ const widgets: Ref<any[]> = ref([
 ]);
 
 onMounted(() => {
-  console.log("mounted");
   const container = document.querySelector(".space-layout") as HTMLElement;
-  // let targets = Array.from(document.querySelectorAll(".space-widget"));
   let targets = []
-  console.log("targets", targets)
 
   const moveable = new Moveable(container, {
     target: targets,
-    // If the container is null, the position is fixed. (default: parentElement(document.body))
+
     draggable: true,
-    resizable: false,
-    scalable: false,
+    resizable: true,
+
     rotatable: false,
+    scalable: false,
     warpable: false,
     pinchable: false,
-    origin: true,
+
+    origin: false,
     keepRatio: true,
-    edge: false,
-    throttleDrag: 0,
-    throttleResize: 0,
-    throttleScale: 0,
-    throttleRotate: 0,
+    edge: true,
+    edgeDraggable: true,
+
+    throttleDrag: 1,
+    throttleResize: 1,
+    throttleRotate: 1,
+
+    snappable: true,
+    isDisplaySnapDigit: true,
+    snapThreshold: 5,
+    maxSnapElementGuidelineDistance: undefined,
+    elementGuidelines: targets,
+    snapDirections: { "top": true, "left": true, "bottom": true, "right": true, "center": true, "middle": true },
+    elementSnapDirections: { "top": true, "left": true, "bottom": true, "right": true, "center": true, "middle": true },
   });
 
   const selecto = new Selecto({
@@ -69,7 +77,7 @@ onMounted(() => {
     selectableTargets: [".selecto-area .space-widget"],
     hitRate: 0,
     selectByClick: true,
-    selectFromInside: true,
+    selectFromInside: false,
     toggleContinueSelect: ["shift"],
     ratio: 0
   });
@@ -77,6 +85,7 @@ onMounted(() => {
   function setTargets(nextTargets) {
     targets = nextTargets;
     moveable.target = targets;
+    moveable.elementGuidelines = Array.from(document.querySelectorAll(".selecto-area .space-widget")).filter(t => !t.classList.contains("selected"));
   }
   moveable.on("clickGroup", e => {
     selecto!.clickTarget(e.inputEvent, e.inputTarget);
@@ -89,6 +98,19 @@ onMounted(() => {
       ev.target.style.transform = ev.transform;
     });
   });
+  moveable.on("resize", e => {
+    e.target.style.width = `${e.width}px`;
+    e.target.style.height = `${e.height}px`;
+    e.target.style.transform = e.drag.transform;
+  });
+  moveable.on("resizeGroup", e => {
+    e.events.forEach(ev => {
+      ev.target.style.width = `${ev.width}px`;
+      ev.target.style.height = `${ev.height}px`;
+      ev.target.style.transform = ev.drag.transform;
+    });
+  });
+
   selecto.on("dragStart", e => {
     const target = e.inputEvent.target;
     const isMoveable = moveable.isMoveableElement(target);
@@ -124,7 +146,7 @@ onMounted(() => {
 <template>
   <div class="space-layout">
     <div data-croffle-ref="selecto"></div>
-    <div class="elements selecto-area">
+    <div class="elements selecto-area scroll-area">
       <div
         v-for="widget in widgets"
         class="space-widget p-4 bg-slate-100 w-1/5 absolute"
@@ -143,6 +165,9 @@ onMounted(() => {
   width: 100vw;
   height: 100vh;
   overflow: auto;
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 .space-widget.selected {
   background-color: #ff0000;
