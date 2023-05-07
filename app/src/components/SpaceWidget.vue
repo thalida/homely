@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {ref, watch, reactive, watchEffect, onMounted, nextTick, toRefs } from 'vue'
+import { ref, watch, reactive, watchEffect, onMounted, nextTick, toRefs } from 'vue'
 import { useSpring } from '@vueuse/motion'
 
 const widgetRef = ref()
@@ -7,43 +7,52 @@ const widgetRef = ref()
 const props = defineProps({
   widget: {
     type: Object,
-    required: true,
-  },
-});
+    required: true
+  }
+})
 const { widget } = toRefs(props)
 const transformValue = reactive({
   translateX: widget.value.styles.x,
-  translateY: widget.value.styles.y,
-});
+  translateY: widget.value.styles.y
+})
 const { set } = useSpring(transformValue)
 
 onMounted(() => {
-  watch(widget, async (w) => {
-    set({ translateX: w.styles.x, translateY: w.styles.y });
-  }, { immediate: true, deep: true })
+  watch(
+    widget,
+    async (w) => {
+      set({ translateX: w.styles.x, translateY: w.styles.y })
+    },
+    { immediate: true, deep: true }
+  )
 
-  watch(transformValue, (tv) => {
-    if (widget.value.isSelectedGroup){
-      return
-    }
-    const controlBoxes = Array.from(document.querySelectorAll('.space-layout__canvas > .moveable-control-box'))
-    if (controlBoxes.length === 0) {
-      return
-    }
-    for (const controlBox of controlBoxes) {
-      const rect = controlBox.getBoundingClientRect()
-      const hasSize = rect.width !== 0 && rect.height !== 0
-      const hasChildNodes = controlBox.hasChildNodes()
-
-      if (!hasSize || !hasChildNodes) {
-        continue
+  watch(
+    transformValue,
+    (tv) => {
+      if (widget.value.isSelectedGroup) {
+        return
       }
+      const controlBoxes = Array.from(
+        document.querySelectorAll('.space-layout__canvas > .moveable-control-box')
+      )
+      if (controlBoxes.length === 0) {
+        return
+      }
+      for (const controlBox of controlBoxes) {
+        const rect = controlBox.getBoundingClientRect()
+        const hasSize = rect.width !== 0 && rect.height !== 0
+        const hasChildNodes = controlBox.hasChildNodes()
 
-      controlBox.style.transform = `translate3d(${tv.translateX}px, ${tv.translateY}px, 0)`;
-    }
-  }, { immediate: true });
-});
+        if (!hasSize || !hasChildNodes) {
+          continue
+        }
 
+        controlBox.style.transform = `translate3d(${tv.translateX}px, ${tv.translateY}px, 0)`
+      }
+    },
+    { immediate: true }
+  )
+})
 </script>
 
 <template>
@@ -53,14 +62,15 @@ onMounted(() => {
     :class="{
       'bg-red-100': widget.isSelected,
       'bg-blue-100': widget.isSelectedGroup,
-      'bg-slate-100': !widget.isSelected && !widget.isSelectedGroup,
+      'bg-slate-100': !widget.isSelected && !widget.isSelectedGroup
     }"
     :style="{
       width: `${widget.styles.width}px`,
       height: `${widget.styles.height}px`,
       transform: `translate(${transformValue.translateX}px, ${transformValue.translateY}px)`
-    }">
-      {{ widget.content }}
+    }"
+  >
+    {{ widget.content }}
   </div>
 </template>
 
@@ -68,5 +78,4 @@ onMounted(() => {
 .space-widget.selected {
   background-color: #ff0000;
 }
-
 </style>

@@ -1,11 +1,10 @@
-
 <script setup lang="ts">
-import { type Ref, ref, onMounted, reactive, nextTick } from 'vue';
-import Moveable from "moveable";
-import Selecto from "selecto";
-import SpaceWidget from './SpaceWidget.vue';
+import { type Ref, ref, onMounted, reactive, nextTick } from 'vue'
+import Moveable from 'moveable'
+import Selecto from 'selecto'
+import SpaceWidget from './SpaceWidget.vue'
 
-const isEditMode = ref(false);
+const isEditMode = ref(false)
 const widgets = ref({
   1: {
     id: 1,
@@ -16,8 +15,8 @@ const widgets = ref({
       x: 0,
       y: 0,
       width: 100,
-      height: 100,
-    },
+      height: 100
+    }
   },
   2: {
     id: 2,
@@ -28,8 +27,8 @@ const widgets = ref({
       x: 100,
       y: 100,
       width: 200,
-      height: 200,
-    },
+      height: 200
+    }
   },
   3: {
     id: 3,
@@ -40,8 +39,8 @@ const widgets = ref({
       x: 300,
       y: 200,
       width: 200,
-      height: 400,
-    },
+      height: 400
+    }
   },
   4: {
     id: 4,
@@ -52,8 +51,8 @@ const widgets = ref({
       x: 400,
       y: 0,
       width: 200,
-      height: 200,
-    },
+      height: 200
+    }
   },
   5: {
     id: 5,
@@ -64,30 +63,30 @@ const widgets = ref({
       x: 750,
       y: 0,
       width: 300,
-      height: 300,
-    },
-  },
-});
-const widgetOrder: Ref<number[]> = ref([1, 2, 3, 4, 5]);
+      height: 300
+    }
+  }
+})
+const widgetOrder: Ref<number[]> = ref([1, 2, 3, 4, 5])
 
 const editCopy = reactive({
   widgets: {},
-  widgetOrder: [],
-});
+  widgetOrder: []
+})
 
-let moveable: Moveable | null = null;
-let selecto: Selecto | null = null;
+let moveable: Moveable | null = null
+let selecto: Selecto | null = null
 let targets = []
 
 function startEditMode() {
-  editCopy.widgets = JSON.parse(JSON.stringify(widgets.value));
-  editCopy.widgetOrder = [...widgetOrder.value];
+  editCopy.widgets = JSON.parse(JSON.stringify(widgets.value))
+  editCopy.widgetOrder = [...widgetOrder.value]
 
-  isEditMode.value = true;
+  isEditMode.value = true
 
-  const moveableContainer = document.querySelector(".space-layout__canvas") as HTMLElement;
-  const selectoContainer = document.querySelector(".space-layout__canvas__selecto") as HTMLElement;
-  targets = [];
+  const moveableContainer = document.querySelector('.space-layout__canvas') as HTMLElement
+  const selectoContainer = document.querySelector('.space-layout__canvas__selecto') as HTMLElement
+  targets = []
 
   moveable = new Moveable(moveableContainer, {
     target: targets,
@@ -113,146 +112,159 @@ function startEditMode() {
     snapThreshold: 10,
     maxSnapElementGuidelineDistance: undefined,
     elementGuidelines: targets,
-    snapDirections: { "top": true, "left": true, "bottom": true, "right": true, "center": true, "middle": true },
-    elementSnapDirections: { "top": true, "left": true, "bottom": true, "right": true, "center": true, "middle": true },
-  });
+    snapDirections: {
+      top: true,
+      left: true,
+      bottom: true,
+      right: true,
+      center: true,
+      middle: true
+    },
+    elementSnapDirections: {
+      top: true,
+      left: true,
+      bottom: true,
+      right: true,
+      center: true,
+      middle: true
+    }
+  })
 
   selecto = new Selecto({
     container: selectoContainer,
     dragContainer: moveableContainer,
-    selectableTargets: [".selecto-area .space-widget"],
+    selectableTargets: ['.selecto-area .space-widget'],
     hitRate: 0,
     selectByClick: true,
     selectFromInside: false,
-    toggleContinueSelect: ["shift"],
+    toggleContinueSelect: ['shift'],
     ratio: 0
-  });
+  })
 
-  moveable.on("clickGroup", e => {
-    selecto!.clickTarget(e.inputEvent, e.inputTarget);
-  });
-  moveable.on("drag", e => {
+  moveable.on('clickGroup', (e) => {
+    selecto!.clickTarget(e.inputEvent, e.inputTarget)
+  })
+  moveable.on('drag', (e) => {
     setStyles(e)
-  });
-  moveable.on("dragGroup", e => {
-    e.events.forEach(ev => {
-      setStyles(ev);
-    });
-  });
-  moveable.on("resize", e => {
-    setStyles(e);
-  });
-  moveable.on("resizeGroup", e => {
-    e.events.forEach(ev => {
-      setStyles(ev);
-    });
-  });
+  })
+  moveable.on('dragGroup', (e) => {
+    e.events.forEach((ev) => {
+      setStyles(ev)
+    })
+  })
+  moveable.on('resize', (e) => {
+    setStyles(e)
+  })
+  moveable.on('resizeGroup', (e) => {
+    e.events.forEach((ev) => {
+      setStyles(ev)
+    })
+  })
 
-  selecto.on("dragStart", e => {
-    const target = e.inputEvent.target;
-    const isMoveable = moveable.isMoveableElement(target);
-    if (isMoveable || targets.some(t => t === target || t.contains(target))) {
-      e.stop();
+  selecto.on('dragStart', (e) => {
+    const target = e.inputEvent.target
+    const isMoveable = moveable.isMoveableElement(target)
+    if (isMoveable || targets.some((t) => t === target || t.contains(target))) {
+      e.stop()
     }
-  });
-  selecto.on("selectEnd", e => {
+  })
+  selecto.on('selectEnd', (e) => {
     if (e.isDragStart) {
-      e.inputEvent.preventDefault();
+      e.inputEvent.preventDefault()
       moveable.waitToChangeTarget().then(() => {
-        moveable.dragStart(e.inputEvent);
-      });
+        moveable.dragStart(e.inputEvent)
+      })
     }
-    setTargets(e.selected);
-  });
+    setTargets(e.selected)
+  })
 }
 
 function stopEditMode() {
-  isEditMode.value = false;
+  isEditMode.value = false
   if (moveable) {
-    moveable.destroy();
-    moveable = null;
+    moveable.destroy()
+    moveable = null
   }
   if (selecto) {
-    selecto.destroy();
-    selecto = null;
+    selecto.destroy()
+    selecto = null
   }
-  setTargets([]);
-  editCopy.widgets = {};
-  editCopy.widgetOrder = [];
+  setTargets([])
+  editCopy.widgets = {}
+  editCopy.widgetOrder = []
 }
 
 async function resetEditMode() {
-  widgets.value = JSON.parse(JSON.stringify(editCopy.widgets));
-  widgetOrder.value = [...editCopy.widgetOrder];
+  widgets.value = JSON.parse(JSON.stringify(editCopy.widgets))
+  widgetOrder.value = [...editCopy.widgetOrder]
 }
 
-
 function setStyles(e) {
-  const widgetId = e.target.dataset.widgetId;
+  const widgetId = e.target.dataset.widgetId
   if (!widgetId) {
-    return;
+    return
   }
 
   if (Array.isArray(e.translate)) {
-    widgets.value[widgetId].styles.x = e.translate[0];
-    widgets.value[widgetId].styles.y = e.translate[1];
+    widgets.value[widgetId].styles.x = e.translate[0]
+    widgets.value[widgetId].styles.y = e.translate[1]
   }
 
-
-  if (typeof e.width === "number") {
-    e.target.style.width = `${e.width}px`;
-    widgets.value[widgetId].styles.width = e.width;
+  if (typeof e.width === 'number') {
+    e.target.style.width = `${e.width}px`
+    widgets.value[widgetId].styles.width = e.width
   }
 
-  if (typeof e.height === "number") {
-    e.target.style.height = `${e.height}px`;
-    widgets.value[widgetId].styles.height = e.height;
+  if (typeof e.height === 'number') {
+    e.target.style.height = `${e.height}px`
+    widgets.value[widgetId].styles.height = e.height
   }
 }
 
 function setTargets(nextTargets) {
-  const currentTargets = [...targets];
-  targets = nextTargets;
+  const currentTargets = [...targets]
+  targets = nextTargets
 
   if (moveable) {
-    moveable.target = targets;
-    moveable.elementGuidelines = Array.from(document.querySelectorAll(".selecto-area .space-widget")).filter(t => !t.classList.contains("selected"));
+    moveable.target = targets
+    moveable.elementGuidelines = Array.from(
+      document.querySelectorAll('.selecto-area .space-widget')
+    ).filter((t) => !t.classList.contains('selected'))
   }
 
   for (const target of currentTargets) {
-    const widgetId = target.dataset.widgetId;
+    const widgetId = target.dataset.widgetId
     if (!widgetId) {
-      continue;
+      continue
     }
-    widgets.value[widgetId].isSelected = false;
-    widgets.value[widgetId].isSelectedGroup = false;
+    widgets.value[widgetId].isSelected = false
+    widgets.value[widgetId].isSelectedGroup = false
   }
 
-  const isGroup = targets.length > 1;
+  const isGroup = targets.length > 1
   for (const target of targets) {
-    const widgetId = target.dataset.widgetId;
+    const widgetId = target.dataset.widgetId
     if (!widgetId) {
-      continue;
+      continue
     }
-    widgets.value[widgetId].isSelected = true;
-    widgets.value[widgetId].isSelectedGroup = isGroup;
+    widgets.value[widgetId].isSelected = true
+    widgets.value[widgetId].isSelectedGroup = isGroup
   }
 }
 
 function handleEditModeToggle() {
-  isEditMode.value = !isEditMode.value;
+  isEditMode.value = !isEditMode.value
   if (isEditMode.value) {
-    startEditMode();
+    startEditMode()
   } else {
-    stopEditMode();
+    stopEditMode()
   }
 }
 
 function handleCancelEdit() {
-  resetEditMode();
-  stopEditMode();
+  resetEditMode()
+  stopEditMode()
 }
-
 </script>
 
 <template>
@@ -260,7 +272,7 @@ function handleCancelEdit() {
     <div class="space-layout__menu">
       <button v-if="isEditMode" @click="handleCancelEdit">Cancel</button>
       <button @click="handleEditModeToggle">
-        {{  isEditMode ? 'Done' : 'Edit' }}
+        {{ isEditMode ? 'Done' : 'Edit' }}
       </button>
     </div>
     <div class="space-layout__canvas">
@@ -271,7 +283,8 @@ function handleCancelEdit() {
           :data-widget-id="widgetId"
           class="space-widget"
           :key="widgetId"
-          :widget="widgets[widgetId]">
+          :widget="widgets[widgetId]"
+        >
         </SpaceWidget>
       </div>
     </div>
