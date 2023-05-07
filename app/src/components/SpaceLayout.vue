@@ -110,7 +110,7 @@ function startEditMode() {
 
     snappable: true,
     isDisplaySnapDigit: true,
-    snapThreshold: 5,
+    snapThreshold: 10,
     maxSnapElementGuidelineDistance: undefined,
     elementGuidelines: targets,
     snapDirections: { "top": true, "left": true, "bottom": true, "right": true, "center": true, "middle": true },
