@@ -1,20 +1,27 @@
 <script setup lang="ts">
-import { ref, watch, reactive, onMounted, toRefs } from 'vue'
+import { ref, watch, reactive, onMounted, toRefs, computed } from 'vue'
 import { useSpring } from '@vueuse/motion'
+import { useWidgetStore } from '@/stores/widget'
 
+const widgetStore = useWidgetStore()
 const widgetRef = ref()
 
 const props = defineProps({
-  widget: {
-    type: Object,
+  widgetId: {
+    type: String,
     required: true
   }
 })
-const { widget } = toRefs(props)
+
+const widget = computed(() => {
+  return widgetStore.getWidgetById(props.widgetId)
+})
+
 const transformValue = reactive({
   translateX: widget.value.styles.x,
   translateY: widget.value.styles.y
 })
+
 const { set } = useSpring(transformValue)
 
 onMounted(() => {
