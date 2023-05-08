@@ -56,8 +56,7 @@ onMounted(() => {
 
         controlBox.style.transform = `translate3d(${tv.translateX}px, ${tv.translateY}px, 0)`
       }
-    },
-    { immediate: true }
+    }
   )
 })
 </script>
