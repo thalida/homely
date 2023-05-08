@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useSpaceStore } from '@/stores/space';
-import { computed, ref, type Component, watchEffect } from 'vue';
+import { computed, ref, type Component, watchEffect, onMounted } from 'vue';
 import { widgetComponents, LINK_WIDGET_KEY, TEXT_WIDGET_KEY } from '@/components/widgets';
 
 const spaceStore = useSpaceStore();
@@ -12,18 +12,7 @@ const emits = defineEmits<{
 }>();
 
 const activeWidgetComponentKey = ref<typeof LINK_WIDGET_KEY | typeof TEXT_WIDGET_KEY | null>(null);
-const widgetModal = ref<Component | null>(null);
 const showModal = ref(false);
-
-// watchEffect(async () => {
-//   if (activeWidgetComponentKey.value === null) {
-//     return;
-//   }
-
-//   const components = widgetComponents[activeWidgetComponentKey.value];
-//   widgetModal.value = components.modalComponent
-//   console.log(widgetModal.value);
-// });
 
 function handleEditModeCancel() {
   spaceStore.setEditMode(false);
@@ -42,6 +31,12 @@ function handleAddLinkClick() {
   activeWidgetComponentKey.value = LINK_WIDGET_KEY;
   showModal.value = true;
 }
+
+onMounted(() => {
+  if(spaceStore.isEditMode) {
+    emits('editModeStart');
+  }
+})
 </script>
 
 <template>
@@ -55,7 +50,7 @@ function handleAddLinkClick() {
   <teleport to="body">
     <component
       v-if="activeWidgetComponentKey"
-      :is="widgetComponents[activeWidgetComponentKey].modalComponent"
+      :is="widgetComponents[activeWidgetComponentKey].modal"
       :show="showModal"
       @submit="showModal = false"
       @cancel="showModal = false"

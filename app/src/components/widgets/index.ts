@@ -7,11 +7,9 @@ export type TWidgetType = typeof LINK_WIDGET_KEY | typeof TEXT_WIDGET_KEY
 
 export const widgetComponents = {
   [LINK_WIDGET_KEY]: {
-    modalComponent: LinkModal,
-    widgetComponent: () => import('./LinkWidget.vue'),
+    modal: LinkModal,
   },
   [TEXT_WIDGET_KEY]: {
-    modalComponent: LinkModal,
-    widgetComponent: () => import('./LinkWidget.vue'),
+    modal: LinkModal,
   },
 }

@@ -17,7 +17,7 @@ function startEditMode() {
 
   const moveableContainer = document.querySelector('.space-layout__canvas') as HTMLElement
   const selectoContainer = document.querySelector('.space-layout__canvas__selecto') as HTMLElement
-  targets = []
+  targets = Array.from(moveableContainer.querySelectorAll('.space-widget.selected'))
 
   moveable = new Moveable(moveableContainer, {
     target: targets,
@@ -222,6 +222,10 @@ function setTargets(nextTargets: HTMLElement[]) {
           v-for="widgetId in spaceStore.widgets.widgetKeys"
           :data-widget-id="widgetId"
           class="space-widget"
+          :class="{
+            'selected': spaceStore.widgets.collection[widgetId].isSelected,
+            'selected-group': spaceStore.widgets.collection[widgetId].isSelectedGroup
+          }"
           :key="widgetId"
           :widget-id="widgetId"
         >
