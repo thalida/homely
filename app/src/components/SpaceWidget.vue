@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, reactive, onMounted, toRefs, computed } from 'vue'
+import { ref, watch, reactive, onMounted, computed } from 'vue'
 import { useSpring } from '@vueuse/motion'
 import { useWidgetStore } from '@/stores/widget'
 

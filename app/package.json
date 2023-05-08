@@ -16,11 +16,13 @@
   "dependencies": {
     "@vueuse/gesture": "2.0.0-beta.1",
     "@vueuse/motion": "2.0.0-beta.12",
+    "axios": "^1.4.0",
     "lodash": "^4.17.21",
     "moveable": "^0.47.2",
     "pinia": "^2.0.32",
     "selecto": "^1.22.3",
     "type-fest": "^3.10.0",
+    "uuid": "^9.0.0",
     "vue": "^3.2.47"
   },
   "devDependencies": {
@@ -28,6 +30,7 @@
     "@types/jsdom": "^21.1.0",
     "@types/lodash": "^4.14.194",
     "@types/node": "^18.14.2",
+    "@types/uuid": "^9.0.1",
     "@vitejs/plugin-vue": "^4.0.0",
     "@vue/eslint-config-prettier": "^7.1.0",
     "@vue/eslint-config-typescript": "^11.0.2",
