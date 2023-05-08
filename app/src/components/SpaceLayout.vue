@@ -38,6 +38,13 @@ function startEditMode() {
     throttleDrag: 0,
     throttleResize: 0,
 
+    bounds: {
+      left: 0,
+      top: 0,
+      right: Infinity,
+      bottom: Infinity
+    },
+
     snappable: true,
     isDisplaySnapDigit: true,
     snapThreshold: 10,
@@ -245,7 +252,7 @@ function setTargets(nextTargets: HTMLElement[]) {
   width: 100vw;
   height: 100vh;
   position: absolute;
-  top: 32px;
+  top: 0;
   left: 0;
 }
 </style>

@@ -40,12 +40,12 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="space-layout__menu">
-    <button v-if="spaceStore.isEditMode" @click="handleEditModeCancel">Cancel</button>
-    <button @click="handleEditModeToggle">
+  <div class="space-layout__menu fixed space-x-2 top-0 left-0 w-full p-4 bg-slate-200 z-10 bg-opacity-90">
+    <button v-if="spaceStore.isEditMode" @click="handleEditModeCancel" class="p-2 bg-slate-400">Cancel</button>
+    <button @click="handleEditModeToggle" class="p-2 bg-green-300">
       {{ spaceStore.isEditMode ? 'Done' : 'Edit' }}
     </button>
-    <button @click="handleAddLinkClick">Add Link</button>
+    <button @click="handleAddLinkClick" class="p-2 bg-blue-400">Add Link</button>
   </div>
   <teleport to="body">
     <component
@@ -59,15 +59,4 @@ onMounted(() => {
 </template>
 
 <style scoped>
-.space-layout__menu {
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 1;
-  background-color: #eee;
-  padding: 8px;
-  border-bottom: 1px solid #ddd;
-  width: 100%;
-  height: 32px;
-}
 </style>
