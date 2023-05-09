@@ -3,6 +3,7 @@ import { useSpaceStore } from '@/stores/space';
 import { ref, computed, nextTick } from 'vue';
 import { widgetComponents, LINK_WIDGET_KEY, TEXT_WIDGET_KEY } from '@/components/widgets';
 import { filter } from 'lodash';
+import type { IWidget } from '@/stores/widget';
 
 const spaceStore = useSpaceStore();
 
@@ -11,6 +12,8 @@ const emits = defineEmits<{
   (e: 'editModeStart'): void
   (e: 'editModeDone'): void
   (e: 'deletedWidgets'): void
+  (e: 'addModuleStart', widgetType: string): void
+  (e: 'addModuleSubmit', widget: IWidget): void
 }>();
 
 const activeWidgetComponentKey = ref<typeof LINK_WIDGET_KEY | typeof TEXT_WIDGET_KEY | null>(null);
@@ -48,6 +51,13 @@ async function handleDelete() {
 function handleAddLink() {
   activeWidgetComponentKey.value = LINK_WIDGET_KEY;
   showModal.value = true;
+  emits('addModuleStart', LINK_WIDGET_KEY);
+}
+
+function handleAddModuleSubmit(widget: IWidget) {
+  showModal.value = false;
+  activeWidgetComponentKey.value = null;
+  emits('addModuleSubmit', widget);
 }
 </script>
 
@@ -67,7 +77,7 @@ function handleAddLink() {
       v-if="activeWidgetComponentKey"
       :is="widgetComponents[activeWidgetComponentKey].modal"
       :show="showModal"
-      @submit="showModal = false"
+      @submit="handleAddModuleSubmit"
       @cancel="showModal = false"
     />
   </teleport>

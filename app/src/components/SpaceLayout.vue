@@ -4,7 +4,8 @@ import Selecto from 'selecto'
 import SpaceMenu from './SpaceMenu.vue'
 import SpaceWidget from './SpaceWidget.vue'
 import { useSpaceStore } from '@/stores/space'
-import { onMounted } from 'vue'
+import { nextTick, onMounted } from 'vue'
+import type { IWidget } from '@/stores/widget'
 
 const spaceStore = useSpaceStore()
 
@@ -236,6 +237,30 @@ function refreshTargets() {
   const selectedWidgets: HTMLElement[] = Array.from(moveableContainer.querySelectorAll('.space-widget.selected'));
   setTargets(selectedWidgets);
 }
+
+function startAddModule() {
+  setTargets([])
+}
+
+async function createdModule(widget: IWidget) {
+  const windowWidth = window.innerWidth
+  const windowHeight = window.innerHeight
+  const widgetWidth = widget.styles.width
+  const widgetHeight = widget.styles.height
+  const x = (windowWidth - widgetWidth) / 2
+  const y = (windowHeight - widgetHeight) / 2
+  spaceStore.widgets.updateWidget(widget.id, {
+    isSelected: true,
+    isSelectedGroup: false,
+    styles: {
+      ...widget.styles,
+      x,
+      y,
+    }
+  })
+  await nextTick()
+  refreshTargets()
+}
 </script>
 
 <template>
@@ -245,6 +270,8 @@ function refreshTargets() {
       @editModeDone="stopEditMode"
       @editModeCancel="cancelEditMode"
       @deletedWidgets="refreshTargets"
+      @addModuleStart="startAddModule"
+      @addModuleSubmit="createdModule"
     />
     <div class="space-layout__canvas">
       <div class="space-layout__canvas__selecto"></div>
