@@ -93,15 +93,16 @@ function handleChangeZindex(amount: number) {
   <div class="space-layout__menu fixed space-x-2 top-0 left-0 w-full p-4 bg-slate-200 z-10 bg-opacity-90">
     <button v-if="spaceStore.isEditMode" @click="handleEditModeCancel" class="p-2 bg-slate-400">Cancel</button>
     <button @click="handleEditModeToggle" class="p-2 bg-green-300">
-      {{ spaceStore.isEditMode ? 'Done' : 'Edit' }}
+      {{ spaceStore.isEditMode ? 'Save' : 'Edit' }}
     </button>
     <template v-if="spaceStore.isEditMode">
-      <button @click="handleDelete" class="p-2 bg-red-400 disabled:opacity-50" :disabled="numSelectedWidgets === 0">Delete {{ numSelectedWidgets }}</button>
-      <button @click="handleAddLink" class="p-2 bg-blue-400">Add Link</button>
-    </template>
-    <template v-if="spaceStore.isEditMode">
+      {{ numSelectedWidgets }} selected:
+      <button @click="handleDelete" class="p-2 bg-red-400 disabled:opacity-50" :disabled="numSelectedWidgets === 0">Delete</button>
       <button @click="handleChangeZindex(Infinity)" class="p-2 bg-slate-400 disabled:opacity-50" :disabled="numSelectedWidgets === 0">Move to Front</button>
       <button @click="handleChangeZindex(-Infinity)" class="p-2 bg-slate-400 disabled:opacity-50" :disabled="numSelectedWidgets === 0">Move to Back</button>
+    </template>
+    <template v-if="spaceStore.isEditMode">
+      <button @click="handleAddLink" class="p-2 bg-blue-400">Add Link</button>
     </template>
   </div>
   <teleport to="body">
