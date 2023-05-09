@@ -1,26 +1,47 @@
 <script setup lang="ts">
-import { ref, watch, reactive, onMounted, toRefs } from 'vue'
+import { ref, watch, reactive, onMounted, computed } from 'vue'
 import { useSpring } from '@vueuse/motion'
+import { useWidgetStore } from '@/stores/widget'
+import { useSpaceStore } from '@/stores/space'
 
+const spaceStore = useSpaceStore()
+const widgetStore = useWidgetStore()
 const widgetRef = ref()
 
 const props = defineProps({
-  widget: {
-    type: Object,
+  widgetId: {
+    type: String,
     required: true
   }
 })
-const { widget } = toRefs(props)
-const transformValue = reactive({
-  translateX: widget.value.styles.x,
-  translateY: widget.value.styles.y
+
+const widget = computed(() => {
+  return widgetStore.getWidgetById(props.widgetId)
 })
+
+const widgetWidth = computed(() => {
+  return widget.value.styles ? widget.value.styles.width : 0;
+});
+
+const widgetHeight = computed(() => {
+  return widget.value.styles ? widget.value.styles.height : 0;
+});
+
+const transformValue = reactive({
+  translateX: widget.value.styles ? widget.value.styles.x : 0,
+  translateY: widget.value.styles ? widget.value.styles.y : 0,
+})
+
 const { set } = useSpring(transformValue)
 
 onMounted(() => {
   watch(
     widget,
     async (w) => {
+      if (!w.styles) {
+        return
+      }
+
       set({ translateX: w.styles.x, translateY: w.styles.y })
     },
     { immediate: true, deep: true }
@@ -29,6 +50,10 @@ onMounted(() => {
   watch(
     transformValue,
     (tv) => {
+      if (!spaceStore.isEditMode) {
+        return
+      }
+
       if (widget.value.isSelectedGroup) {
         return
       }
@@ -49,8 +74,7 @@ onMounted(() => {
 
         controlBox.style.transform = `translate3d(${tv.translateX}px, ${tv.translateY}px, 0)`
       }
-    },
-    { immediate: true }
+    }
   )
 })
 </script>
@@ -65,8 +89,8 @@ onMounted(() => {
       'bg-slate-100': !widget.isSelected && !widget.isSelectedGroup
     }"
     :style="{
-      width: `${widget.styles.width}px`,
-      height: `${widget.styles.height}px`,
+      width: `${widgetWidth}px`,
+      height: `${widgetHeight}px`,
       transform: `translate(${transformValue.translateX}px, ${transformValue.translateY}px)`
     }"
   >
@@ -75,7 +99,4 @@ onMounted(() => {
 </template>
 
 <style scoped>
-.space-widget.selected {
-  background-color: #ff0000;
-}
 </style>
