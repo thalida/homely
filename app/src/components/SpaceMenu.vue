@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { useSpaceStore } from '@/stores/space';
-import { ref, computed, nextTick } from 'vue';
+import { ref, computed } from 'vue';
 import { widgetComponents, LINK_WIDGET_KEY, TEXT_WIDGET_KEY } from '@/components/widgets';
-import { filter, map } from 'lodash';
-import type { IWidget } from '@/stores/widget';
+import { filter } from 'lodash';
 
 const spaceStore = useSpaceStore();
 
@@ -11,16 +10,13 @@ const emits = defineEmits<{
   (e: 'editModeCancel'): void
   (e: 'editModeStart'): void
   (e: 'editModeDone'): void
-  (e: 'deletedWidgets'): void
-  (e: 'addModuleStart', widgetType: string): void
-  (e: 'addModuleSubmit', widget: IWidget): void
 }>();
 
 const activeWidgetComponentKey = ref<typeof LINK_WIDGET_KEY | typeof TEXT_WIDGET_KEY | null>(null);
 const showModal = ref(false);
 
 const selectedWidgets = computed(() => {
-  return filter(spaceStore.widgets.collection, (w) => w.isSelected);
+  return filter(spaceStore.widgets.collection, (w) => w.state.selected);
 });
 const numSelectedWidgets = computed(() => {
   return selectedWidgets.value.length;
@@ -43,49 +39,16 @@ async function handleDelete() {
   for (const widget of selectedWidgets.value) {
     spaceStore.widgets.deleteWidget(widget.id);
   }
-
-  await nextTick();
-  emits('deletedWidgets');
 }
 
 function handleAddLink() {
   activeWidgetComponentKey.value = LINK_WIDGET_KEY;
   showModal.value = true;
-  emits('addModuleStart', LINK_WIDGET_KEY);
 }
 
-function handleAddModuleSubmit(widget: IWidget) {
+function handleAddModuleSubmit() {
   showModal.value = false;
   activeWidgetComponentKey.value = null;
-  emits('addModuleSubmit', widget);
-}
-
-function handleChangeZindex(amount: number) {
-  if (numSelectedWidgets.value === 0) {
-    return;
-  }
-
-  let maxZindex: number = 0;
-  let minZindex: number = 0;
-  if (amount === Infinity) {
-    maxZindex = Math.max(...map(spaceStore.widgets.collection, (w) => w.styles.zIndex))
-  } else if (amount === -Infinity) {
-    minZindex = Math.min(...map(spaceStore.widgets.collection, (w) => w.styles.zIndex))
-  }
-
-  for (const widget of selectedWidgets.value) {
-    let zIndex: number = widget.styles.zIndex;
-
-    if (amount === Infinity) {
-      zIndex = maxZindex + 1
-    } else if (amount === -Infinity) {
-      zIndex = minZindex - 1
-    }
-
-    spaceStore.widgets.updateWidget(widget.id, {
-      styles: { zIndex }
-    })
-  }
 }
 </script>
 
@@ -98,8 +61,6 @@ function handleChangeZindex(amount: number) {
     <template v-if="spaceStore.isEditMode">
       {{ numSelectedWidgets }} selected:
       <button @click="handleDelete" class="p-2 bg-red-400 disabled:opacity-50" :disabled="numSelectedWidgets === 0">Delete</button>
-      <button @click="handleChangeZindex(Infinity)" class="p-2 bg-slate-400 disabled:opacity-50" :disabled="numSelectedWidgets === 0">Move to Front</button>
-      <button @click="handleChangeZindex(-Infinity)" class="p-2 bg-slate-400 disabled:opacity-50" :disabled="numSelectedWidgets === 0">Move to Back</button>
     </template>
     <template v-if="spaceStore.isEditMode">
       <button @click="handleAddLink" class="p-2 bg-blue-400">Add Link</button>

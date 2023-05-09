@@ -10,59 +10,75 @@ export interface IWidget {
   id: string
   type: TWidgetType
   content: Record<string, any>
-  isSelected: boolean
-  isSelectedGroup: boolean
-  styles: {
-    x: number
-    y: number
-    width: number
-    height: number
-    zIndex: number
-  }
+  state: IWidgetState
+}
+
+export interface IWidgetState {
+  selected: boolean,
 }
 
 export interface IWidgets {
   [key: string]: IWidget
 }
 
+export interface IWidgetLayout {
+  i: string
+  x: number
+  y: number
+  w: number
+  h: number
+  static?: boolean
+}
+
 export const useWidgetStore = defineStore('widget', () => {
   const collection: Ref<IWidgets> = useLocalStorage('homely/widget/collection', {});
-  const deletedWigetIds: Ref<{ [key: string]: boolean }> = ref({});
+  const layout: Ref<IWidgetLayout[]> = useLocalStorage('homely/widget/layout', []);
 
-  const backupCopy: Ref<IWidgets> = useLocalStorage('homely/widget/backupCopy', {});
-  const backupDeletedWigetIds: Ref<{ [key: string]: boolean }> = ref({});
+  const backupCollection: Ref<IWidgets> = useLocalStorage('homely/widget/backupCollection', {});
+  const backupLayout: Ref<IWidgetLayout[]> = useLocalStorage('homely/widget/backupLayout', []);
 
-  const widgetKeys = computed(() => Object.keys(collection.value))
   const getWidgetById = computed(() => (id: string) => collection.value[id])
+  const getWidgetLayoutById = computed(() => (id: string) => layout.value.find((item) => item.i === id))
+
 
   function createBackup() {
-    backupCopy.value = cloneDeep(collection.value);
-    backupDeletedWigetIds.value = cloneDeep(deletedWigetIds.value);
+    backupCollection.value = cloneDeep(collection.value);
+    backupLayout.value = cloneDeep(layout.value);
   }
 
   function deleteBackup() {
-    backupCopy.value = {};
-    backupDeletedWigetIds.value = {};
+    backupCollection.value = {};
+    backupLayout.value = [];
   }
 
   function resetFromBackup() {
-    collection.value = JSON.parse(JSON.stringify(backupCopy.value));
-    deletedWigetIds.value = JSON.parse(JSON.stringify(backupDeletedWigetIds.value));
+    collection.value = cloneDeep(backupCollection.value);
+    layout.value = cloneDeep(backupLayout.value);
 
     deleteBackup()
   }
 
-  function createWidget(widgetInput: Omit<IWidget, 'id'>) {
+  function createWidget(widgetInput: Omit<IWidget, 'id' | 'state'>, widgetLayout: Pick<IWidgetLayout, 'w' | 'h'>) {
     const widget: IWidget = {
-      id: uuidv4(),
       ...widgetInput,
+      id: uuidv4(),
+      state: {
+        selected: true,
+      },
     }
     collection.value[widget.id] = widget;
+    layout.value.push({
+      i: widget.id,
+      w: widgetLayout.w || 1,
+      h: widgetLayout.h || 1,
+      x: (layout.value.length * 2) % 12,
+      y: layout.value.length + 12,
+    });
     return collection.value[widget.id];
   }
 
   function updateWidget(id: string, widget: PartialDeep<IWidget>) {
-    if (!collection.value[id] || deletedWigetIds.value[id]) {
+    if (!collection.value[id]) {
       return;
     }
 
@@ -70,16 +86,27 @@ export const useWidgetStore = defineStore('widget', () => {
     return collection.value[id];
   }
 
+  function updateAllWidgets(settings: PartialDeep<IWidget>) {
+    Object.keys(collection.value).forEach((id) => {
+      collection.value[id] = merge(collection.value[id], settings);
+    })
+  }
+
   function deleteWidget(id: string) {
-    deletedWigetIds.value[id] = true;
+    const index = layout.value.findIndex((item) => item.i === id);
+    if (index > -1) {
+      layout.value.splice(index, 1);
+    }
+
     delete collection.value[id];
   }
 
   return {
     collection,
-    widgetKeys,
+    layout,
 
     getWidgetById,
+    getWidgetLayoutById,
 
     createBackup,
     deleteBackup,
@@ -88,5 +115,6 @@ export const useWidgetStore = defineStore('widget', () => {
     createWidget,
     updateWidget,
     deleteWidget,
+    updateAllWidgets,
   }
 })
