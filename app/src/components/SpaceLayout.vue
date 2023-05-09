@@ -4,22 +4,23 @@ import { useDropZone } from '@vueuse/core'
 import SpaceMenu from './SpaceMenu.vue'
 import SpaceWidget from './SpaceWidget.vue'
 import { useSpaceStore } from '@/stores/space'
-import { onMounted, ref } from 'vue'
+import { onBeforeUnmount, onMounted, ref } from 'vue'
+import { throttle } from 'lodash'
 
 const spaceStore = useSpaceStore()
 
-const dropZoneRef = ref<HTMLDivElement>()
+const wrapper = ref<HTMLElement>()
+const gridLayout = ref<InstanceType<typeof GridLayout>>()
 function onDrop(files: File[] | null) {
   console.log(files)
 }
-const { isOverDropZone } = useDropZone(dropZoneRef, onDrop)
+const { isOverDropZone } = useDropZone(wrapper, onDrop)
 
 onMounted(() => {
   if (spaceStore.isEditMode) {
     startEditMode({ storeBackup: false })
   }
 })
-
 function startEditMode({ storeBackup = true } = {}) {
   spaceStore.setEditMode(true)
 
@@ -73,11 +74,15 @@ function handleGridItemClick(e:KeyboardEvent, item: any) {
 
   spaceStore.widgets.updateWidget(item.i, { state: { selected } })
 }
+
+function handleGridItemMove(itemId: string) {
+  spaceStore.widgets.updateWidget(itemId, { state: { selected: true } })
+}
 </script>
 
 <template>
   <div
-    ref="dropZoneRef"
+    ref="wrapper"
     class="space-layout"
     @paste="handlePaste"
     @click="handleLayoutClick"
@@ -89,6 +94,8 @@ function handleGridItemClick(e:KeyboardEvent, item: any) {
     />
 
     <GridLayout
+      ref="gridLayout"
+      class="grid-layout"
       v-model:layout="spaceStore.widgets.layout"
       :col-num="12"
       :row-height="30"
@@ -107,6 +114,7 @@ function handleGridItemClick(e:KeyboardEvent, item: any) {
         :h="item.h"
         :i="item.i"
         @click="handleGridItemClick($event, item)"
+        @move="handleGridItemMove"
       >
         <SpaceWidget :widget-id="item.i" />
       </GridItem>
