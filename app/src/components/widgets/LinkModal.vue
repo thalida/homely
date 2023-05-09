@@ -45,7 +45,8 @@ async function handleSubmit() {
       x: 0,
       y: 0,
       width: 300,
-      height: 300
+      height: 300,
+      zIndex: 0,
     }
   })
   emits('submit', widget)

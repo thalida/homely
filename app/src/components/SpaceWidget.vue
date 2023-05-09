@@ -19,13 +19,9 @@ const widget = computed(() => {
   return widgetStore.getWidgetById(props.widgetId)
 })
 
-const widgetWidth = computed(() => {
-  return widget.value.styles ? widget.value.styles.width : 0;
-});
-
-const widgetHeight = computed(() => {
-  return widget.value.styles ? widget.value.styles.height : 0;
-});
+const widgetStyles = computed(() => {
+  return widget.value.styles || {}
+})
 
 const transformValue = reactive({
   translateX: widget.value.styles ? widget.value.styles.x : 0,
@@ -36,13 +32,9 @@ const { set } = useSpring(transformValue)
 
 onMounted(() => {
   watch(
-    widget,
-    async (w) => {
-      if (!w.styles) {
-        return
-      }
-
-      set({ translateX: w.styles.x, translateY: w.styles.y })
+    widgetStyles,
+    async (styles) => {
+      set({ translateX: styles.x, translateY: styles.y })
     },
     { immediate: true, deep: true }
   )
@@ -57,6 +49,7 @@ onMounted(() => {
       if (widget.value.isSelectedGroup) {
         return
       }
+
       const controlBoxes: HTMLElement[] = Array.from(
         document.querySelectorAll('.space-layout__canvas > .moveable-control-box')
       )
@@ -89,8 +82,9 @@ onMounted(() => {
       'bg-slate-100': !widget.isSelected && !widget.isSelectedGroup
     }"
     :style="{
-      width: `${widgetWidth}px`,
-      height: `${widgetHeight}px`,
+      zIndex: widgetStyles.zIndex,
+      width: `${widgetStyles.width}px`,
+      height: `${widgetStyles.height}px`,
       transform: `translate(${transformValue.translateX}px, ${transformValue.translateY}px)`
     }"
   >

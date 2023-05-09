@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import Moveable, { type OnDrag, type OnResize  } from 'moveable'
 import Selecto from 'selecto'
+import { useDropZone } from '@vueuse/core'
 import SpaceMenu from './SpaceMenu.vue'
 import SpaceWidget from './SpaceWidget.vue'
 import { useSpaceStore } from '@/stores/space'
-import { nextTick, onMounted } from 'vue'
+import { computed, nextTick, onMounted, ref } from 'vue'
 import type { IWidget } from '@/stores/widget'
+import { map } from 'lodash'
 
 const spaceStore = useSpaceStore()
 
@@ -13,6 +15,12 @@ let moveable: Moveable | null = null
 let selecto: Selecto | null = null
 let targets: HTMLElement[] = []
 
+
+const dropZoneRef = ref<HTMLDivElement>()
+function onDrop(files: File[] | null) {
+  console.log(files)
+}
+const { isOverDropZone } = useDropZone(dropZoneRef, onDrop)
 
 onMounted(() => {
   if (spaceStore.isEditMode) {
@@ -249,6 +257,7 @@ async function createdModule(widget: IWidget) {
   const widgetHeight = widget.styles.height
   const x = (windowWidth - widgetWidth) / 2
   const y = (windowHeight - widgetHeight) / 2
+  const zIndex = Math.max(...map(spaceStore.widgets.collection, (w) => w.styles.zIndex)) + 1
   spaceStore.widgets.updateWidget(widget.id, {
     isSelected: true,
     isSelectedGroup: false,
@@ -256,15 +265,37 @@ async function createdModule(widget: IWidget) {
       ...widget.styles,
       x,
       y,
+      zIndex
     }
   })
   await nextTick()
   refreshTargets()
 }
+
+function handlePaste(e: ClipboardEvent) {
+  console.log(e)
+  const clipboardData = e.clipboardData
+  if (!clipboardData) {
+    return
+  }
+
+  console.log(clipboardData.getData('text/plain'))
+
+  const image = clipboardData.files[0]
+  if (!image) {
+    return
+  }
+
+  console.log(image)
+}
 </script>
 
 <template>
-  <div class="space-layout">
+  <div
+    ref="dropZoneRef"
+    class="space-layout"
+    @paste="handlePaste"
+  >
     <SpaceMenu
       @editModeStart="startEditMode"
       @editModeDone="stopEditMode"
@@ -273,7 +304,11 @@ async function createdModule(widget: IWidget) {
       @addModuleStart="startAddModule"
       @addModuleSubmit="createdModule"
     />
-    <div class="space-layout__canvas">
+    <div class="space-layout__canvas"
+      :class="{
+        'cursor-add': isOverDropZone,
+      }"
+    >
       <div class="space-layout__canvas__selecto"></div>
       <div class="elements selecto-area scroll-area">
         <SpaceWidget
