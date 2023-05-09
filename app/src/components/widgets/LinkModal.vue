@@ -39,16 +39,7 @@ async function handleSubmit() {
       url: url.value,
       metadata,
     },
-    isSelected: false,
-    isSelectedGroup: false,
-    styles: {
-      x: 0,
-      y: 0,
-      width: 300,
-      height: 300,
-      zIndex: 0,
-    }
-  })
+  }, { w: 3, h: 2})
   emits('submit', widget)
 }
 

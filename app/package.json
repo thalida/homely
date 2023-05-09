@@ -18,6 +18,7 @@
     "@vueuse/gesture": "2.0.0-beta.1",
     "@vueuse/motion": "2.0.0-beta.12",
     "axios": "^1.4.0",
+    "grid-layout-plus": "^1.0.2",
     "lodash": "^4.17.21",
     "moveable": "^0.47.2",
     "pinia": "^2.0.32",
