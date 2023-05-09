@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useSpaceStore } from '@/stores/space';
-import { ref, onMounted, computed, nextTick } from 'vue';
+import { ref, computed, nextTick } from 'vue';
 import { widgetComponents, LINK_WIDGET_KEY, TEXT_WIDGET_KEY } from '@/components/widgets';
 import { filter } from 'lodash';
 

@@ -19,7 +19,7 @@ onMounted(() => {
   }
 })
 
-function startEditMode({ storeBackup = true }) {
+function startEditMode({ storeBackup = true } = {}) {
   spaceStore.setEditMode(true)
 
   if (storeBackup) {
