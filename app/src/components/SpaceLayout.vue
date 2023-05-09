@@ -4,6 +4,7 @@ import Selecto from 'selecto'
 import SpaceMenu from './SpaceMenu.vue'
 import SpaceWidget from './SpaceWidget.vue'
 import { useSpaceStore } from '@/stores/space'
+import { onMounted } from 'vue'
 
 const spaceStore = useSpaceStore()
 
@@ -11,9 +12,19 @@ let moveable: Moveable | null = null
 let selecto: Selecto | null = null
 let targets: HTMLElement[] = []
 
-function startEditMode() {
+
+onMounted(() => {
+  if (spaceStore.isEditMode) {
+    startEditMode({ storeBackup: false })
+  }
+})
+
+function startEditMode({ storeBackup = true }) {
   spaceStore.setEditMode(true)
-  spaceStore.widgets.createBackup()
+
+  if (storeBackup) {
+    spaceStore.widgets.createBackup()
+  }
 
   const moveableContainer = document.querySelector('.space-layout__canvas') as HTMLElement
   const selectoContainer = document.querySelector('.space-layout__canvas__selecto') as HTMLElement
@@ -137,6 +148,11 @@ function stopEditMode() {
     selecto = null
   }
 
+  const controlBoxes = document.querySelectorAll('.space-layout__canvas > .moveable-control-box');
+  for (const controlBox of controlBoxes) {
+    controlBox.remove()
+  }
+
   setTargets([])
 }
 
@@ -207,11 +223,18 @@ function setTargets(nextTargets: HTMLElement[]) {
     if (!widgetId) {
       continue
     }
+
     spaceStore.widgets.updateWidget(widgetId, {
       isSelected: true,
       isSelectedGroup: isGroup
     })
   }
+}
+
+function refreshTargets() {
+  const moveableContainer = document.querySelector('.space-layout__canvas') as HTMLElement
+  const selectedWidgets: HTMLElement[] = Array.from(moveableContainer.querySelectorAll('.space-widget.selected'));
+  setTargets(selectedWidgets);
 }
 </script>
 
@@ -221,20 +244,20 @@ function setTargets(nextTargets: HTMLElement[]) {
       @editModeStart="startEditMode"
       @editModeDone="stopEditMode"
       @editModeCancel="cancelEditMode"
+      @deletedWidgets="refreshTargets"
     />
     <div class="space-layout__canvas">
       <div class="space-layout__canvas__selecto"></div>
       <div class="elements selecto-area scroll-area">
         <SpaceWidget
           v-for="widgetId in spaceStore.widgets.widgetKeys"
+          :key="widgetId"
           :data-widget-id="widgetId"
+          :widget-id="widgetId"
           class="space-widget"
           :class="{
             'selected': spaceStore.widgets.collection[widgetId].isSelected,
-            'selected-group': spaceStore.widgets.collection[widgetId].isSelectedGroup
           }"
-          :key="widgetId"
-          :widget-id="widgetId"
         >
         </SpaceWidget>
       </div>

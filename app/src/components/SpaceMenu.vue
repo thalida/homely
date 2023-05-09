@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { useSpaceStore } from '@/stores/space';
-import { computed, ref, type Component, watchEffect, onMounted } from 'vue';
+import { ref, onMounted, computed, nextTick } from 'vue';
 import { widgetComponents, LINK_WIDGET_KEY, TEXT_WIDGET_KEY } from '@/components/widgets';
+import { filter } from 'lodash';
 
 const spaceStore = useSpaceStore();
 
@@ -9,10 +10,18 @@ const emits = defineEmits<{
   (e: 'editModeCancel'): void
   (e: 'editModeStart'): void
   (e: 'editModeDone'): void
+  (e: 'deletedWidgets'): void
 }>();
 
 const activeWidgetComponentKey = ref<typeof LINK_WIDGET_KEY | typeof TEXT_WIDGET_KEY | null>(null);
 const showModal = ref(false);
+
+const selectedWidgets = computed(() => {
+  return filter(spaceStore.widgets.collection, (w) => w.isSelected);
+});
+const numSelectedWidgets = computed(() => {
+  return selectedWidgets.value.length;
+});
 
 function handleEditModeCancel() {
   spaceStore.setEditMode(false);
@@ -27,16 +36,19 @@ function handleEditModeToggle() {
   }
 }
 
-function handleAddLinkClick() {
+async function handleDelete() {
+  for (const widget of selectedWidgets.value) {
+    spaceStore.widgets.deleteWidget(widget.id);
+  }
+
+  await nextTick();
+  emits('deletedWidgets');
+}
+
+function handleAddLink() {
   activeWidgetComponentKey.value = LINK_WIDGET_KEY;
   showModal.value = true;
 }
-
-onMounted(() => {
-  if(spaceStore.isEditMode) {
-    emits('editModeStart');
-  }
-})
 </script>
 
 <template>
@@ -45,7 +57,10 @@ onMounted(() => {
     <button @click="handleEditModeToggle" class="p-2 bg-green-300">
       {{ spaceStore.isEditMode ? 'Done' : 'Edit' }}
     </button>
-    <button @click="handleAddLinkClick" class="p-2 bg-blue-400">Add Link</button>
+    <template v-if="spaceStore.isEditMode">
+      <button @click="handleDelete" class="p-2 bg-red-400 disabled:opacity-50" :disabled="numSelectedWidgets === 0">Delete {{ numSelectedWidgets }}</button>
+      <button @click="handleAddLink" class="p-2 bg-blue-400">Add Link</button>
+    </template>
   </div>
   <teleport to="body">
     <component
