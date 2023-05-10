@@ -33,14 +33,14 @@ async function getMetadata(url: string) {
 
 async function handleSubmit() {
   const metadata = await getMetadata(url.value)
-  const widget = widgetStore.createWidget({
+  const res = widgetStore.createWidget({
     type: LINK_WIDGET_KEY,
     content: {
       url: url.value,
       metadata,
     },
   }, { w: 3, h: 2})
-  emits('submit', widget)
+  emits('submit', res)
 }
 
 function handleCancel() {
