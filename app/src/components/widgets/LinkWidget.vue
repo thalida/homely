@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import axios from 'axios'
 import { computed, ref } from 'vue'
-import { LINK_WIDGET_KEY } from '.'
-import { useWidgetStore } from '@/stores/widget'
+import { EWidgetType, useWidgetStore } from '@/stores/widget'
 
 const props = defineProps({
   widgetId: {
@@ -32,7 +31,7 @@ async function getMetadata(url: string) {
 
 function handleCreate() {
   widgetStore.createWidget({
-    type: LINK_WIDGET_KEY,
+    type: EWidgetType.LINK,
     content: null,
   }, { w: 3, h: 2 })
 }

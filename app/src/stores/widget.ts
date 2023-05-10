@@ -1,14 +1,18 @@
 import { v4 as uuidv4 } from 'uuid';
-import { computed, ref, type Ref } from 'vue'
+import { computed, type Ref } from 'vue'
 import { defineStore } from 'pinia'
 import type { PartialDeep } from 'type-fest'
 import { merge, cloneDeep } from 'lodash'
-import type { TWidgetType } from '@/components/widgets'
 import { useLocalStorage } from '@vueuse/core'
+
+export enum EWidgetType {
+  LINK = 'link',
+  TEXT = 'text',
+}
 
 export interface IWidget {
   id: string
-  type: TWidgetType
+  type: EWidgetType
   content: Record<string, any> | null
   state: IWidgetState
 }

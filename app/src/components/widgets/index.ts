@@ -1,12 +1,8 @@
 import type { Component } from 'vue'
 import LinkWidget from './LinkWidget.vue'
+import { EWidgetType } from '@/stores/widget'
 
-export const LINK_WIDGET_KEY = 'link'
-export const TEXT_WIDGET_KEY = 'text'
-
-export type TWidgetType = typeof LINK_WIDGET_KEY | typeof TEXT_WIDGET_KEY
-
-export const widgetComponents: Record<TWidgetType, Component | null> = {
-  [LINK_WIDGET_KEY]: LinkWidget,
-  [TEXT_WIDGET_KEY]: null,
+export const widgetComponents: Record<EWidgetType, Component | null> = {
+  [EWidgetType.LINK]: LinkWidget,
+  [EWidgetType.TEXT]: null,
 }

@@ -5,8 +5,7 @@ import SpaceWidget from './SpaceWidget.vue'
 import { useSpaceStore } from '@/stores/space'
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 import { throttle } from 'lodash'
-import type { IWidget, IWidgetLayout } from '@/stores/widget'
-import { TEXT_WIDGET_KEY } from './widgets'
+import { EWidgetType, type IWidget, type IWidgetLayout } from '@/stores/widget'
 
 const spaceStore = useSpaceStore()
 
@@ -199,7 +198,7 @@ function handleAddModuleDragEnd() {
   cleanupTmpWidgetStore(tmpWidgetLayout)
 
   const { widget, layout } = spaceStore.widgets.createWidget({
-    type: tmpWidget?.type || TEXT_WIDGET_KEY,
+    type: tmpWidget?.type || EWidgetType.TEXT,
     content: null,
   }, {
     x: tmpWidgetLayout.x,

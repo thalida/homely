@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { useSpaceStore } from '@/stores/space';
 import { computed, onBeforeUnmount, onMounted } from 'vue';
-import { LINK_WIDGET_KEY, TEXT_WIDGET_KEY, type TWidgetType } from '@/components/widgets';
 import { filter } from 'lodash';
+import { EWidgetType } from '@/stores/widget';
 
 const spaceStore = useSpaceStore();
 
@@ -10,8 +10,8 @@ const emits = defineEmits<{
   (e: 'editModeCancel'): void
   (e: 'editModeStart'): void
   (e: 'editModeDone'): void
-  (e: 'addModuleDrag', event: DragEvent, widgetType: TWidgetType): void
-  (e: 'addModuleDragEnd', event: DragEvent, widgetType: TWidgetType): void
+  (e: 'addModuleDrag', event: DragEvent, widgetType: EWidgetType): void
+  (e: 'addModuleDragEnd', event: DragEvent, widgetType: EWidgetType): void
 }>();
 
 const selectedWidgets = computed(() => {
@@ -48,12 +48,12 @@ async function handleDelete() {
   }
 }
 
-function drag(e: DragEvent, widgetType: TWidgetType) {
+function drag(e: DragEvent, widgetType: EWidgetType) {
   spaceStore.widgets.updateAllWidgets({ state: { selected: false } })
   emits('addModuleDrag', e, widgetType);
 }
 
-function dragEnd(e: DragEvent, widgetType: TWidgetType) {
+function dragEnd(e: DragEvent, widgetType: EWidgetType) {
   spaceStore.widgets.updateAllWidgets({ state: { selected: false } })
   emits('addModuleDragEnd', e, widgetType);
 }
@@ -78,8 +78,8 @@ function handleWindowKeyup(e: KeyboardEvent) {
         class="droppable-element w-12 p-2 bg-blue-400"
         draggable="true"
         unselectable="on"
-        @drag="drag($event, LINK_WIDGET_KEY as TWidgetType)"
-        @dragend="dragEnd($event, LINK_WIDGET_KEY as TWidgetType)"
+        @drag="drag($event, EWidgetType.LINK)"
+        @dragend="dragEnd($event, EWidgetType.LINK)"
       >
         Link
       </div>
