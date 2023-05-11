@@ -3,28 +3,46 @@ import { GridLayout, GridItem } from 'grid-layout-plus'
 import SpaceMenu from './SpaceMenu.vue'
 import SpaceWidget from './SpaceWidget.vue'
 import { useSpaceStore } from '@/stores/space'
-import { onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watchEffect } from 'vue'
 import { throttle } from 'lodash'
-import { EWidgetType, type IWidget, type IWidgetLayout } from '@/stores/widget'
+import type { IWidget, IWidgetButton, IWidgetLayout } from '@/stores/widget'
 
 const spaceStore = useSpaceStore()
 
 const isReady = ref(false)
 const spaceRef = ref<HTMLElement>()
 const gridLayoutRef = ref<InstanceType<typeof GridLayout>>()
+const rowHeight = ref<number>(32)
 
 onMounted(() => {
+  setRowHeight()
+
   if (spaceStore.isEditMode) {
     startEditMode({ storeBackup: false })
   }
 
+  window.addEventListener('resize', throttle(setRowHeight))
   document.addEventListener('dragover', syncMousePosition)
 
   isReady.value = true
 })
 onBeforeUnmount(() => {
+  window.removeEventListener('resize', throttle(setRowHeight))
   document.removeEventListener('dragover', syncMousePosition)
 })
+
+function setRowHeight() {
+  if (!spaceRef.value) {
+    return
+  }
+
+  console.log('setRowHeight')
+
+  const parentRect = spaceRef.value.getBoundingClientRect()
+  rowHeight.value = (parentRect.width / 12) - 10
+  console.log(parentRect.width, rowHeight.value)
+}
+
 function startEditMode({ storeBackup = true } = {}) {
   spaceStore.setEditMode(true)
 
@@ -120,7 +138,7 @@ function cleanupTmpWidgetSettings() {
   tmpWidgetLayout = null
 }
 
-const handleAddModuleDrag = throttle((_, widgetType) => {
+const handleAddModuleDrag = throttle((_, widgetButton: IWidgetButton) => {
   const parentRect = spaceRef.value?.getBoundingClientRect()
 
   if (!parentRect || !gridLayoutRef.value) return
@@ -132,12 +150,11 @@ const handleAddModuleDrag = throttle((_, widgetType) => {
     if (!hasTmpWidget) {
       tmpWidget = {
         id: TMP_WIDGET_ID,
-        type: widgetType,
-        content: {},
         state: {
           temporary: true,
           selected: false
-        }
+        },
+        ...widgetButton.widget
       }
       spaceStore.widgets.collection[TMP_WIDGET_ID] = tmpWidget
     }
@@ -147,9 +164,8 @@ const handleAddModuleDrag = throttle((_, widgetType) => {
       tmpWidgetLayout = {
         x: (spaceStore.widgets.layout.length * 2) % 12,
         y: spaceStore.widgets.layout.length + 12,
-        w: 2,
-        h: 2,
-        i: TMP_WIDGET_ID
+        i: TMP_WIDGET_ID,
+        ...widgetButton.layout
       }
       spaceStore.widgets.layout.push(tmpWidgetLayout)
     }
@@ -192,14 +208,13 @@ const handleAddModuleDrag = throttle((_, widgetType) => {
   tmpWidgetLayout.y = spaceStore.widgets.layout[index].y
 })
 
-function handleAddModuleDragEnd() {
+function handleAddModuleDragEnd(_, widgetButton: IWidgetButton) {
   if (!gridLayoutRef.value || !isMouseInGrid() || tmpWidgetLayout === null) return
 
   cleanupTmpWidgetStore(tmpWidgetLayout)
 
   const { widget, layout } = spaceStore.widgets.createWidget({
-    type: tmpWidget?.type || EWidgetType.TEXT,
-    content: null,
+    ...widgetButton.widget,
   }, {
     x: tmpWidgetLayout.x,
     y: tmpWidgetLayout.y,
@@ -233,15 +248,14 @@ function handleAddModuleDragEnd() {
       @addModuleDragEnd="handleAddModuleDragEnd"
     />
 
-    <div id="space__widget-menu"></div>
-
     <GridLayout
       v-if="isReady"
       ref="gridLayoutRef"
       class="grid-layout"
       v-model:layout="spaceStore.widgets.layout"
       :col-num="12"
-      :row-height="30"
+      :row-height="rowHeight"
+      :responsive="false"
       :is-draggable="spaceStore.isEditMode"
       :is-resizable="false"
       :vertical-compact="false"
@@ -270,5 +284,6 @@ function handleAddModuleDragEnd() {
   width: 100vw;
   height: 100vh;
   overflow: auto;
+  min-width: 900px;
 }
 </style>

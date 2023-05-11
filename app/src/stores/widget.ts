@@ -4,6 +4,7 @@ import { defineStore } from 'pinia'
 import type { PartialDeep } from 'type-fest'
 import { merge, cloneDeep } from 'lodash'
 import { useLocalStorage } from '@vueuse/core'
+import type { I } from 'vitest/dist/types-94cfe4b4';
 
 export enum EWidgetType {
   LINK = 'link',
@@ -33,6 +34,12 @@ export interface IWidgetLayout {
   w: number
   h: number
   static?: boolean
+}
+
+export interface IWidgetButton {
+  name: string
+  widget: Pick<IWidget, 'type' | 'content'>
+  layout: Pick<IWidgetLayout, 'w' | 'h'>
 }
 
 export const useWidgetStore = defineStore('widget', () => {

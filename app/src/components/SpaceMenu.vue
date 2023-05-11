@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { useSpaceStore } from '@/stores/space';
-import { computed, onBeforeUnmount, onMounted } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref, type Component, type Ref } from 'vue';
 import { filter } from 'lodash';
-import { EWidgetType } from '@/stores/widget';
+import type { IWidgetButton } from '@/stores/widget';
+import { widgetButtons as LinkWidgetButtons } from './widgets/LinkWidget';
 
 const spaceStore = useSpaceStore();
 
@@ -10,13 +11,21 @@ const emits = defineEmits<{
   (e: 'editModeCancel'): void
   (e: 'editModeStart'): void
   (e: 'editModeDone'): void
-  (e: 'addModuleDrag', event: DragEvent, widgetType: EWidgetType): void
-  (e: 'addModuleDragEnd', event: DragEvent, widgetType: EWidgetType): void
+  (e: 'addModuleDrag', event: DragEvent, widgetButton: IWidgetButton): void
+  (e: 'addModuleDragEnd', event: DragEvent, widgetButton: IWidgetButton): void
 }>();
+
+const widgetButtons = ref([
+  {
+    name: 'Link',
+    buttons: LinkWidgetButtons
+  },
+])
 
 const selectedWidgets = computed(() => {
   return filter(spaceStore.widgets.collection, (w) => w.state.selected);
 });
+
 const numSelectedWidgets = computed(() => {
   return selectedWidgets.value.length;
 });
@@ -48,14 +57,14 @@ async function handleDelete() {
   }
 }
 
-function drag(e: DragEvent, widgetType: EWidgetType) {
+function drag(e: DragEvent, widgetButton: IWidgetButton) {
   spaceStore.widgets.updateAllWidgets({ state: { selected: false } })
-  emits('addModuleDrag', e, widgetType);
+  emits('addModuleDrag', e, widgetButton);
 }
 
-function dragEnd(e: DragEvent, widgetType: EWidgetType) {
+function dragEnd(e: DragEvent, widgetButton: IWidgetButton) {
   spaceStore.widgets.updateAllWidgets({ state: { selected: false } })
-  emits('addModuleDragEnd', e, widgetType);
+  emits('addModuleDragEnd', e, widgetButton);
 }
 
 function handleWindowKeyup(e: KeyboardEvent) {
@@ -74,16 +83,22 @@ function handleWindowKeyup(e: KeyboardEvent) {
     <template v-if="spaceStore.isEditMode">
       {{ numSelectedWidgets }} selected:
       <button @click="handleDelete" class="p-2 bg-red-400 disabled:opacity-50" :disabled="numSelectedWidgets === 0">Delete</button>
-      <div
-        class="droppable-element w-12 p-2 bg-blue-400"
-        draggable="true"
-        unselectable="on"
-        @drag="drag($event, EWidgetType.LINK)"
-        @dragend="dragEnd($event, EWidgetType.LINK)"
-      >
-        Link
+      <div v-for="section in widgetButtons" :key="section.name">
+        {{ section.name }}
+        <div
+          v-for="button in section.buttons"
+          :key="`${section.name}-${button.name}`"
+          class="droppable-element w-12 p-2 bg-blue-400"
+          draggable="true"
+          unselectable="on"
+          @drag="drag($event, button)"
+          @dragend="dragEnd($event, button)"
+        >
+          {{ button.name }}
+        </div>
       </div>
     </template>
+    <div id="space__widget-menu"></div>
   </div>
 </template>
 

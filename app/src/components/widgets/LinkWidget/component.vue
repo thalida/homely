@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import axios from 'axios'
 import { computed, ref } from 'vue'
-import { EWidgetType, useWidgetStore } from '@/stores/widget'
+import { EWidgetType, useWidgetStore, type IWidgetButton } from '@/stores/widget'
 
 const props = defineProps({
   widgetId: {
@@ -18,7 +18,6 @@ const widget = computed(() => {
 })
 
 const url = ref('')
-const layoutDefaults = { w: 3, h: 2 };
 
 async function getMetadata(url: string) {
   const apiUrl = `http://0.0.0.0:8000/metadata`
@@ -27,13 +26,6 @@ async function getMetadata(url: string) {
   })
 
   return res.data
-}
-
-function handleCreate() {
-  widgetStore.createWidget({
-    type: EWidgetType.LINK,
-    content: null,
-  }, { w: 3, h: 2 })
 }
 
 async function handleSubmit() {
@@ -49,11 +41,6 @@ async function handleSubmit() {
 function handleCancel() {
   url.value = ''
 }
-
-defineExpose({
-  layoutDefaults,
-  handleCreate,
-})
 </script>
 
 <template>
