@@ -45,6 +45,9 @@ function handleCancel() {
 
 <template>
   <div>
+    <div>
+      {{  widget.content }}
+    </div>
     <teleport to="#space__widget-menu">
       <div v-if="widget.state.selected">
         <label>

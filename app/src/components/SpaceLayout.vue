@@ -69,7 +69,7 @@ function handlePaste(e: ClipboardEvent) {
   console.log(clipboardData.getData('text/plain'))
 }
 
-function handleLayoutClick() {
+function handleGridLayoutClick() {
   if (!spaceStore.isEditMode) {
     return
   }
@@ -235,7 +235,6 @@ function handleAddModuleDragEnd(_, widgetButton: IWidgetButton) {
     ref="spaceRef"
     class="space-layout"
     @paste="handlePaste"
-    @click="handleLayoutClick"
   >
     <SpaceMenu
       @editModeStart="startEditMode"
@@ -249,6 +248,7 @@ function handleAddModuleDragEnd(_, widgetButton: IWidgetButton) {
       v-if="isReady"
       ref="gridLayoutRef"
       class="grid-layout"
+      @click="handleGridLayoutClick"
       v-model:layout="spaceStore.widgets.layout"
       :col-num="12"
       :row-height="rowHeight"
