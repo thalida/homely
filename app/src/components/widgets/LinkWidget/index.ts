@@ -1,6 +1,7 @@
 import { EWidgetType, type IWidgetButton } from "@/stores/widget";
+import component from "./LinkWidget.vue";
 
-export const widgetButtons: IWidgetButton[] = [
+const widgetButtons: IWidgetButton[] = [
   {
     name: "Icon",
     widget: {
@@ -23,6 +24,18 @@ export const widgetButtons: IWidgetButton[] = [
       type: EWidgetType.LINK,
       content: null,
     },
-    layout: { w: 2, h: 3 },
+    layout: { w: 3, h: 3 },
   },
 ];
+
+const menuItem = {
+  id: EWidgetType.LINK,
+  label: 'Link',
+  buttons: widgetButtons
+}
+
+export default {
+  type: EWidgetType.LINK,
+  component,
+  menuItem,
+}

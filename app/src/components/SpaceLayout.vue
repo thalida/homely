@@ -3,7 +3,7 @@ import { GridLayout, GridItem } from 'grid-layout-plus'
 import SpaceMenu from './SpaceMenu.vue'
 import SpaceWidget from './SpaceWidget.vue'
 import { useSpaceStore } from '@/stores/space'
-import { computed, onBeforeUnmount, onMounted, ref, watchEffect } from 'vue'
+import { onBeforeUnmount, onMounted, ref } from 'vue'
 import { throttle } from 'lodash'
 import type { IWidget, IWidgetButton, IWidgetLayout } from '@/stores/widget'
 
@@ -36,11 +36,8 @@ function setRowHeight() {
     return
   }
 
-  console.log('setRowHeight')
-
   const parentRect = spaceRef.value.getBoundingClientRect()
   rowHeight.value = (parentRect.width / 12) - 10
-  console.log(parentRect.width, rowHeight.value)
 }
 
 function startEditMode({ storeBackup = true } = {}) {

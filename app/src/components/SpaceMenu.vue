@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { useSpaceStore } from '@/stores/space';
-import { computed, onBeforeUnmount, onMounted, ref, type Component, type Ref } from 'vue';
 import { filter } from 'lodash';
+import { useSpaceStore } from '@/stores/space';
+import { computed, onBeforeUnmount, onMounted } from 'vue';
 import type { IWidgetButton } from '@/stores/widget';
-import { widgetButtons as LinkWidgetButtons } from './widgets/LinkWidget';
+import { widgetMenuItems } from './widgets';
 
 const spaceStore = useSpaceStore();
 
@@ -14,13 +14,6 @@ const emits = defineEmits<{
   (e: 'addModuleDrag', event: DragEvent, widgetButton: IWidgetButton): void
   (e: 'addModuleDragEnd', event: DragEvent, widgetButton: IWidgetButton): void
 }>();
-
-const widgetButtons = ref([
-  {
-    name: 'Link',
-    buttons: LinkWidgetButtons
-  },
-])
 
 const selectedWidgets = computed(() => {
   return filter(spaceStore.widgets.collection, (w) => w.state.selected);
@@ -83,11 +76,11 @@ function handleWindowKeyup(e: KeyboardEvent) {
     <template v-if="spaceStore.isEditMode">
       {{ numSelectedWidgets }} selected:
       <button @click="handleDelete" class="p-2 bg-red-400 disabled:opacity-50" :disabled="numSelectedWidgets === 0">Delete</button>
-      <div v-for="section in widgetButtons" :key="section.name">
-        {{ section.name }}
+      <div v-for="section in widgetMenuItems" :key="section.id">
+        {{ section.label }}
         <div
           v-for="button in section.buttons"
-          :key="`${section.name}-${button.name}`"
+          :key="`${section.id}-${button.name}`"
           class="droppable-element w-12 p-2 bg-blue-400"
           draggable="true"
           unselectable="on"
