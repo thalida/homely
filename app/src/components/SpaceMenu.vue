@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { filter } from 'lodash';
 import { useSpaceStore } from '@/stores/space';
-import { computed, onBeforeUnmount, onMounted } from 'vue';
+import { computed } from 'vue';
 import type { IWidgetButton } from '@/stores/widget';
 import { widgetMenuItems } from './widgets';
 

@@ -1,18 +1,22 @@
 <script setup lang="ts">
-import { GridLayout, GridItem } from 'grid-layout-plus'
-import SpaceMenu from './SpaceMenu.vue'
-import SpaceWidget from './SpaceWidget.vue'
-import { useSpaceStore } from '@/stores/space'
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 import { throttle } from 'lodash'
+import { GridLayout, GridItem } from 'grid-layout-plus'
+import { useSpaceStore } from '@/stores/space'
 import type { IWidget, IWidgetButton, IWidgetLayout } from '@/stores/widget'
+import SpaceMenu from './SpaceMenu.vue'
+import SpaceWidget from './SpaceWidget.vue'
 
 const spaceStore = useSpaceStore()
 
 const isReady = ref(false)
 const spaceRef = ref<HTMLElement>()
 const gridLayoutRef = ref<InstanceType<typeof GridLayout>>()
-const rowHeight = ref<number>(32)
+const gridLayoutSettings = ref({
+  rowHeight: 32,
+  columns: 12,
+  margin: [16, 16],
+})
 
 onMounted(() => {
   setRowHeight()
@@ -26,6 +30,7 @@ onMounted(() => {
 
   isReady.value = true
 })
+
 onBeforeUnmount(() => {
   window.removeEventListener('resize', throttle(setRowHeight))
   document.removeEventListener('dragover', syncMousePosition)
@@ -37,7 +42,7 @@ function setRowHeight() {
   }
 
   const parentRect = spaceRef.value.getBoundingClientRect()
-  rowHeight.value = (parentRect.width / 12) - 10
+  gridLayoutSettings.value.rowHeight = (parentRect.width / gridLayoutSettings.value.columns) - gridLayoutSettings.value.margin[0]
 }
 
 function startEditMode({ storeBackup = true } = {}) {
@@ -250,10 +255,11 @@ function handleAddModuleDragEnd(_, widgetButton: IWidgetButton) {
       class="grid-layout"
       @click="handleGridLayoutClick"
       v-model:layout="spaceStore.widgets.layout"
-      :col-num="12"
-      :row-height="rowHeight"
-      :responsive="false"
+      :col-num="gridLayoutSettings.columns"
+      :row-height="gridLayoutSettings.rowHeight"
+      :margin="gridLayoutSettings.margin"
       :is-draggable="spaceStore.isEditMode"
+      :responsive="false"
       :is-resizable="false"
       :vertical-compact="false"
       :restore-on-drag="true"
