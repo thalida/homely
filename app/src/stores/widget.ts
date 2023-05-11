@@ -27,7 +27,7 @@ export interface IWidgetState {
 export interface IWidgetStyle {
   id: string
   label: string
-  layout: Pick<IWidgetLayout, 'w' | 'h'>
+  layout: Omit<IWidgetLayout, 'i' | 'x' | 'y'>
 }
 
 export interface IWidgets {
@@ -41,6 +41,8 @@ export interface IWidgetLayout {
   w: number
   h: number
   static?: boolean
+  preserveAspectRatio?: boolean
+  isResizable?: boolean
 }
 
 export interface IWidgetButton extends Pick<IWidget, 'type' | 'content' | 'style'>{}

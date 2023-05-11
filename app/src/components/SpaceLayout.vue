@@ -218,8 +218,7 @@ function handleAddModuleDragEnd(_, widgetButton: IWidgetButton) {
   const { widget, layout } = spaceStore.widgets.createWidget(widgetButton, {
     x: tmpWidgetLayout.x,
     y: tmpWidgetLayout.y,
-    w: tmpWidgetLayout.w,
-    h: tmpWidgetLayout.h,
+    ...widgetButton.style.layout
   })
   gridLayoutRef.value.dragEvent('dragend', widget.id, layout.x, layout.y, layout.h, layout.w)
 
@@ -271,6 +270,8 @@ function handleAddModuleDragEnd(_, widgetButton: IWidgetButton) {
         :w="item.w"
         :h="item.h"
         :i="item.i"
+        :preserve-aspect-ratio="item.preserveAspectRatio"
+        :is-resizable="item.isResizable"
         @click="handleGridItemClick($event, item)"
         @move="handleGridItemMove"
       >
