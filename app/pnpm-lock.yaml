@@ -19,6 +19,9 @@ dependencies:
   lodash:
     specifier: ^4.17.21
     version: 4.17.21
+  lucide-vue-next:
+    specifier: ^0.215.0
+    version: 0.215.0(vue@3.2.47)
   moveable:
     specifier: ^0.47.2
     version: 0.47.2
@@ -2975,6 +2978,14 @@ packages:
     dependencies:
       yallist: 4.0.0
     dev: true
+
+  /lucide-vue-next@0.215.0(vue@3.2.47):
+    resolution: {integrity: sha512-Rq3rpWGtLqXrQRTmP4ZBJhege3oDRIy0ty2OM4gIltHsCuAm8OyV+0dQSgReOJRGnrwslLM2nbpx12a7Glv+mw==}
+    peerDependencies:
+      vue: '>=3.0.1'
+    dependencies:
+      vue: 3.2.47
+    dev: false
 
   /magic-string@0.25.9:
     resolution: {integrity: sha512-RmF0AsMzgt25qzqqLc1+MbHmhdx0ojF2Fvs4XnOqz2ZOBXzzkEwc/dJQZCYHAn7v1jbVOjAZfK8msRn4BxO4VQ==}

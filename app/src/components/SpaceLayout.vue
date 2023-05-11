@@ -156,7 +156,7 @@ const handleAddModuleDrag = throttle((_, widgetButton: IWidgetButton) => {
           temporary: true,
           selected: false
         },
-        ...widgetButton.widget
+        ...widgetButton
       }
       spaceStore.widgets.collection[TMP_WIDGET_ID] = tmpWidget
     }
@@ -167,7 +167,7 @@ const handleAddModuleDrag = throttle((_, widgetButton: IWidgetButton) => {
         x: (spaceStore.widgets.layout.length * 2) % 12,
         y: spaceStore.widgets.layout.length + 12,
         i: TMP_WIDGET_ID,
-        ...widgetButton.layout
+        ...widgetButton.style.layout
       }
       spaceStore.widgets.layout.push(tmpWidgetLayout)
     }
@@ -215,9 +215,7 @@ function handleAddModuleDragEnd(_, widgetButton: IWidgetButton) {
 
   cleanupTmpWidgetStore(tmpWidgetLayout)
 
-  const { widget, layout } = spaceStore.widgets.createWidget({
-    ...widgetButton.widget,
-  }, {
+  const { widget, layout } = spaceStore.widgets.createWidget(widgetButton, {
     x: tmpWidgetLayout.x,
     y: tmpWidgetLayout.y,
     w: tmpWidgetLayout.w,

@@ -16,13 +16,6 @@ const widget = computed(() => {
   return widgetStore.getWidgetById(props.widgetId)
 })
 
-const isSelected = computed(() => {
-  if (!widget.value) {
-    return false
-  }
-  return widget.value.state ? widget.value.state.selected : false
-})
-
 const component = computed(() => {
   if (!widget.value) {
     return null
@@ -35,11 +28,7 @@ const component = computed(() => {
   <component
     :is="component"
     :widgetId="props.widgetId"
-    class="p-4 overflow-auto h-full"
-    :class="{
-      'bg-blue-100': isSelected,
-      'bg-slate-100': !isSelected
-    }" />
+    class="p-4 overflow-auto h-full" />
 </template>
 
 <style scoped>

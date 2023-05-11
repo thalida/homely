@@ -70,14 +70,14 @@ function dragEnd(e: DragEvent, widgetButton: IWidgetButton) {
         {{ section.label }}
         <button
           v-for="button in section.buttons"
-          :key="`${section.id}-${button.name}`"
+          :key="`${section.id}-${button.style.id}`"
           class="w-12 p-2 bg-blue-400"
           draggable="true"
           unselectable="on"
           @drag="drag($event, button)"
           @dragend="dragEnd($event, button)"
         >
-          {{ button.name }}
+          {{ button.style.label }}
         </button>
       </div>
     </template>

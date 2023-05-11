@@ -34,6 +34,14 @@ def get_metadata(url: str) -> dict:
     meta_tags = soup.find_all("meta")
 
     metadata = {}
+
+    icon_link = soup.find("link", rel="shortcut icon")
+    if icon_link is None:
+        icon_link = soup.find("link", rel="icon")
+
+    if icon_link:
+        metadata["icon"] = icon_link["href"]
+
     for tag in meta_tags:
         if not tag.get("property", "").startswith("og:"):
             continue

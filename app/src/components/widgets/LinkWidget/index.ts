@@ -3,28 +3,37 @@ import component from "./LinkWidget.vue";
 
 const widgetButtons: IWidgetButton[] = [
   {
-    name: "Icon",
-    widget: {
-      type: EWidgetType.LINK,
-      content: null,
+    type: EWidgetType.LINK,
+    content: {
+      url: null,
     },
-    layout: { w: 1, h: 1 },
+    style: {
+      id: "icon",
+      label: "Icon",
+      layout: { w: 1, h: 1 },
+    },
   },
   {
-    name: "Flag",
-    widget: {
-      type: EWidgetType.LINK,
-      content: null,
+    type: EWidgetType.LINK,
+    content: {
+      url: null,
     },
-    layout: { w: 3, h: 1 },
+    style: {
+      id: "flag",
+      label: "Flag",
+      layout: { w: 3, h: 1 },
+    },
   },
   {
-    name: "Card",
-    widget: {
-      type: EWidgetType.LINK,
-      content: null,
+    type: EWidgetType.LINK,
+    content: {
+      url: null,
     },
-    layout: { w: 3, h: 3 },
+    style: {
+      id: "card",
+      label: "Card",
+      layout: { w: 3, h: 3 },
+    },
   },
 ];
 

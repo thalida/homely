@@ -16,11 +16,18 @@ export interface IWidget {
   type: EWidgetType
   content: Record<string, any> | null
   state: IWidgetState
+  style: IWidgetStyle
 }
 
 export interface IWidgetState {
   selected: boolean,
   temporary: boolean,
+}
+
+export interface IWidgetStyle {
+  id: string
+  label: string
+  layout: Pick<IWidgetLayout, 'w' | 'h'>
 }
 
 export interface IWidgets {
@@ -36,11 +43,7 @@ export interface IWidgetLayout {
   static?: boolean
 }
 
-export interface IWidgetButton {
-  name: string
-  widget: Pick<IWidget, 'type' | 'content'>
-  layout: Pick<IWidgetLayout, 'w' | 'h'>
-}
+export interface IWidgetButton extends Pick<IWidget, 'type' | 'content' | 'style'>{}
 
 export const useWidgetStore = defineStore('widget', () => {
   const collection: Ref<IWidgets> = useLocalStorage('homely/widget/collection', {});
