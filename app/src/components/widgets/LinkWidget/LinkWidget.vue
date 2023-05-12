@@ -38,11 +38,9 @@ const metadata = computed(() => {
 
   return widget.value.content.metadata || {}
 })
+
 const isSelected = computed(() => {
-  if (!widget.value) {
-    return false
-  }
-  return widget.value.state ? widget.value.state.selected : false
+  return widget.value.state.selected;
 })
 
 const url = ref('')

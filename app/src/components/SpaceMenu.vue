@@ -54,7 +54,7 @@ function dragEnd(e: DragEvent, widgetButton: IWidgetButton) {
 </script>
 
 <template>
-  <div ref="menuRef" class="space-layout__menu fixed space-x-2 top-0 right-0 h-full overflow-auto bg-slate-200 z-10 bg-opacity-90"
+  <div ref="menuRef" class="space-layout__menu fixed space-x-2 top-0 right-0 overflow-auto bg-slate-200 z-10 bg-opacity-90"
   :class="{
     'h-auto w-auto p-0 m-4': !spaceStore.isEditMode,
     'h-full w-80 p-4 m-0': spaceStore.isEditMode,

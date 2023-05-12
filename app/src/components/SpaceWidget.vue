@@ -28,7 +28,7 @@ const component = computed(() => {
   <component
     :is="component"
     :widgetId="props.widgetId"
-    class="p-4 overflow-auto h-full" />
+    class="overflow-auto h-full" />
 </template>
 
 <style scoped>

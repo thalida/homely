@@ -12,7 +12,7 @@ const widgetButtons: IWidgetButton[] = [
       label: "Text",
       layout: {
         w: 6,
-        h: 6,
+        h: 1,
         isResizable: true,
         preserveAspectRatio: false,
       },

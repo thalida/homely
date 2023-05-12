@@ -16,13 +16,3 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-
-a {
-  color: red;
-  text-decoration: none;
-
-  &:hover {
-    text-decoration: underline;
-    color: rgb(214, 221, 18);
-  }
-}

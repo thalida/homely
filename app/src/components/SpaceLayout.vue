@@ -74,29 +74,25 @@ function handlePaste(e: ClipboardEvent) {
   console.log(clipboardData.getData('text/plain'))
 }
 
-function handleGridLayoutClick() {
-  if (!spaceStore.isEditMode) {
-    return
-  }
+function handleSpaceClick(e: Event) {
+  const target = e.target as HTMLElement
+  const isGridElement = target.classList.contains('grid-layout')
+  const isWrapper = target.classList.contains('space-layout')
 
-  spaceStore.widgets.updateAllWidgets({ state: { selected: false } })
+  if (isGridElement || isWrapper) {
+    spaceStore.widgets.updateAllWidgets({ state: { selected: false } })
+  }
 }
 
 function handleGridItemClick(e:KeyboardEvent, item: any) {
-  if (!spaceStore.isEditMode) {
-    return
-  }
-
   e.stopPropagation()
 
-  const isShiftPressed = e.shiftKey
-  const selected = !spaceStore.widgets.collection[item.i].state.selected
-
-  if (!isShiftPressed) {
-    spaceStore.widgets.updateAllWidgets({ state: { selected: false } })
+  if (spaceStore.isEditMode) {
+    e.preventDefault()
   }
 
-  spaceStore.widgets.updateWidget(item.i, { state: { selected } })
+  spaceStore.widgets.updateAllWidgets({ state: { selected: false } })
+  spaceStore.widgets.updateWidget(item.i, { state: { selected: true } })
 }
 
 function handleGridItemMove(itemId: string) {
@@ -237,6 +233,7 @@ function handleAddModuleDragEnd(_, widgetButton: IWidgetButton) {
     ref="spaceRef"
     class="space-layout"
     @paste="handlePaste"
+    @click="handleSpaceClick"
   >
     <SpaceMenu
       @editModeStart="startEditMode"
@@ -250,7 +247,6 @@ function handleAddModuleDragEnd(_, widgetButton: IWidgetButton) {
       v-if="isReady"
       ref="gridLayoutRef"
       class="grid-layout"
-      @click="handleGridLayoutClick"
       v-model:layout="spaceStore.widgets.layout"
       :col-num="gridLayoutSettings.columns"
       :row-height="gridLayoutSettings.rowHeight"
@@ -271,7 +267,7 @@ function handleAddModuleDragEnd(_, widgetButton: IWidgetButton) {
         :h="item.h"
         :i="item.i"
         :preserve-aspect-ratio="item.preserveAspectRatio"
-        :is-resizable="item.isResizable"
+        :is-resizable="spaceStore.isEditMode && item.isResizable"
         @click="handleGridItemClick($event, item)"
         @move="handleGridItemMove"
       >
