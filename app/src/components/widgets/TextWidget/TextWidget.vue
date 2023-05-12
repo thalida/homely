@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch, watchEffect, nextTick } from 'vue'
-import Quill from 'quill'
 import { useWidgetStore } from '@/stores/widget'
 import { useSpaceStore } from '@/stores/space'
 import { useFontStore } from '@/stores/fonts'
+import { has } from 'lodash'
 
 const spaceStore = useSpaceStore()
 const widgetStore = useWidgetStore()
@@ -16,16 +16,7 @@ const props = defineProps({
     default: null
   }
 })
-const editorId = computed(() => {
-  return `editor-${props.widgetId}`
-})
-const toolbarId = computed(() => {
-  return `toolbar-${props.widgetId}`
-})
 
-const isTemporary = computed(() => {
-  return widget.value?.state?.temporary;
-})
 const isSelected = computed(() => {
   return widget.value?.state?.selected;
 })
@@ -42,75 +33,80 @@ const hasFonts = computed(() => {
   return fontStore.fonts.length > 0
 })
 
-let quillEditor: Quill | null = null
+const fontSizes = ref([10, 11, 12, 13, 14, 15, 16, 18, 20, 22, 24,  32, 36, 48, 64, 72, 96, 144])
+const selectedFontSize = ref(16)
+const selectedFontFamily = ref('Lato')
+const selectedFontVariant = ref('regular')
+const selectedFontWeight = computed(() => {
+  const selectedFont = fontStore.fontsByFamily[selectedFontFamily.value]
+  if (!selectedFont) {
+    return null
+  }
+
+  const selectedVariant = selectedFont.variants.filter((v) => v === selectedFontVariant.value)[0]
+  if (!selectedVariant) {
+    return null
+  }
+
+  return selectedVariant.replace('italic', '')
+})
+const selectedFontStyle = computed(() => {
+  const selectedFont = fontStore.fontsByFamily[selectedFontFamily.value]
+  if (!selectedFont) {
+    return null
+  }
+
+  const selectedVariant = selectedFont.variants.filter((v) => v === selectedFontVariant.value)[0]
+  if (!selectedVariant) {
+    return null
+  }
+
+  return selectedVariant.includes('italic') ? 'italic' : 'normal'
+})
+const selectedFontUrl = computed(() => {
+  const selectedFont = fontStore.fontsByFamily[selectedFontFamily.value]
+
+  if (!selectedFont) {
+    return null
+  }
+
+  const selectedVariant = selectedFont.variants.filter((v) => v === selectedFontVariant.value)[0]
+
+  if (!selectedVariant) {
+    return null
+  }
+
+  return `https://fonts.googleapis.com/css?family=${selectedFont.family.replace(/ /g, '+')}:${selectedVariant}`
+})
+
+function handleFontChange() {
+  const hasVariant = fontStore.fontsByFamily[selectedFontFamily.value].variants.includes(selectedFontVariant.value)
+  if (!hasVariant) {
+    selectedFontVariant.value = 'regular'
+  }
+}
 
 onMounted(async () => {
   await fontStore.loadFonts()
-  await nextTick()
-  console.log(fontStore.fontsByFamily)
-  initQuill()
 })
-
-function initQuill() {
-  if (quillEditor !== null) {
-    return
-  }
-
-  quillEditor = new Quill(`#${editorId.value}`, {
-    modules: {
-      toolbar: false,
-    },
-    theme: 'snow',
-  });
-
-  quillEditor.enable(spaceStore.isEditMode)
-
-  watchEffect(() => {
-    if (quillEditor === null) {
-      return
-    }
-
-    quillEditor.enable(isEditing.value)
-  })
-
-  watchEffect(async () => {
-    if (isTemporary.value || quillEditor !== null) {
-      return
-    }
-
-    initQuill()
-  }, { flush: 'post' })
-
-  watch(() => spaceStore.isEditMode, () => {
-    if (quillEditor === null) {
-      return
-    }
-    quillEditor.enable(spaceStore.isEditMode)
-  })
-}
-
-const selectedFontFamily = ref('Lato')
-const selectedFontVariant = ref('regular')
-
-function handleFontChange(e: Event) {
-  const target = e.target as HTMLSelectElement
-  const font = target.value
-  quillEditor?.format('font', font)
-}
-
-function handleFontVariantChange(e: Event) {
-  const target = e.target as HTMLSelectElement
-  const variant = target.value
-  quillEditor?.format('variant', variant)
-}
 
 </script>
 
 <template>
-  <div :id="editorId" v-bind="$attrs">
-    <p>Hello World!</p>
-    <p>Some initial <strong>bold</strong> text</p>
+  <div v-bind="$attrs" :contenteditable="isEditing" class="whitespace-pre-wrap cursor-auto" :style="{
+    fontFamily: selectedFontFamily,
+    fontWeight: selectedFontWeight,
+    fontStyle: selectedFontStyle,
+    fontSize: selectedFontSize + 'px',
+  }">
+    Some text here
+
+    and here
   </div>
+  <teleport to="body">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link v-if="selectedFontUrl" :href="selectedFontUrl" rel="stylesheet" type="text/css">
+  </teleport>
   <teleport to="#space__widget-menu">
     <div v-if="isEditing && isSelected && hasFonts">
       <select @change="handleFontChange" v-model="selectedFontFamily">
@@ -126,13 +122,14 @@ function handleFontVariantChange(e: Event) {
           {{ variant }}
         </option>
       </select>
+      <select v-model="selectedFontSize">
+        <option v-for="size in fontSizes" :key="size" :value="size">
+          {{ size }}
+        </option>
+      </select>
     </div>
   </teleport>
 </template>
 
-<style>
-.ql-picker-options {
-  overflow: auto;
-  height: 200px;
-}
+<style scoped>
 </style>
