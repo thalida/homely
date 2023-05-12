@@ -1,8 +1,13 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch, watchEffect, nextTick } from 'vue'
+import Quill from 'quill'
 import { useWidgetStore } from '@/stores/widget'
 import { useSpaceStore } from '@/stores/space'
-import Quill from 'quill'
+import { useFontStore } from '@/stores/fonts'
+
+const spaceStore = useSpaceStore()
+const widgetStore = useWidgetStore()
+const fontStore = useFontStore()
 
 const props = defineProps({
   widgetId: {
@@ -11,13 +16,18 @@ const props = defineProps({
     default: null
   }
 })
+const editorId = computed(() => {
+  return `editor-${props.widgetId}`
+})
+const toolbarId = computed(() => {
+  return `toolbar-${props.widgetId}`
+})
 
-const editorEl = ref<HTMLElement>()
-const spaceStore = useSpaceStore()
-const widgetStore = useWidgetStore()
-
+const isTemporary = computed(() => {
+  return widget.value?.state?.temporary;
+})
 const isSelected = computed(() => {
-  return widget.value.state.selected;
+  return widget.value?.state?.selected;
 })
 
 const isEditing = computed(() => {
@@ -28,49 +38,101 @@ const widget = computed(() => {
   return widgetStore.getWidgetById(props.widgetId)
 })
 
-onMounted(() => {
-  new Quill(editorEl, {
+const hasFonts = computed(() => {
+  return fontStore.fonts.length > 0
+})
+
+let quillEditor: Quill | null = null
+
+onMounted(async () => {
+  await fontStore.loadFonts()
+  await nextTick()
+  console.log(fontStore.fontsByFamily)
+  initQuill()
+})
+
+function initQuill() {
+  if (quillEditor !== null) {
+    return
+  }
+
+  quillEditor = new Quill(`#${editorId.value}`, {
     modules: {
-      toolbar: "#toolbar",
+      toolbar: false,
     },
     theme: 'snow',
   });
-})
+
+  quillEditor.enable(spaceStore.isEditMode)
+
+  watchEffect(() => {
+    if (quillEditor === null) {
+      return
+    }
+
+    quillEditor.enable(isEditing.value)
+  })
+
+  watchEffect(async () => {
+    if (isTemporary.value || quillEditor !== null) {
+      return
+    }
+
+    initQuill()
+  }, { flush: 'post' })
+
+  watch(() => spaceStore.isEditMode, () => {
+    if (quillEditor === null) {
+      return
+    }
+    quillEditor.enable(spaceStore.isEditMode)
+  })
+}
+
+const selectedFontFamily = ref('Lato')
+const selectedFontVariant = ref('regular')
+
+function handleFontChange(e: Event) {
+  const target = e.target as HTMLSelectElement
+  const font = target.value
+  quillEditor?.format('font', font)
+}
+
+function handleFontVariantChange(e: Event) {
+  const target = e.target as HTMLSelectElement
+  const variant = target.value
+  quillEditor?.format('variant', variant)
+}
+
 </script>
 
 <template>
-  <div ref="editor" v-bind="$attrs">
+  <div :id="editorId" v-bind="$attrs">
     <p>Hello World!</p>
     <p>Some initial <strong>bold</strong> text</p>
-    <p><br></p>
   </div>
   <teleport to="#space__widget-menu">
-    <div v-show="isSelected" id="toolbar"  class="absolute top-0 left-0 w-full bg-slate-300 z-50">
-      <div class="toolbar" ref="toolbar">
-        <span class="ql-formats">
-          <select class="ql-font"></select>
-          <select class="ql-header"></select>
-        </span>
-        <span class="ql-formats">
-          <button class="ql-bold"></button>
-          <button class="ql-italic"></button>
-          <button class="ql-underline"></button>
-          <button class="ql-strike"></button>
-        </span>
-        <span class="ql-formats">
-          <button class="ql-blockquote"></button>
-          <button class="ql-code-block"></button>
-          <button class="ql-link"></button>
-        </span>
-        <span class="ql-formats">
-          <button class="ql-list" value="ordered"></button>
-          <button class="ql-list" value="bullet"></button>
-          <select class="ql-align"></select>
-        </span>
-      </div>
+    <div v-if="isEditing && isSelected && hasFonts">
+      <select @change="handleFontChange" v-model="selectedFontFamily">
+        <option v-for="font in fontStore.fonts" :key="font.family" :value="font.family">
+          {{ font.family }}
+        </option>
+      </select>
+      <select @change="handleFontVariantChange" v-model="selectedFontVariant">
+        <option
+          v-for="variant in fontStore.fontsByFamily[selectedFontFamily].variants"
+          :key="variant"
+          :value="variant">
+          {{ variant }}
+        </option>
+      </select>
     </div>
   </teleport>
 </template>
 
-<style scoped>
+<style>
+.ql-picker-options {
+  overflow: auto;
+  height: 200px;
+}
 </style>

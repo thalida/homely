@@ -85,12 +85,12 @@ function handleSpaceClick(e: Event) {
 }
 
 function handleGridItemClick(e:KeyboardEvent, item: any) {
-  e.stopPropagation()
-
-  if (spaceStore.isEditMode) {
-    e.preventDefault()
+  if (!spaceStore.isEditMode) {
+    return
   }
 
+  e.stopPropagation()
+  e.preventDefault()
   spaceStore.widgets.updateAllWidgets({ state: { selected: false } })
   spaceStore.widgets.updateWidget(item.i, { state: { selected: true } })
 }
