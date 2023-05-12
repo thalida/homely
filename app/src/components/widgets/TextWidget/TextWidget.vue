@@ -4,6 +4,7 @@ import { useWidgetStore } from '@/stores/widget'
 import { useSpaceStore } from '@/stores/space'
 import { useFontStore } from '@/stores/fonts'
 import { has } from 'lodash'
+import { text } from 'stream/consumers'
 
 const spaceStore = useSpaceStore()
 const widgetStore = useWidgetStore()
@@ -33,7 +34,11 @@ const hasFonts = computed(() => {
   return fontStore.fonts.length > 0
 })
 
+const verticalAlignments = ref(['start', 'center', 'end'])
+const horiztonalAlignments = ref(['left', 'center', 'right'])
 const fontSizes = ref([10, 11, 12, 13, 14, 15, 16, 18, 20, 22, 24,  32, 36, 48, 64, 72, 96, 144])
+const selectedVAlignment = ref('start')
+const selectedHAlignment = ref('left')
 const selectedFontSize = ref(16)
 const selectedFontFamily = ref('Lato')
 const selectedFontVariant = ref('regular')
@@ -93,11 +98,13 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div v-bind="$attrs" :contenteditable="isEditing" class="whitespace-pre-wrap cursor-auto" :style="{
+  <div v-bind="$attrs" :contenteditable="isEditing" class="flex whitespace-pre-wrap cursor-auto w-full h-full" :style="{
     fontFamily: selectedFontFamily,
     fontWeight: selectedFontWeight,
     fontStyle: selectedFontStyle,
     fontSize: selectedFontSize + 'px',
+    justifyContent: selectedHAlignment,
+    alignItems: selectedVAlignment,
   }">
     Some text here
 
@@ -125,6 +132,16 @@ onMounted(async () => {
       <select v-model="selectedFontSize">
         <option v-for="size in fontSizes" :key="size" :value="size">
           {{ size }}
+        </option>
+      </select>
+      <select v-model="selectedHAlignment">
+        <option v-for="alignment in horiztonalAlignments" :key="alignment" :value="alignment">
+          {{ alignment }}
+        </option>
+      </select>
+      <select v-model="selectedVAlignment">
+        <option v-for="alignment in verticalAlignments" :key="alignment" :value="alignment">
+          {{ alignment }}
         </option>
       </select>
     </div>
