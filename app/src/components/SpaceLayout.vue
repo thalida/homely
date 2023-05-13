@@ -3,7 +3,7 @@ import { onBeforeUnmount, onMounted, ref } from 'vue'
 import { throttle } from 'lodash'
 import { GridLayout, GridItem } from 'grid-layout-plus'
 import { useSpaceStore } from '@/stores/space'
-import type { IWidget, IWidgetButton, IWidgetLayout } from '@/stores/widget'
+import type { IWidget, IWidgetButton, IWidgetLayout } from '@/types/widget'
 import SpaceMenu from './SpaceMenu.vue'
 import SpaceWidget from './SpaceWidget.vue'
 
@@ -206,7 +206,7 @@ const handleAddModuleDrag = throttle((_, widgetButton: IWidgetButton) => {
   tmpWidgetLayout.y = spaceStore.widgets.layout[index].y
 })
 
-function handleAddModuleDragEnd(_, widgetButton: IWidgetButton) {
+function handleAddModuleDragEnd(e: Event, widgetButton: IWidgetButton) {
   if (!gridLayoutRef.value || !isMouseInGrid() || tmpWidgetLayout === null) return
 
   cleanupTmpWidgetStore(tmpWidgetLayout)

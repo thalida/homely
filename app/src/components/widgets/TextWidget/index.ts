@@ -1,11 +1,18 @@
-import { EWidgetType, type IWidgetButton } from "@/stores/widget";
+import { EWidgetType, type IWidgetButton } from "@/types/widget";
 import component from "./TextWidget.vue";
 
 const widgetButtons: IWidgetButton[] = [
   {
     type: EWidgetType.TEXT,
     content: {
-      url: null,
+      text: null,
+      styles: {
+        fontFamily: "Lato",
+        fontVariant: "regular",
+        fontSize: 16,
+        horizontalAlignment: "left",
+        verticalAlignment: "top",
+      },
     },
     style: {
       id: "text",

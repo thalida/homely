@@ -4,48 +4,7 @@ import { defineStore } from 'pinia'
 import type { PartialDeep } from 'type-fest'
 import { merge, cloneDeep } from 'lodash'
 import { useLocalStorage } from '@vueuse/core'
-import type { I } from 'vitest/dist/types-94cfe4b4';
-
-export enum EWidgetType {
-  LINK = 'link',
-  TEXT = 'text',
-}
-
-export interface IWidget {
-  id: string
-  type: EWidgetType
-  content: Record<string, any> | null
-  state: IWidgetState
-  style: IWidgetStyle
-}
-
-export interface IWidgetState {
-  selected: boolean,
-  temporary: boolean,
-}
-
-export interface IWidgetStyle {
-  id: string
-  label: string
-  layout: Omit<IWidgetLayout, 'i' | 'x' | 'y'>
-}
-
-export interface IWidgets {
-  [key: string]: IWidget
-}
-
-export interface IWidgetLayout {
-  i: string
-  x: number
-  y: number
-  w: number
-  h: number
-  static?: boolean
-  preserveAspectRatio?: boolean
-  isResizable?: boolean
-}
-
-export interface IWidgetButton extends Pick<IWidget, 'type' | 'content' | 'style'>{}
+import type { IWidgets, IWidgetLayout, IWidget } from '@/types/widget';
 
 export const useWidgetStore = defineStore('widget', () => {
   const collection: Ref<IWidgets> = useLocalStorage('homely/widget/collection', {});

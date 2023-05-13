@@ -1,4 +1,4 @@
-import { EWidgetType, type IWidgetButton } from "@/stores/widget";
+import { EWidgetType, type IWidgetButton } from "@/types/widget";
 import component from "./LinkWidget.vue";
 
 const widgetButtons: IWidgetButton[] = [

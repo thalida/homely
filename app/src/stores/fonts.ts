@@ -1,17 +1,7 @@
 import { defineStore } from 'pinia'
 import axios from 'axios'
 import { ref, computed, type Ref } from 'vue';
-
-export interface IFont {
-  category: string
-  family: string
-  files: Record<string, string>
-  kind: string
-  lastModified: string
-  subsets: string[]
-  variants: string[]
-  version: string
-}
+import type { IFont } from '@/types/font';
 
 export const useFontStore = defineStore('font', () => {
   const fonts: Ref<IFont[]> = ref([])

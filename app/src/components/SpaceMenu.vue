@@ -2,7 +2,7 @@
 import { filter } from 'lodash';
 import { useSpaceStore } from '@/stores/space';
 import { computed } from 'vue';
-import type { IWidgetButton } from '@/stores/widget';
+import type { IWidgetButton } from '@/types/widget';
 import { widgetMenuItems } from './widgets';
 
 const spaceStore = useSpaceStore();
