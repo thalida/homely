@@ -6,7 +6,7 @@ export enum EWidgetType {
 export interface IWidget {
   id: string
   type: EWidgetType
-  content: Record<string, any> | null
+  content: Record<string, any>
   state: IWidgetState
   style: IWidgetStyle
 }
@@ -38,6 +38,10 @@ export interface IWidgetLayout {
 }
 
 export interface IWidgetButton extends Pick<IWidget, 'type' | 'content' | 'style'> { }
+
+export interface ITextWidget extends IWidget {
+  content: ITextWidgetContent
+}
 
 export interface ITextWidgetContent {
   text: string
