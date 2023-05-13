@@ -10,8 +10,7 @@ const widgetButtons: IWidgetButton[] = [
         fontFamily: "Lato",
         fontVariant: "regular",
         fontSize: 16,
-        horizontalAlignment: "left",
-        verticalAlignment: "top",
+        textAlign: "left",
       },
     },
     style: {

@@ -48,6 +48,5 @@ export interface ITextWidgetStyles {
   fontFamily: string
   fontVariant: string
   fontSize: number
-  verticalAlignment: string
-  horizontalAlignment: string
+  textAlign: string
 }
