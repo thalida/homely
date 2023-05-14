@@ -196,7 +196,7 @@ watch(() => widget.value?.content?.text, (value: string) => {
 <template>
   <editor-content
     v-bind="$attrs"
-    class="text-widget cursor-auto w-full h-full flex flex-col prose prose-base m-5 max-w-none focus:outline-none"
+    class="text-widget cursor-auto w-full h-full flex flex-col prose prose-base max-w-none focus:outline-none"
     :style="{
       fontFamily: widget.content.styles.fontFamily,
       fontSize: widget.content.styles.fontSize + 'px',
