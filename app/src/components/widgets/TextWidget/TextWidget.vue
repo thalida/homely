@@ -5,8 +5,6 @@ import StarterKit from '@tiptap/starter-kit'
 import LinkExtension from '@tiptap/extension-link'
 import PlaceholderExtension from '@tiptap/extension-placeholder'
 import TypographyExtension from '@tiptap/extension-typography'
-import TaskListExtension from '@tiptap/extension-task-list'
-import TaskItemExtension from '@tiptap/extension-task-item'
 import UnderlineExtension from '@tiptap/extension-underline'
 import { BoldIcon, ItalicIcon, UnderlineIcon, ListIcon, ListOrderedIcon, ListChecksIcon } from 'lucide-vue-next'
 import { useWidgetStore } from '@/stores/widget'
@@ -111,21 +109,17 @@ function handleFontChange() {
 
 const editor = useEditor({
   extensions: [
-    LinkExtension,
-    PlaceholderExtension,
-    TypographyExtension,
-    UnderlineExtension,
-    TaskListExtension,
-    TaskItemExtension.configure({
-      nested: true,
-    }),
     StarterKit.configure({
       blockquote: false,
       codeBlock: false,
       heading: false,
       horizontalRule: false,
       code: false,
-    })
+    }),
+    LinkExtension,
+    PlaceholderExtension,
+    TypographyExtension,
+    UnderlineExtension,
   ],
   editorProps: {
     attributes: {
@@ -173,12 +167,6 @@ const menuItems = ref([
     title: "Ordered List",
     action: () => editor.value?.chain().focus().toggleOrderedList().run(),
     isActive: () => editor.value?.isActive("orderedList"),
-  },
-  {
-    icon: ListChecksIcon,
-    title: "Task List",
-    action: () => editor.value?.chain().focus()?.toggleTaskList().run(),
-    isActive: () => editor.value?.isActive("taskList"),
   },
 ]);
 
