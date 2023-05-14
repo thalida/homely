@@ -1,6 +1,7 @@
 export enum EWidgetType {
   LINK = 'link',
   TEXT = 'text',
+  IMAGE = 'image',
 }
 
 export interface IWidget {
