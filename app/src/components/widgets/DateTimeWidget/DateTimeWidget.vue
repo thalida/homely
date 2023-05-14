@@ -49,6 +49,26 @@ function onChangeUseLocalTime(e: Event, datetime: IDateTime) {
   }
 }
 
+function handleAddDateTime() {
+  if (!widget.value) {
+    return
+  }
+
+  widget.value.content.datetimes.push({
+    format: 'YYYY-MM-DD HH:mm:ss',
+    useLocalTime: true,
+    timezone: null
+  })
+}
+
+function handleRemoveDateTime(e: Event, datetime: IDateTime, index: number) {
+  if (!widget.value) {
+    return
+  }
+
+  widget.value.content.datetimes.splice(index, 1)
+}
+
 </script>
 
 <template>
@@ -74,6 +94,10 @@ function onChangeUseLocalTime(e: Event, datetime: IDateTime) {
             <option v-for="timezone in dateTimeStore.supportedTimezones" :key="timezone" :value="timezone">{{ timezone }}</option>
           </select>
         </label>
+        <button @click="handleRemoveDateTime($event, datetime, index)">Remove</button>
+      </div>
+      <div>
+        <button @click="handleAddDateTime">Add</button>
       </div>
     </div>
   </teleport>
