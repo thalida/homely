@@ -1,17 +1,20 @@
 import type { Component } from 'vue'
-import { EWidgetType } from '@/types/widget'
+import type { EWidgetType } from '@/types/widget'
 import LinkWidget from './LinkWidget'
 import TextWidget from './TextWidget'
 import ImageWidget from './ImageWidget'
+import DateTimeWidget from './DateTimeWidget'
 
-export const widgetComponents: Record<EWidgetType, Component | null> = {
-  [EWidgetType.LINK]: LinkWidget.component,
-  [EWidgetType.TEXT]: TextWidget.component,
-  [EWidgetType.IMAGE]: ImageWidget.component,
-}
-
-export const widgetMenuItems = [
-  LinkWidget.menuItem,
-  TextWidget.menuItem,
-  ImageWidget.menuItem,
+const supportedWidgets = [
+  LinkWidget,
+  TextWidget,
+  ImageWidget,
+  DateTimeWidget,
 ]
+
+export const widgetComponents: Record<EWidgetType, Component | null> = supportedWidgets.reduce((acc, widget) => {
+  acc[widget.widgetType] = widget.component
+  return acc
+}, {} as Record<EWidgetType, Component>)
+
+export const widgetMenuItems = supportedWidgets.map((widget) => widget.menuItem)

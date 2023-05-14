@@ -1,39 +1,38 @@
-import { EWidgetType, type IWidgetButton } from "@/types/widget";
+import { EWidgetType, type IWidgetMenuItem } from "@/types/widget";
 import component from "./TextWidget.vue";
 
-const widgetButtons: IWidgetButton[] = [
-  {
-    type: EWidgetType.TEXT,
-    content: {
-      text: null,
-      styles: {
-        fontFamily: "Lato",
-        fontVariant: "regular",
-        fontSize: 16,
-        textAlign: "left",
-      },
-    },
-    style: {
-      id: "text",
-      label: "Text",
-      layout: {
-        w: 6,
-        h: 1,
-        isResizable: true,
-        preserveAspectRatio: false,
-      },
-    },
-  },
-];
-
-const menuItem = {
-  id: EWidgetType.TEXT,
+const widgetType = EWidgetType.TEXT;
+const menuItem: IWidgetMenuItem = {
+  widgetType,
   label: 'Text',
-  buttons: widgetButtons
+  buttons: [
+    {
+      widgetType,
+      content: {
+        text: null,
+        styles: {
+          fontFamily: "Lato",
+          fontVariant: "regular",
+          fontSize: 16,
+          textAlign: "left",
+        },
+      },
+      style: {
+        id: "text",
+        label: "Text",
+        layout: {
+          w: 6,
+          h: 1,
+          isResizable: true,
+          preserveAspectRatio: false,
+        },
+      },
+    },
+  ]
 }
 
 export default {
-  type: EWidgetType.TEXT,
+  widgetType,
   component,
   menuItem,
 }

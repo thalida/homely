@@ -1,9 +1,5 @@
 <script setup lang="ts">
 import { computed, ref, watch, watchEffect } from 'vue'
-import { useWidgetStore } from '@/stores/widget'
-import { useSpaceStore } from '@/stores/space'
-import { useFontStore } from '@/stores/fonts'
-import type { ITextWidget } from '@/types/widget'
 import { useEditor, EditorContent } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
 import LinkExtension from '@tiptap/extension-link'
@@ -12,12 +8,11 @@ import TypographyExtension from '@tiptap/extension-typography'
 import TaskListExtension from '@tiptap/extension-task-list'
 import TaskItemExtension from '@tiptap/extension-task-item'
 import UnderlineExtension from '@tiptap/extension-underline'
-import { BoldIcon } from 'lucide-vue-next'
-import { ItalicIcon } from 'lucide-vue-next'
-import { UnderlineIcon } from 'lucide-vue-next'
-import { ListIcon } from 'lucide-vue-next'
-import { ListOrderedIcon } from 'lucide-vue-next'
-import { ListChecksIcon } from 'lucide-vue-next'
+import { BoldIcon, ItalicIcon, UnderlineIcon, ListIcon, ListOrderedIcon, ListChecksIcon } from 'lucide-vue-next'
+import { useWidgetStore } from '@/stores/widget'
+import { useSpaceStore } from '@/stores/space'
+import { useFontStore } from '@/stores/fonts'
+import type { ITextWidget } from '@/types/widget'
 
 const spaceStore = useSpaceStore()
 const widgetStore = useWidgetStore()
@@ -139,6 +134,7 @@ const editor = useEditor({
   },
   content: widget.value?.content?.text || '',
   onUpdate: () => {
+    if (typeof widget.value === 'undefined') return
     widgetStore.updateWidget(widget.value.id, {
       content: {
         text: editor.value?.getHTML() || ''

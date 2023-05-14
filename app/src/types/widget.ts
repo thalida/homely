@@ -2,11 +2,12 @@ export enum EWidgetType {
   LINK = 'link',
   TEXT = 'text',
   IMAGE = 'image',
+  DATETIME = 'datetime',
 }
 
 export interface IWidget {
   id: string
-  type: EWidgetType
+  widgetType: EWidgetType
   content: Record<string, any>
   state: IWidgetState
   style: IWidgetStyle
@@ -38,20 +39,22 @@ export interface IWidgetLayout {
   isResizable?: boolean
 }
 
-export interface IWidgetButton extends Pick<IWidget, 'type' | 'content' | 'style'> { }
+export interface IWidgetMenuItem {
+  widgetType: EWidgetType
+  label: string
+  buttons: IWidgetButton[]
+}
+
+export interface IWidgetButton extends Pick<IWidget, 'widgetType' | 'content' | 'style'> { }
 
 export interface ITextWidget extends IWidget {
-  content: ITextWidgetContent
-}
-
-export interface ITextWidgetContent {
-  text: string
-  styles: ITextWidgetStyles
-}
-
-export interface ITextWidgetStyles {
-  fontFamily: string
-  fontVariant: string
-  fontSize: number
-  textAlign: string
+  content: {
+    text: string
+    styles: {
+      fontFamily: string
+      fontVariant: string
+      fontSize: number
+      textAlign: string
+    }
+  }
 }

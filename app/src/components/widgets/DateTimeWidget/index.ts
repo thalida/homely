@@ -1,10 +1,10 @@
 import { EWidgetType, type IWidgetMenuItem } from "@/types/widget";
-import component from "./ImageWidget.vue";
+import component from "./DateTimeWidget.vue";
 
-const widgetType = EWidgetType.IMAGE;
+const widgetType = EWidgetType.DATETIME;
 
 const menuItem: IWidgetMenuItem = {
-  label: 'Image',
+  label: 'Date and Time',
   widgetType,
   buttons: [
     {
@@ -13,11 +13,11 @@ const menuItem: IWidgetMenuItem = {
         url: null,
       },
       style: {
-        id: "sm",
-        label: "Icon",
+        id: "date",
+        label: "Date",
         layout: {
           w: 2,
-          h: 2,
+          h: 1,
           isResizable: true,
           preserveAspectRatio: false,
         },

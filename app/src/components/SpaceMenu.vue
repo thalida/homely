@@ -66,11 +66,11 @@ function dragEnd(e: DragEvent, widgetButton: IWidgetButton) {
     <template v-if="spaceStore.isEditMode">
       {{ numSelectedWidgets }} selected:
       <button @click="handleDelete" class="p-2 bg-red-400 disabled:opacity-50" :disabled="numSelectedWidgets === 0">Delete</button>
-      <div v-for="section in widgetMenuItems" :key="section.id">
+      <div v-for="section in widgetMenuItems" :key="section.widgetType">
         {{ section.label }}
         <button
           v-for="button in section.buttons"
-          :key="`${section.id}-${button.style.id}`"
+          :key="`${section.widgetType}-${button.style.id}`"
           class="w-12 p-2 bg-blue-400"
           draggable="true"
           unselectable="on"

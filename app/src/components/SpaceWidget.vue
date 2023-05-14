@@ -20,7 +20,7 @@ const component = computed(() => {
   if (!widget.value) {
     return null
   }
-  return widgetComponents[widget.value.type]
+  return widgetComponents[widget.value.widgetType]
 })
 </script>
 
