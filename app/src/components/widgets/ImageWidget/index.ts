@@ -10,7 +10,12 @@ const widgetButtons: IWidgetButton[] = [
     style: {
       id: "sm",
       label: "Icon",
-      layout: { w: 2, h: 2 },
+      layout: {
+        w: 2,
+        h: 2,
+        isResizable: true,
+        preserveAspectRatio: false,
+      },
     },
   },
 ];
