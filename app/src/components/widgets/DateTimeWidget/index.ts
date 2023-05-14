@@ -10,11 +10,17 @@ const menuItem: IWidgetMenuItem = {
     {
       widgetType,
       content: {
-        url: null,
+        datetimes: [
+          {
+            timezone: null,
+            useLocalTime: true,
+            format: "dddd, MMMM D YYYY, h:mm:ss a",
+          }
+        ],
       },
       style: {
-        id: "date",
-        label: "Date",
+        id: "datetime",
+        label: "Date & Time",
         layout: {
           w: 2,
           h: 1,

@@ -58,3 +58,15 @@ export interface ITextWidget extends IWidget {
     }
   }
 }
+
+export interface IDateTimeWidget extends IWidget {
+  content: {
+    datetimes: IDateTime[]
+  }
+}
+
+export interface IDateTime {
+  format: string
+  timezone: string | null
+  useLocalTime: boolean
+}
