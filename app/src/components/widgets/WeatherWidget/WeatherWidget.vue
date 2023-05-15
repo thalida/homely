@@ -90,11 +90,8 @@ onBeforeUnmount(() => {
 
 <template>
   <div>
-    {{ widget.content.location }}
+    {{ widget.content.location.name }}
     {{ widget.content.weather }}
-    <!-- <div v-for="(datetime, index) in widget.content.datetimes" :key="index">
-      {{ weatherStore.format(datetime) }}
-    </div> -->
   </div>
   <teleport to="#space__widget-menu">
     <div v-show="widget.state.selected">
@@ -103,27 +100,6 @@ onBeforeUnmount(() => {
         <input type="checkbox" v-model="widget.content.useCurrentLocation" />
       </label>
       <input ref="autocompleteInput" type="text" v-model="location" :disabled="widget.content.useCurrentLocation" />
-      <!-- <div v-for="(datetime, index) in widget.content.datetimes" :key="index">
-        <label>
-          <span>Format</span>
-          <input type="text" v-model="datetime.format" />
-        </label>
-        <label>
-          <span>Use Local Time</span>
-          <input type="checkbox" v-model="datetime.useLocalTime" @change="onChangeUseLocalTime($event, datetime)" />
-        </label>
-        <label v-if="!datetime.useLocalTime">
-          <span>Timezone</span>
-          <select v-model="datetime.timezone">
-            <option v-for="timezone in weatherStore.supportedTimezones" :key="timezone" :value="timezone">{{ timezone }}
-            </option>
-          </select>
-        </label>
-        <button @click="handleRemoveDateTime($event, datetime, index)">Remove</button>
-      </div>
-      <div>
-        <button @click="handleAddDateTime">Add</button>
-      </div> -->
     </div>
   </teleport>
 </template>
