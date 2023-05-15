@@ -3,6 +3,7 @@ export enum EWidgetType {
   TEXT = 'text',
   IMAGE = 'image',
   DATETIME = 'datetime',
+  WEATHER = 'weather',
 }
 
 export interface IWidget {
@@ -69,4 +70,19 @@ export interface IDateTime {
   format: string
   timezone: string | null
   useLocalTime: boolean
+}
+
+
+export interface IWeatherWidget extends IWidget {
+  content: {
+    location: IWeatherLocation,
+    weather: any,
+    useCurrentLocation: boolean,
+  }
+}
+
+export interface IWeatherLocation {
+  name: string
+  lat: number
+  lng: number
 }

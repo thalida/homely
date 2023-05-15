@@ -4,12 +4,14 @@ import LinkWidget from './LinkWidget'
 import TextWidget from './TextWidget'
 import ImageWidget from './ImageWidget'
 import DateTimeWidget from './DateTimeWidget'
+import WeatherWidget from './WeatherWidget'
 
 const supportedWidgets = [
   LinkWidget,
   TextWidget,
   ImageWidget,
   DateTimeWidget,
+  WeatherWidget,
 ]
 
 export const widgetComponents: Record<EWidgetType, Component | null> = supportedWidgets.reduce((acc, widget) => {
