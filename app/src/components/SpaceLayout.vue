@@ -231,22 +231,17 @@ function handleAddModuleDragEnd(e: Event, widgetButton: IWidgetButton) {
 <template>
   <div
     ref="spaceRef"
-    class="space-layout"
+    class="space-layout flex"
     @paste="handlePaste"
     @click="handleSpaceClick"
   >
-    <SpaceMenu
-      @editModeStart="startEditMode"
-      @editModeDone="stopEditMode"
-      @editModeCancel="cancelEditMode"
-      @addModuleDrag="handleAddModuleDrag"
-      @addModuleDragEnd="handleAddModuleDragEnd"
-    />
-
     <GridLayout
       v-if="isReady"
       ref="gridLayoutRef"
-      class="grid-layout"
+      class="grid-layout grow shrink-0 w-full h-full"
+      :class="{
+        'mr-80': spaceStore.isEditMode,
+      }"
       v-model:layout="spaceStore.widgets.layout"
       :col-num="gridLayoutSettings.columns"
       :row-height="gridLayoutSettings.rowHeight"
@@ -274,6 +269,15 @@ function handleAddModuleDragEnd(e: Event, widgetButton: IWidgetButton) {
         <SpaceWidget :widget-id="item.i" />
       </GridItem>
     </GridLayout>
+
+    <SpaceMenu
+      class="shrink-0"
+      @editModeStart="startEditMode"
+      @editModeDone="stopEditMode"
+      @editModeCancel="cancelEditMode"
+      @addModuleDrag="handleAddModuleDrag"
+      @addModuleDragEnd="handleAddModuleDragEnd"
+    />
   </div>
 </template>
 
@@ -282,6 +286,5 @@ function handleAddModuleDragEnd(e: Event, widgetButton: IWidgetButton) {
   width: 100vw;
   height: 100vh;
   overflow: auto;
-  min-width: 900px;
 }
 </style>
