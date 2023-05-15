@@ -87,3 +87,11 @@ export interface IWeatherLocation {
   lat: number
   lng: number
 }
+
+export interface ILinkWidget extends IWidget {
+  content: {
+    url: string | null,
+    metadata: Record<string, any>,
+    icon: string | null,
+  }
+}

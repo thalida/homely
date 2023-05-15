@@ -4,6 +4,8 @@ import { computed, ref, watchEffect } from 'vue'
 import { useWidgetStore } from '@/stores/widget'
 import { Link } from 'lucide-vue-next'
 import { useSpaceStore } from '@/stores/space'
+import type { ILinkWidget } from '@/types/widget'
+import iconTags from 'lucide-static/tags.json'
 
 const props = defineProps({
   widgetId: {
@@ -25,7 +27,7 @@ const wrapperEl = computed(() => {
 });
 
 const widget = computed(() => {
-  return widgetStore.getWidgetById(props.widgetId)
+  return widgetStore.getWidgetById(props.widgetId) as ILinkWidget;
 })
 const metadata = computed(() => {
   if (!widget.value) {
@@ -43,11 +45,15 @@ const isSelected = computed(() => {
   return widget.value.state.selected;
 })
 
+const supportedIcons = computed(() => {
+  return Object.keys(iconTags)
+})
+
 const url = ref('')
 
 watchEffect(() => {
   if (widget.value && widget.value.content !== null) {
-    url.value = widget.value.content.url
+    url.value = widget.value.content.url || ''
   }
 })
 
@@ -86,7 +92,7 @@ async function handleSubmit() {
   >
     <template v-if="widget.style.id === 'icon'">
       <img v-if="metadata.icon" :src="metadata.icon" />
-      <Link v-else />
+      <img v-else :src="`https://unpkg.com/lucide-static@latest/icons/${widget.content.icon}.svg`" />
     </template>
   </component>
   <teleport to="#space__widget-menu">
@@ -94,6 +100,12 @@ async function handleSubmit() {
       <label>
         <span>URL</span>
         <input type="url" class="border border-gray-200" v-model="url" />
+      </label>
+      <label>
+        <span>Icon</span>
+        <select v-model="widget.content.icon" class="border border-gray-200">
+          <option v-for="icon in supportedIcons" :key="icon" :value="icon">{{ icon }}</option>
+        </select>
       </label>
       <button class="bg-green-200 p-2" @click="handleSubmit">Submit</button>
     </div>

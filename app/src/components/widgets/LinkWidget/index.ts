@@ -11,6 +11,8 @@ const menuItem: IWidgetMenuItem = {
       widgetType,
       content: {
         url: null,
+        metadata: {},
+        icon: 'link',
       },
       style: {
         id: "icon",
@@ -22,6 +24,8 @@ const menuItem: IWidgetMenuItem = {
       widgetType,
       content: {
         url: null,
+        metadata: {},
+        icon: 'link',
       },
       style: {
         id: "flag",
@@ -33,6 +37,8 @@ const menuItem: IWidgetMenuItem = {
       widgetType,
       content: {
         url: null,
+        metadata: {},
+        icon: 'link',
       },
       style: {
         id: "card",

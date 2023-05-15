@@ -49,6 +49,9 @@ dependencies:
   lodash:
     specifier: ^4.17.21
     version: 4.17.21
+  lucide-static:
+    specifier: ^0.216.0
+    version: 0.216.0
   lucide-vue-next:
     specifier: ^0.215.0
     version: 0.215.0(vue@3.3.2)
@@ -3624,6 +3627,10 @@ packages:
     dependencies:
       yallist: 4.0.0
     dev: true
+
+  /lucide-static@0.216.0:
+    resolution: {integrity: sha512-cpPEqL5Gur2f6cXykUGBK8cPc7SyLlPW0JPNE3QLAQBh6p203xWZm5RkmZSSSbalgy9aLy83hJ38vTlBql+qHA==}
+    dev: false
 
   /lucide-vue-next@0.215.0(vue@3.3.2):
     resolution: {integrity: sha512-Rq3rpWGtLqXrQRTmP4ZBJhege3oDRIy0ty2OM4gIltHsCuAm8OyV+0dQSgReOJRGnrwslLM2nbpx12a7Glv+mw==}

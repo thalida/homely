@@ -30,6 +30,7 @@
     "dayjs": "^1.11.7",
     "grid-layout-plus": "^1.0.2",
     "lodash": "^4.17.21",
+    "lucide-static": "^0.216.0",
     "lucide-vue-next": "^0.215.0",
     "pinia": "^2.0.36",
     "timezone": "link:dayjs/plugin/timezone",
