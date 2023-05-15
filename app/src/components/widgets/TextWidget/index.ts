@@ -10,6 +10,7 @@ const menuItem: IWidgetMenuItem = {
       widgetType,
       content: {
         text: null,
+        isInteractive: false,
         styles: {
           fontFamily: "Lato",
           fontVariant: "regular",

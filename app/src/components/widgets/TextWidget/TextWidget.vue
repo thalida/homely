@@ -171,7 +171,8 @@ const menuItems = ref([
 ]);
 
 watchEffect(() => {
-  editor.value?.setEditable(isEditing.value)
+  const editable = isEditing.value || widget.value?.content?.isInteractive
+  editor.value?.setEditable(editable)
 })
 
 watch(() => widget.value?.content?.text, (value: string) => {
@@ -233,6 +234,10 @@ watch(() => widget.value?.content?.text, (value: string) => {
           <component :is="item.icon" />
         </button>
       </template>
+      <label>
+        <span>Is Interactive?</span>
+        <input type="checkbox" v-model="widget.content.isInteractive" />
+      </label>
     </div>
   </teleport>
 </template>

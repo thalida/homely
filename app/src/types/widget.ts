@@ -51,6 +51,7 @@ export interface IWidgetButton extends Pick<IWidget, 'widgetType' | 'content' | 
 export interface ITextWidget extends IWidget {
   content: {
     text: string
+    isInteractive: boolean
     styles: {
       fontFamily: string
       fontVariant: string
