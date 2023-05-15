@@ -64,15 +64,6 @@ function cancelEditMode() {
   stopEditMode()
 }
 
-function handlePaste(e: ClipboardEvent) {
-  console.log(e)
-  const clipboardData = e.clipboardData
-  if (!clipboardData) {
-    return
-  }
-
-  console.log(clipboardData.getData('text/plain'))
-}
 
 function handleSpaceClick(e: Event) {
   const target = e.target as HTMLElement
@@ -232,7 +223,6 @@ function handleAddModuleDragEnd(e: Event, widgetButton: IWidgetButton) {
   <div
     ref="spaceRef"
     class="space-layout flex"
-    @paste="handlePaste"
     @click="handleSpaceClick"
   >
     <GridLayout
