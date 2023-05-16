@@ -2,7 +2,7 @@
 import { computed, onMounted, onBeforeUnmount, watchEffect, ref } from 'vue'
 import { useWidgetStore } from '@/stores/widget'
 import { useDateTimeStore } from '@/stores/datetime'
-import type { IDateTimeWidget } from '@/types/widget'
+import type { IDateTime, IDateTimeWidget } from '@/types/widget'
 
 const props = defineProps({
   widgetId: {

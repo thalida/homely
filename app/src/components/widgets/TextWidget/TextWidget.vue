@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch, watchEffect } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch, watchEffect } from 'vue'
 import { useEditor, EditorContent } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
 import LinkExtension from '@tiptap/extension-link'
@@ -40,6 +40,13 @@ const widget = computed((): ITextWidget => {
 
 const hasFonts = computed(() => {
   return fontStore.fonts.length > 0
+})
+const widgetId = ref<string | null>(null)
+
+watchEffect(() => {
+  if (widget.value) {
+    widgetId.value = widget.value.id
+  }
 })
 
 const textAlignments = ref(['left', 'center', 'right'])
@@ -82,13 +89,6 @@ const parsedFontStyle = computed(() => {
   }
 
   return selectedVariant.value.includes('italic') ? 'italic' : 'normal'
-})
-const fontUrl = computed(() => {
-  if (selectedFontSpecs.value === null || selectedVariant.value === null) {
-    return null
-  }
-
-  return `https://fonts.googleapis.com/css?family=${selectedFontSpecs.value.family.replace(/ /g, '+')}:${selectedVariant.value}`
 })
 
 function handleFontChange() {
@@ -180,6 +180,18 @@ watch(() => widget.value?.content?.text, (value: string) => {
   editor.value?.commands.setContent(value, false)
 })
 
+onMounted(() => {
+  fontStore.connect(widget.value.id)
+})
+
+onBeforeUnmount(() => {
+  if (!widgetId.value) {
+    return
+  }
+
+  fontStore.disconnect(widgetId.value)
+})
+
 </script>
 
 <template>
@@ -194,10 +206,6 @@ watch(() => widget.value?.content?.text, (value: string) => {
       fontStyle: parsedFontStyle,
     }"
     :editor="editor"/>
-  <teleport to="body">
-    <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link v-if="fontUrl" :href="fontUrl" rel="stylesheet" type="text/css">
-  </teleport>
   <teleport to="#space__widget-menu">
     <div v-if="isEditing && isSelected && hasFonts">
       <select @change="handleFontChange" v-model="widget.content.styles.fontFamily">
@@ -259,5 +267,10 @@ watch(() => widget.value?.content?.text, (value: string) => {
 .text-widget.prose :where(p):not(:where([class~="not-prose"] *)) {
   margin-top: 0.25em;
   margin-bottom: 0.25em;
+}
+
+.text-widget.prose * {
+  font-weight: inherit;
+  font-family: inherit;
 }
 </style>
