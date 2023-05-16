@@ -16,14 +16,11 @@ const menuItem: IWidgetMenuItem = {
         textAlign: "left",
       },
     },
-    style: {
-      name: "default",
-      layout: {
-        w: 6,
-        h: 1,
-        isResizable: true,
-        preserveAspectRatio: false,
-      },
+    layout: {
+      w: 6,
+      h: 1,
+      isResizable: true,
+      preserveAspectRatio: false,
     },
   },
 }

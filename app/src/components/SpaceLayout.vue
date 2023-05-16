@@ -154,7 +154,7 @@ const handleAddModuleDrag = throttle((_, widgetButton: IWidgetButton) => {
         x: (spaceStore.widgets.layout.length * 2) % 12,
         y: spaceStore.widgets.layout.length + 12,
         i: TMP_WIDGET_ID,
-        ...widgetButton.style.layout
+        ...widgetButton.layout
       }
       spaceStore.widgets.layout.push(tmpWidgetLayout)
     }
@@ -205,7 +205,7 @@ function handleAddModuleDragEnd(e: Event, widgetButton: IWidgetButton) {
   const { widget, layout } = spaceStore.widgets.createWidget(widgetButton, {
     x: tmpWidgetLayout.x,
     y: tmpWidgetLayout.y,
-    ...widgetButton.style.layout
+    ...widgetButton.layout
   })
   gridLayoutRef.value.dragEvent('dragend', widget.id, layout.x, layout.y, layout.h, layout.w)
 

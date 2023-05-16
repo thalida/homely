@@ -1,4 +1,4 @@
-import { EWidgetType, type IWidgetMenuItem } from "@/types/widget";
+import { EImageWidgetBackgroundSize, EWidgetType, type IWidgetMenuItem } from "@/types/widget";
 import component from "./ImageWidget.vue";
 
 const widgetType = EWidgetType.IMAGE;
@@ -9,15 +9,13 @@ const menuItem: IWidgetMenuItem = {
     widgetType,
     content: {
       url: null,
+      backgroundSize: EImageWidgetBackgroundSize.CONTAIN,
     },
-    style: {
-      name: "default",
-      layout: {
-        w: 2,
-        h: 2,
-        isResizable: true,
-        preserveAspectRatio: false,
-      },
+    layout: {
+      w: 2,
+      h: 2,
+      isResizable: true,
+      preserveAspectRatio: false,
     },
   },
 }

@@ -6,26 +6,21 @@ export enum EWidgetType {
   WEATHER = 'weather',
 }
 
+export interface IWidgets {
+  [key: string]: IWidget
+}
+
 export interface IWidget {
   id: string
   widgetType: EWidgetType
   content: Record<string, any>
   state: IWidgetState
-  style: IWidgetStyle
+  layout: Omit<IWidgetLayout, 'i' | 'x' | 'y'>
 }
 
 export interface IWidgetState {
   selected: boolean,
   temporary: boolean,
-}
-
-export interface IWidgetStyle {
-  name: string
-  layout: Omit<IWidgetLayout, 'i' | 'x' | 'y'>
-}
-
-export interface IWidgets {
-  [key: string]: IWidget
 }
 
 export interface IWidgetLayout {
@@ -44,7 +39,7 @@ export interface IWidgetMenuItem {
   widget: IWidgetButton
 }
 
-export interface IWidgetButton extends Pick<IWidget, 'widgetType' | 'content' | 'style'> { }
+export interface IWidgetButton extends Pick<IWidget, 'widgetType' | 'content' | 'layout'> { }
 
 export interface ITextWidget extends IWidget {
   content: {
@@ -99,4 +94,17 @@ export enum ELinkWidgetStyle {
   SQUARE = 'SQUARE',
   FLAG = 'flag',
   CARD = 'card',
+}
+
+export interface IImageWidget extends IWidget {
+  content: {
+    url: string | null,
+    backgroundSize: EImageWidgetBackgroundSize,
+  }
+}
+
+export enum EImageWidgetBackgroundSize {
+  COVER = 'cover',
+  CONTAIN = 'contain',
+  AUTO = 'auto',
 }

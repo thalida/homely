@@ -12,14 +12,11 @@ const menuItem: IWidgetMenuItem = {
       weather: null,
       useCurrentLocation: true,
     },
-    style: {
-      name: 'default',
-      layout: {
-        w: 2,
-        h: 1,
-        isResizable: true,
-        preserveAspectRatio: false,
-      },
+    layout: {
+      w: 2,
+      h: 1,
+      isResizable: true,
+      preserveAspectRatio: false,
     },
   },
 }

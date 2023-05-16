@@ -13,14 +13,11 @@ const menuItem: IWidgetMenuItem = {
       icon: null,
       useCustomIcon: false,
     },
-    style: {
-      name: 'default',
-      layout: {
-        w: 1,
-        h: 1,
-        isResizable: true,
-        preserveAspectRatio: false,
-      },
+    layout: {
+      w: 1,
+      h: 1,
+      isResizable: true,
+      preserveAspectRatio: false,
     },
   }
 }
