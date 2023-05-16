@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import { useWidgetStore } from '@/stores/widget'
 import { ImageIcon } from 'lucide-vue-next'
-import { EImageWidgetBackgroundSize } from '@/types/widget';
+import { EImageWidgetBackgroundPosition, EImageWidgetBackgroundSize, EImageWidgetBackgroundRepeat } from '@/types/widget';
 
 const props = defineProps({
   widgetId: {
@@ -19,19 +19,35 @@ const widget = computed(() => {
 const backgroundSizes = computed(() => {
   return Object.values(EImageWidgetBackgroundSize)
 })
+const backgroundPositions = computed(() => {
+  return Object.values(EImageWidgetBackgroundPosition)
+})
+const backgroundRepeats = computed(() => {
+  return Object.values(EImageWidgetBackgroundRepeat)
+})
+const bgPositionStyle = computed(() => {
+  return widget.value.content.backgroundPosition.replace('-', ' ')
+})
 </script>
 
 <template>
   <div
     v-bind="$attrs"
-    class="flex w-full h-full cursor-pointer bg-no-repeat bg-center"
-    :class="{
-      'bg-auto': widget.content.backgroundSize === EImageWidgetBackgroundSize.AUTO,
-      'bg-contain': widget.content.backgroundSize === EImageWidgetBackgroundSize.CONTAIN,
-      'bg-cover': widget.content.backgroundSize === EImageWidgetBackgroundSize.COVER,
-    }"
+    class="flex w-full h-full cursor-pointer"
+    :class="[
+      {
+        'bg-auto': widget.content.backgroundSize === EImageWidgetBackgroundSize.AUTO,
+        'bg-contain': widget.content.backgroundSize === EImageWidgetBackgroundSize.CONTAIN,
+        'bg-cover': widget.content.backgroundSize === EImageWidgetBackgroundSize.COVER,
+        'bg-repeat': widget.content.backgroundRepeat === EImageWidgetBackgroundRepeat.REPEAT,
+        'bg-repeat-x': widget.content.backgroundRepeat === EImageWidgetBackgroundRepeat.REPEAT_X,
+        'bg-repeat-y': widget.content.backgroundRepeat === EImageWidgetBackgroundRepeat.REPEAT_Y,
+        'bg-no-repeat': widget.content.backgroundRepeat === EImageWidgetBackgroundRepeat.NO_REPEAT,
+      },
+    ]"
     :style="{
-      'background-image': widget.content.url ? 'url(' + widget.content.url + ')' : 'none'
+      'background-image': widget.content.url ? 'url(' + widget.content.url + ')' : 'none',
+      'background-position': bgPositionStyle,
     }"
   >
     <ImageIcon v-if="!widget.content.url" />
@@ -46,6 +62,18 @@ const backgroundSizes = computed(() => {
         <span>Background Size</span>
         <select v-model="widget.content.backgroundSize" class="border border-gray-200">
           <option v-for="size in backgroundSizes" :value="size" :key="size">{{ size }}</option>
+        </select>
+      </label>
+      <label>
+        <span>Background Position</span>
+        <select v-model="widget.content.backgroundPosition" class="border border-gray-200">
+          <option v-for="position in backgroundPositions" :value="position" :key="position">{{ position }}</option>
+        </select>
+      </label>
+      <label>
+        <span>Background Repeat</span>
+        <select v-model="widget.content.backgroundRepeat" class="border border-gray-200">
+          <option v-for="repeat in backgroundRepeats" :value="repeat" :key="repeat">{{ repeat }}</option>
         </select>
       </label>
     </div>

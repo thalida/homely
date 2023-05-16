@@ -1,4 +1,4 @@
-import { EImageWidgetBackgroundSize, EWidgetType, type IWidgetMenuItem } from "@/types/widget";
+import { EImageWidgetBackgroundPosition, EImageWidgetBackgroundRepeat, EImageWidgetBackgroundSize, EWidgetType, type IWidgetMenuItem } from "@/types/widget";
 import component from "./ImageWidget.vue";
 
 const widgetType = EWidgetType.IMAGE;
@@ -10,6 +10,8 @@ const menuItem: IWidgetMenuItem = {
     content: {
       url: null,
       backgroundSize: EImageWidgetBackgroundSize.CONTAIN,
+      backgroundPosition: EImageWidgetBackgroundPosition.CENTER,
+      backgroundRepeat: EImageWidgetBackgroundRepeat.NO_REPEAT,
     },
     layout: {
       w: 2,

@@ -9,12 +9,10 @@ const menuItem: IWidgetMenuItem = {
     content: {
       text: null,
       isInteractive: false,
-      styles: {
-        fontFamily: "Lato",
-        fontVariant: "regular",
-        fontSize: 16,
-        textAlign: "left",
-      },
+      fontFamily: "Lato",
+      fontVariant: "regular",
+      fontSize: 16,
+      textAlign: "left",
     },
     layout: {
       w: 6,

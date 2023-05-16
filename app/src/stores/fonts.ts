@@ -24,13 +24,13 @@ export const useFontStore = defineStore('font', () => {
         return null
       }
 
-      return widget.content.styles.fontFamily
+      return widget.content.fontFamily
     }).filter((fontFamily) => fontFamily !== null) as string[]
 
     return [...new Set(fontFamilies)]
   })
   const fontsUrl = computed(() => {
-    if (!hasFonts.value) {
+    if (!hasFonts.value || selectedFontFamilies.value.length === 0) {
       return null
     }
 

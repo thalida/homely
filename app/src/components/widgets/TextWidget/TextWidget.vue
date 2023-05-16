@@ -26,6 +26,10 @@ const props = defineProps({
   }
 })
 
+const widgetId = ref<string | null>(null)
+const textAlignments = ref(['left', 'center', 'right'])
+const fontSizes = ref([10, 11, 12, 13, 14, 15, 16, 18, 20, 22, 24, 32, 36, 48, 64, 72, 96, 144])
+
 const isSelected = computed(() => {
   return widget.value?.state?.selected;
 })
@@ -41,41 +45,33 @@ const widget = computed((): ITextWidget => {
 const hasFonts = computed(() => {
   return fontStore.fonts.length > 0
 })
-const widgetId = ref<string | null>(null)
-
-watchEffect(() => {
-  if (widget.value) {
-    widgetId.value = widget.value.id
-  }
-})
-
-const textAlignments = ref(['left', 'center', 'right'])
-const fontSizes = ref([10, 11, 12, 13, 14, 15, 16, 18, 20, 22, 24,  32, 36, 48, 64, 72, 96, 144])
 
 const selectedFontSpecs = computed(() => {
-  if (widget.value.content.styles.fontFamily === null || widget.value.content.styles.fontVariant === null) {
+  if (widget.value.content.fontFamily === null || widget.value.content.fontVariant === null) {
     return null
   }
 
-  const font = fontStore.fontsByFamily[widget.value.content.styles.fontFamily]
+  const font = fontStore.fontsByFamily[widget.value.content.fontFamily]
   if (!font) {
     return null
   }
 
   return font
 })
+
 const selectedVariant = computed(() => {
   if (selectedFontSpecs.value === null) {
     return null
   }
 
-  const selectedVariant = selectedFontSpecs.value.variants.filter((v) => v === widget.value.content?.styles.fontVariant)[0]
+  const selectedVariant = selectedFontSpecs.value.variants.filter((v) => v === widget.value.content?.fontVariant)[0]
   if (!selectedVariant) {
     return null
   }
 
   return selectedVariant
 })
+
 const parsedFontWeight = computed(() => {
   if (selectedVariant.value === null) {
     return null
@@ -83,6 +79,7 @@ const parsedFontWeight = computed(() => {
 
   return selectedVariant.value.replace('italic', '')
 })
+
 const parsedFontStyle = computed(() => {
   if (selectedVariant.value === null) {
     return null
@@ -92,18 +89,18 @@ const parsedFontStyle = computed(() => {
 })
 
 function handleFontChange() {
-  if (widget.value.content.styles.fontFamily === null || widget.value.content.styles.fontVariant === null) {
+  if (widget.value.content.fontFamily === null || widget.value.content.fontVariant === null) {
     return null
   }
 
-  const selectedFont = fontStore.fontsByFamily[widget.value.content.styles.fontFamily]
+  const selectedFont = fontStore.fontsByFamily[widget.value.content.fontFamily]
   if (!selectedFont) {
     return null
   }
 
-  const hasVariant = fontStore.fontsByFamily[widget.value.content.styles.fontFamily].variants.includes(widget.value.content.styles.fontVariant)
+  const hasVariant = fontStore.fontsByFamily[widget.value.content.fontFamily].variants.includes(widget.value.content.fontVariant)
   if (!hasVariant) {
-    widget.value.content.styles.fontVariant = 'regular'
+    widget.value.content.fontVariant = 'regular'
   }
 }
 
@@ -171,6 +168,12 @@ const menuItems = ref([
 ]);
 
 watchEffect(() => {
+  if (widget.value) {
+    widgetId.value = widget.value.id
+  }
+})
+
+watchEffect(() => {
   const editable = isEditing.value || widget.value?.content?.isInteractive
   editor.value?.setEditable(editable)
 })
@@ -199,34 +202,34 @@ onBeforeUnmount(() => {
     v-bind="$attrs"
     class="text-widget cursor-auto w-full h-full flex flex-col prose prose-base max-w-none focus:outline-none"
     :style="{
-      fontFamily: widget.content.styles.fontFamily,
-      fontSize: widget.content.styles.fontSize + 'px',
-      textAlign: widget.content.styles.textAlign,
+      fontFamily: widget.content.fontFamily,
+      fontSize: widget.content.fontSize + 'px',
+      textAlign: widget.content.textAlign,
       fontWeight: parsedFontWeight,
       fontStyle: parsedFontStyle,
     }"
     :editor="editor"/>
   <teleport to="#space__widget-menu">
     <div v-if="isEditing && isSelected && hasFonts">
-      <select @change="handleFontChange" v-model="widget.content.styles.fontFamily">
+      <select @change="handleFontChange" v-model="widget.content.fontFamily">
         <option v-for="font in fontStore.fonts" :key="font.family" :value="font.family">
           {{ font.family }}
         </option>
       </select>
-      <select v-model="widget.content.styles.fontVariant">
+      <select v-model="widget.content.fontVariant">
         <option
-          v-for="variant in fontStore.fontsByFamily[widget.content.styles.fontFamily].variants"
+          v-for="variant in fontStore.fontsByFamily[widget.content.fontFamily].variants"
           :key="variant"
           :value="variant">
           {{ variant }}
         </option>
       </select>
-      <select v-model="widget.content.styles.fontSize">
+      <select v-model="widget.content.fontSize">
         <option v-for="size in fontSizes" :key="size" :value="size">
           {{ size }}
         </option>
       </select>
-      <select v-model="widget.content.styles.textAlign">
+      <select v-model="widget.content.textAlign">
         <option v-for="alignment in textAlignments" :key="alignment" :value="alignment">
           {{ alignment }}
         </option>
