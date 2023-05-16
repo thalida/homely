@@ -5,6 +5,7 @@ import { useResizeObserver } from '@vueuse/core'
 import { useWidgetStore } from '@/stores/widget'
 import { ELinkWidgetStyle, type ILinkWidget } from '@/types/widget'
 import iconTags from 'lucide-static/tags.json'
+import { useSpaceStore } from '@/stores/space'
 
 const props = defineProps({
   widgetId: {
@@ -14,12 +15,17 @@ const props = defineProps({
   }
 })
 
+const spaceStore = useSpaceStore()
 const widgetStore = useWidgetStore()
 
 const linkEl = ref(null)
 
 const widget = computed(() => {
   return widgetStore.getWidgetById(props.widgetId) as ILinkWidget;
+})
+
+const isEditing = computed(() => {
+  return spaceStore.isEditMode
 })
 
 const isSelected = computed(() => {
@@ -103,14 +109,11 @@ async function handleUrlChange() {
     console.error(e)
   }
 }
-
-onMounted(() => {
-  console.log(widget.value.content)
-})
 </script>
 
 <template>
-  <a
+  <component
+    :is="isEditing ? 'div' : 'a'"
     ref="linkEl"
     v-bind="$attrs"
     class="flex w-full h-full cursor-pointer"
@@ -135,7 +138,7 @@ onMounted(() => {
     <template v-else>
       <img :src="selectedIconUrl" />
     </template>
-  </a>
+  </component>
   <teleport to="#space__widget-menu">
     <div v-if="widget.state.selected">
       <label>
