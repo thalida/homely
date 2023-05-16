@@ -2,7 +2,7 @@ import { defineStore } from 'pinia';
 import { ref, type Ref } from 'vue';
 import axios from 'axios';
 import { useWidgetStore } from './widget';
-import type { IWeatherLocation, IWeatherWidget } from '@/types/widget';
+import { EWeatherWidgetUnits, type IWeatherLocation, type IWeatherWidget } from '@/types/widget';
 
 export const useWeatherStore = defineStore('weather', () => {
   const widgetStore = useWidgetStore()
@@ -97,18 +97,19 @@ export const useWeatherStore = defineStore('weather', () => {
     }
 
     const apiUrl = "https://api.openweathermap.org/data/3.0/onecall";
+    const units = widget.content.units || EWeatherWidgetUnits.METRIC;
     const res = await axios.get(apiUrl, {
       params: {
         lat: location.lat,
         lon: location.lng,
         appid: import.meta.env.VITE_OPEN_WEATHER_API_KEY,
-        units: 'metric',
+        units,
         exclude: 'minutely,hourly,daily,alerts',
       }
     });
 
     widget.content.location = location
-    widget.content.weather = res.data.current
+    widget.content.weatherForcecast = res.data.current
   }
 
   return {
