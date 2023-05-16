@@ -5,25 +5,21 @@ const widgetType = EWidgetType.IMAGE;
 
 const menuItem: IWidgetMenuItem = {
   label: 'Image',
-  widgetType,
-  buttons: [
-    {
-      widgetType,
-      content: {
-        url: null,
-      },
-      style: {
-        id: "sm",
-        label: "Icon",
-        layout: {
-          w: 2,
-          h: 2,
-          isResizable: true,
-          preserveAspectRatio: false,
-        },
+  widget: {
+    widgetType,
+    content: {
+      url: null,
+    },
+    style: {
+      name: "default",
+      layout: {
+        w: 2,
+        h: 2,
+        isResizable: true,
+        preserveAspectRatio: false,
       },
     },
-  ],
+  },
 }
 
 export default {

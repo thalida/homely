@@ -5,31 +5,27 @@ const widgetType = EWidgetType.DATETIME;
 
 const menuItem: IWidgetMenuItem = {
   label: 'Date and Time',
-  widgetType,
-  buttons: [
-    {
-      widgetType,
-      content: {
-        datetimes: [
-          {
-            timezone: null,
-            useLocalTime: true,
-            format: "dddd, MMMM D YYYY, h:mm:ss a",
-          }
-        ],
-      },
-      style: {
-        id: "datetime",
-        label: "Date & Time",
-        layout: {
-          w: 2,
-          h: 1,
-          isResizable: true,
-          preserveAspectRatio: false,
-        },
+  widget: {
+    widgetType,
+    content: {
+      datetimes: [
+        {
+          timezone: null,
+          useLocalTime: true,
+          format: "dddd, MMMM D YYYY, h:mm:ss a",
+        }
+      ],
+    },
+    style: {
+      name: 'default',
+      layout: {
+        w: 2,
+        h: 1,
+        isResizable: true,
+        preserveAspectRatio: false,
       },
     },
-  ],
+  },
 }
 
 export default {

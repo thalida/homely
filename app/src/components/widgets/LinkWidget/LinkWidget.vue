@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import axios from 'axios'
-import { computed, ref, watchEffect } from 'vue'
+import { computed, onMounted, ref, watchEffect } from 'vue'
+import { useResizeObserver } from '@vueuse/core'
 import { useWidgetStore } from '@/stores/widget'
-import { Link } from 'lucide-vue-next'
-import { useSpaceStore } from '@/stores/space'
-import type { ILinkWidget } from '@/types/widget'
+import { ELinkWidgetStyle, type ILinkWidget } from '@/types/widget'
 import iconTags from 'lucide-static/tags.json'
 
 const props = defineProps({
@@ -15,38 +14,63 @@ const props = defineProps({
   }
 })
 
-const spaceStore = useSpaceStore()
 const widgetStore = useWidgetStore()
 
-const isEditing = computed(() => {
-  return spaceStore.isEditMode
-})
-
-const wrapperEl = computed(() => {
-  return isEditing.value ? 'div' : 'a'
-});
+const linkEl = ref(null)
 
 const widget = computed(() => {
   return widgetStore.getWidgetById(props.widgetId) as ILinkWidget;
-})
-const metadata = computed(() => {
-  if (!widget.value) {
-    return {}
-  }
-
-  if (widget.value.content === null) {
-    return {}
-  }
-
-  return widget.value.content.metadata || {}
 })
 
 const isSelected = computed(() => {
   return widget.value.state.selected;
 })
 
+const width = ref()
+const height = ref()
+const dimensionDiff = computed(() => {
+  if (!width.value || !height.value) {
+    return 0
+  }
+
+  return Math.abs(width.value - height.value)
+})
+const selectedStyle = computed(() => {
+  if (dimensionDiff.value < 10) {
+    return ELinkWidgetStyle.SQUARE
+  }
+
+  if (width.value > height.value) {
+    return ELinkWidgetStyle.FLAG
+  }
+
+  return ELinkWidgetStyle.CARD
+})
+
+useResizeObserver(linkEl, (entries) => {
+  const entry = entries[0]
+  width.value = entry.contentRect.width
+  height.value = entry.contentRect.height
+})
+
 const supportedIcons = computed(() => {
   return Object.keys(iconTags)
+})
+
+const selectedIconUrl = computed(() => {
+  const metadataIcon = widget.value.content.metadata?.icon
+  const fallbackIcon = 'link'
+  const customIcon = widget.value.content.icon || fallbackIcon
+
+  if (widget.value.content.useCustomIcon) {
+    return `https://unpkg.com/lucide-static@latest/icons/${customIcon}.svg`
+  }
+
+  if (metadataIcon) {
+    return metadataIcon
+  }
+
+  return `https://unpkg.com/lucide-static@latest/icons/${fallbackIcon}.svg`
 })
 
 const url = ref('')
@@ -66,48 +90,68 @@ async function getMetadata(url: string) {
   return res.data
 }
 
-async function handleSubmit() {
-  const metadata = await getMetadata(url.value)
-  widgetStore.updateWidget(props.widgetId, {
-    content: {
-      url: url.value,
-      metadata,
-    },
-  })
+async function handleUrlChange() {
+  try {
+    const metadata = await getMetadata(url.value)
+    widgetStore.updateWidget(props.widgetId, {
+      content: {
+        url: url.value,
+        metadata,
+      },
+    })
+  } catch (e) {
+    console.error(e)
+  }
 }
+
+onMounted(() => {
+  console.log(widget.value.content)
+})
 </script>
 
 <template>
-  <component
-    :is="wrapperEl"
+  <a
+    ref="linkEl"
     v-bind="$attrs"
     class="flex w-full h-full cursor-pointer"
     :class="{
       'bg-blue-100': isSelected,
       'bg-slate-100': !isSelected,
-      'justify-center items-center': widget.style.id === 'icon',
+      'justify-center items-center': selectedStyle === ELinkWidgetStyle.SQUARE,
     }"
-    :href="widget.content ? widget.content.url : null"
+    :href="widget.content.url ? widget.content.url : ''"
     target="_blank"
   >
-    <template v-if="widget.style.id === 'icon'">
-      <img v-if="metadata.icon" :src="metadata.icon" />
-      <img v-else :src="`https://unpkg.com/lucide-static@latest/icons/${widget.content.icon}.svg`" />
+    <template v-if="selectedStyle === ELinkWidgetStyle.CARD">
+      <img :src="widget.content.metadata?.image" :alt="widget.content.metadata['image:alt']" />
+      <img :src="selectedIconUrl" />
+      <span>{{  widget.content.metadata?.title || widget.content.url }}</span>
     </template>
-  </component>
+    <template v-else-if="selectedStyle === ELinkWidgetStyle.FLAG">
+      <img :src="widget.content.metadata?.image" :alt="widget.content.metadata['image:alt']" />
+      <img :src="selectedIconUrl" />
+      <span>{{ widget.content.metadata?.title || widget.content.url }}</span>
+    </template>
+    <template v-else>
+      <img :src="selectedIconUrl" />
+    </template>
+  </a>
   <teleport to="#space__widget-menu">
     <div v-if="widget.state.selected">
       <label>
         <span>URL</span>
-        <input type="url" class="border border-gray-200" v-model="url" />
+        <input type="url" class="border border-gray-200" v-model="url" @blur="handleUrlChange" />
       </label>
       <label>
+        <span>Use Custom Icon?</span>
+        <input type="checkbox" v-model="widget.content.useCustomIcon" />
+      </label>
+      <label v-if="widget.content.useCustomIcon">
         <span>Icon</span>
         <select v-model="widget.content.icon" class="border border-gray-200">
           <option v-for="icon in supportedIcons" :key="icon" :value="icon">{{ icon }}</option>
         </select>
       </label>
-      <button class="bg-green-200 p-2" @click="handleSubmit">Submit</button>
     </div>
   </teleport>
 </template>

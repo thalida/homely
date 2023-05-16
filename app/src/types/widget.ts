@@ -20,8 +20,7 @@ export interface IWidgetState {
 }
 
 export interface IWidgetStyle {
-  id: string
-  label: string
+  name: string
   layout: Omit<IWidgetLayout, 'i' | 'x' | 'y'>
 }
 
@@ -41,9 +40,8 @@ export interface IWidgetLayout {
 }
 
 export interface IWidgetMenuItem {
-  widgetType: EWidgetType
   label: string
-  buttons: IWidgetButton[]
+  widget: IWidgetButton
 }
 
 export interface IWidgetButton extends Pick<IWidget, 'widgetType' | 'content' | 'style'> { }
@@ -93,5 +91,12 @@ export interface ILinkWidget extends IWidget {
     url: string | null,
     metadata: Record<string, any>,
     icon: string | null,
+    useCustomIcon: boolean,
   }
+}
+
+export enum ELinkWidgetStyle {
+  SQUARE = 'SQUARE',
+  FLAG = 'flag',
+  CARD = 'card',
 }

@@ -5,27 +5,23 @@ const widgetType = EWidgetType.WEATHER;
 
 const menuItem: IWidgetMenuItem = {
   label: 'Weather',
-  widgetType,
-  buttons: [
-    {
-      widgetType,
-      content: {
-        location: null,
-        weather: null,
-        useCurrentLocation: true,
-      },
-      style: {
-        id: "weather",
-        label: "Weather",
-        layout: {
-          w: 2,
-          h: 1,
-          isResizable: true,
-          preserveAspectRatio: false,
-        },
+  widget: {
+    widgetType,
+    content: {
+      location: null,
+      weather: null,
+      useCurrentLocation: true,
+    },
+    style: {
+      name: 'default',
+      layout: {
+        w: 2,
+        h: 1,
+        isResizable: true,
+        preserveAspectRatio: false,
       },
     },
-  ],
+  },
 }
 
 export default {
