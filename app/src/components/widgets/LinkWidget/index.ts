@@ -9,10 +9,14 @@ const menuItem: IWidgetMenuItem = {
     widgetType,
     content: {
       url: null,
-      metadata: {},
+      style: ELinkWidgetStyle.FLAG,
       useCustomIcon: false,
       icon: 'link',
-      style: ELinkWidgetStyle.FLAG,
+      showImage: true,
+      showUrl: true,
+      showTitle: true,
+      showDescription: true,
+      metadata: {},
     },
     layout: {
       w: 3,

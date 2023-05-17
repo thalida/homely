@@ -90,9 +90,13 @@ export interface ILinkWidget extends IWidget {
   content: {
     url: string | null,
     metadata: Record<string, any>,
-    icon: string | null,
-    useCustomIcon: boolean,
     style: ELinkWidgetStyle,
+    useCustomIcon: boolean,
+    icon: string | null,
+    showImage: boolean,
+    showUrl: boolean,
+    showTitle: boolean,
+    showDescription: boolean,
   }
 }
 

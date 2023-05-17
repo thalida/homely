@@ -125,7 +125,7 @@ async function handleUrlChange() {
       'bg-slate-100': !isSelected,
       'justify-center items-center p-8': widget.content.style === ELinkWidgetStyle.ICON,
       'relative flex flex-row items-center justify-end': widget.content.style === ELinkWidgetStyle.FLAG,
-      'relative flex flex-col justify-center': widget.content.style === ELinkWidgetStyle.CARD,
+      'relative flex flex-col': widget.content.style === ELinkWidgetStyle.CARD,
     }"
     :href="widget.content.url ? widget.content.url : ''"
     target="_blank"
@@ -139,6 +139,7 @@ async function handleUrlChange() {
     ></div>
     <template v-else>
       <div
+        v-if="widget.content.showImage"
         class="bg-cover bg-no-repeat bg-center shrink-0 from-indigo-500 via-purple-500 to-pink-500"
         :class="{
           'fixed inset-y-0 left-0 w-1/3 rounded-l-xl': widget.content.style === ELinkWidgetStyle.FLAG,
@@ -152,11 +153,11 @@ async function handleUrlChange() {
       <div
         class="flex flex-col p-4 my-auto space-y-2"
         :class="{
-          'w-2/3': widget.content.style === ELinkWidgetStyle.FLAG,
-          'w-full': widget.content.style === ELinkWidgetStyle.CARD,
+          'w-2/3': widget.content.style === ELinkWidgetStyle.FLAG && widget.content.showImage,
+          'w-full': widget.content.style === ELinkWidgetStyle.CARD || (widget.content.style === ELinkWidgetStyle.FLAG && !widget.content.showImage),
         }"
       >
-        <div class="flex flex-row space-x-2 items-center">
+        <div v-if="widget.content.showTitle" class="flex flex-row space-x-2 items-center">
           <div
             class="bg-cover bg-no-repeat bg-center w-6 h-6 shrink-0"
             :style="{
@@ -165,8 +166,8 @@ async function handleUrlChange() {
           ></div>
           <span class="font-bold text-lg">{{  widget.content.metadata?.title || widget.content.url || "Sample Link" }}</span>
         </div>
-        <p class="text-sm">{{ widget.content.metadata?.description || "Enter a url on the sidebar menu to create a link" }}</p>
-        <p class="text-xs">{{ widget.content.url || "https://link.example.com" }}</p>
+        <p v-if="widget.content.showDescription" class="text-sm">{{ widget.content.metadata?.description || "Enter a url on the sidebar menu to create a link" }}</p>
+        <p v-if="widget.content.showUrl" class="text-xs">{{ widget.content.url || "https://link.example.com" }}</p>
       </div>
     </template>
   </component>
@@ -182,7 +183,7 @@ async function handleUrlChange() {
           <option v-for="style in styleOptions" :key="style" :value="style">{{ style }}</option>
         </select>
       </label>
-      <div v-if="widget.content.style == ELinkWidgetStyle.ICON">
+      <div v-if="widget.content.style === ELinkWidgetStyle.ICON">
         <label>
           <span>Use Custom Icon?</span>
           <input type="checkbox" v-model="widget.content.useCustomIcon" />
@@ -192,6 +193,24 @@ async function handleUrlChange() {
           <select v-model="widget.content.icon" class="border border-gray-200">
             <option v-for="icon in supportedIcons" :key="icon" :value="icon">{{ icon }}</option>
           </select>
+        </label>
+      </div>
+      <div v-if="widget.content.style !== ELinkWidgetStyle.ICON">
+        <label>
+          <span>Show image</span>
+          <input type="checkbox" v-model="widget.content.showImage" />
+        </label>
+        <label>
+          <span>Show title</span>
+          <input type="checkbox" v-model="widget.content.showTitle" />
+        </label>
+        <label>
+          <span>Show description</span>
+          <input type="checkbox" v-model="widget.content.showDescription" />
+        </label>
+        <label>
+          <span>Show URL</span>
+          <input type="checkbox" v-model="widget.content.showUrl" />
         </label>
       </div>
     </div>
