@@ -25,10 +25,7 @@ const component = computed(() => {
 </script>
 
 <template>
-  <component
-    :is="component"
-    :widgetId="props.widgetId"
-    class="overflow-auto h-full" />
+  <component :is="component" :widgetId="props.widgetId" class="rounded-xl" />
 </template>
 
 <style scoped>

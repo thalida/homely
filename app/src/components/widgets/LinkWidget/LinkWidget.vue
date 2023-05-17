@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import axios from 'axios'
-import { computed, onMounted, ref, watchEffect } from 'vue'
+import { computed, ref, watchEffect } from 'vue'
 import { useResizeObserver } from '@vueuse/core'
 import { useWidgetStore } from '@/stores/widget'
 import { ELinkWidgetStyle, type ILinkWidget } from '@/types/widget'
-import iconTags from 'lucide-static/tags.json'
 import { useSpaceStore } from '@/stores/space'
+import iconTags from 'lucide-static/tags.json'
 
 const props = defineProps({
   widgetId: {
@@ -41,16 +41,19 @@ const dimensionDiff = computed(() => {
 
   return Math.abs(width.value - height.value)
 })
+const styleOptions = computed(() => {
+  return Object.values(ELinkWidgetStyle)
+})
 const selectedStyle = computed(() => {
-  if (dimensionDiff.value < 10) {
-    return ELinkWidgetStyle.SQUARE
-  }
+  // if (dimensionDiff.value < 10) {
+  //   return ELinkWidgetStyle.ICON
+  // }
 
-  if (width.value > height.value) {
-    return ELinkWidgetStyle.FLAG
-  }
+  // if (width.value > height.value) {
+  //   return ELinkWidgetStyle.FLAG
+  // }
 
-  return ELinkWidgetStyle.CARD
+  // return ELinkWidgetStyle.CARD
 })
 
 useResizeObserver(linkEl, (entries) => {
@@ -116,27 +119,55 @@ async function handleUrlChange() {
     :is="isEditing ? 'div' : 'a'"
     ref="linkEl"
     v-bind="$attrs"
-    class="flex w-full h-full cursor-pointer"
+    class="flex w-full h-full cursor-pointer overflow-auto"
     :class="{
       'bg-blue-100': isSelected,
       'bg-slate-100': !isSelected,
-      'justify-center items-center': selectedStyle === ELinkWidgetStyle.SQUARE,
+      'justify-center items-center': widget.content.style === ELinkWidgetStyle.ICON,
+      'relative flex flex-row items-center justify-end': widget.content.style === ELinkWidgetStyle.FLAG,
+      'relative flex flex-col justify-center': widget.content.style === ELinkWidgetStyle.CARD,
     }"
     :href="widget.content.url ? widget.content.url : ''"
     target="_blank"
   >
-    <template v-if="selectedStyle === ELinkWidgetStyle.CARD">
-      <img :src="widget.content.metadata?.image" :alt="widget.content.metadata['image:alt']" />
-      <img :src="selectedIconUrl" />
-      <span>{{  widget.content.metadata?.title || widget.content.url }}</span>
-    </template>
-    <template v-else-if="selectedStyle === ELinkWidgetStyle.FLAG">
-      <img :src="widget.content.metadata?.image" :alt="widget.content.metadata['image:alt']" />
-      <img :src="selectedIconUrl" />
-      <span>{{ widget.content.metadata?.title || widget.content.url }}</span>
-    </template>
+    <div
+      v-if="widget.content.style == ELinkWidgetStyle.ICON"
+      class="bg-contain bg-no-repeat bg-center w-full h-full m-4"
+      :style="{
+        backgroundImage:`url(${selectedIconUrl})`,
+      }"
+    ></div>
     <template v-else>
-      <img :src="selectedIconUrl" />
+      <div
+        class="bg-cover bg-no-repeat bg-center shrink-0"
+        :class="{
+          'fixed inset-y-0 left-0 w-1/3 rounded-l-xl': widget.content.style === ELinkWidgetStyle.FLAG,
+          'inset-x-0 top-0 h-1/2 rounded-t-xl': widget.content.style === ELinkWidgetStyle.CARD,
+        }"
+        :style="{
+          backgroundImage: widget.content.metadata?.image ? `url(${widget.content.metadata?.image})` : 'none',
+        }"
+        :title="widget.content.metadata['image:alt'] || widget.content.url"
+      ></div>
+      <div
+        class="flex flex-col p-4 my-auto space-y-2"
+        :class="{
+          'w-2/3': widget.content.style === ELinkWidgetStyle.FLAG,
+          'w-full': widget.content.style === ELinkWidgetStyle.CARD,
+        }"
+      >
+        <div class="flex flex-row space-x-2">
+          <div
+            class="bg-cover bg-no-repeat bg-center w-6 h-6 shrink-0"
+            :style="{
+              backgroundImage: `url(${selectedIconUrl})`,
+            }"
+          ></div>
+          <span class="font-bold text-lg">{{  widget.content.metadata?.title || widget.content.url }}</span>
+        </div>
+        <p class="text-sm">{{ widget.content.metadata?.description }}</p>
+        <p class="text-xs">{{ widget.content.url  }}</p>
+      </div>
     </template>
   </component>
   <teleport to="#space__widget-menu">
@@ -153,6 +184,12 @@ async function handleUrlChange() {
         <span>Icon</span>
         <select v-model="widget.content.icon" class="border border-gray-200">
           <option v-for="icon in supportedIcons" :key="icon" :value="icon">{{ icon }}</option>
+        </select>
+      </label>
+      <label>
+        <span>Style</span>
+        <select v-model="widget.content.style" class="border border-gray-200">
+          <option v-for="style in styleOptions" :key="style" :value="style">{{ style }}</option>
         </select>
       </label>
     </div>

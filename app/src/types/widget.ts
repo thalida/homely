@@ -92,11 +92,12 @@ export interface ILinkWidget extends IWidget {
     metadata: Record<string, any>,
     icon: string | null,
     useCustomIcon: boolean,
+    style: ELinkWidgetStyle,
   }
 }
 
 export enum ELinkWidgetStyle {
-  SQUARE = 'SQUARE',
+  ICON = 'icon',
   FLAG = 'flag',
   CARD = 'card',
 }
