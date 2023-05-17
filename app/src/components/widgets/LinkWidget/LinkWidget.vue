@@ -123,7 +123,7 @@ async function handleUrlChange() {
     :class="{
       'bg-blue-100': isSelected,
       'bg-slate-100': !isSelected,
-      'justify-center items-center': widget.content.style === ELinkWidgetStyle.ICON,
+      'justify-center items-center p-8': widget.content.style === ELinkWidgetStyle.ICON,
       'relative flex flex-row items-center justify-end': widget.content.style === ELinkWidgetStyle.FLAG,
       'relative flex flex-col justify-center': widget.content.style === ELinkWidgetStyle.CARD,
     }"
@@ -132,20 +132,20 @@ async function handleUrlChange() {
   >
     <div
       v-if="widget.content.style == ELinkWidgetStyle.ICON"
-      class="bg-contain bg-no-repeat bg-center w-full h-full m-4"
+      class="bg-contain bg-no-repeat bg-center w-full h-full"
       :style="{
         backgroundImage:`url(${selectedIconUrl})`,
       }"
     ></div>
     <template v-else>
       <div
-        class="bg-cover bg-no-repeat bg-center shrink-0"
+        class="bg-cover bg-no-repeat bg-center shrink-0 from-indigo-500 via-purple-500 to-pink-500"
         :class="{
           'fixed inset-y-0 left-0 w-1/3 rounded-l-xl': widget.content.style === ELinkWidgetStyle.FLAG,
           'inset-x-0 top-0 h-1/2 rounded-t-xl': widget.content.style === ELinkWidgetStyle.CARD,
         }"
         :style="{
-          backgroundImage: widget.content.metadata?.image ? `url(${widget.content.metadata?.image})` : 'none',
+          backgroundImage: widget.content.metadata?.image ? `url(${widget.content.metadata?.image})` : 'linear-gradient(to bottom right, var(--tw-gradient-stops))',
         }"
         :title="widget.content.metadata['image:alt'] || widget.content.url"
       ></div>
@@ -156,17 +156,17 @@ async function handleUrlChange() {
           'w-full': widget.content.style === ELinkWidgetStyle.CARD,
         }"
       >
-        <div class="flex flex-row space-x-2">
+        <div class="flex flex-row space-x-2 items-center">
           <div
             class="bg-cover bg-no-repeat bg-center w-6 h-6 shrink-0"
             :style="{
               backgroundImage: `url(${selectedIconUrl})`,
             }"
           ></div>
-          <span class="font-bold text-lg">{{  widget.content.metadata?.title || widget.content.url }}</span>
+          <span class="font-bold text-lg">{{  widget.content.metadata?.title || widget.content.url || "Sample Link" }}</span>
         </div>
-        <p class="text-sm">{{ widget.content.metadata?.description }}</p>
-        <p class="text-xs">{{ widget.content.url  }}</p>
+        <p class="text-sm">{{ widget.content.metadata?.description || "Enter a url on the sidebar menu to create a link" }}</p>
+        <p class="text-xs">{{ widget.content.url || "https://link.example.com" }}</p>
       </div>
     </template>
   </component>
@@ -177,21 +177,23 @@ async function handleUrlChange() {
         <input type="url" class="border border-gray-200" v-model="url" @blur="handleUrlChange" />
       </label>
       <label>
-        <span>Use Custom Icon?</span>
-        <input type="checkbox" v-model="widget.content.useCustomIcon" />
-      </label>
-      <label v-if="widget.content.useCustomIcon">
-        <span>Icon</span>
-        <select v-model="widget.content.icon" class="border border-gray-200">
-          <option v-for="icon in supportedIcons" :key="icon" :value="icon">{{ icon }}</option>
-        </select>
-      </label>
-      <label>
         <span>Style</span>
         <select v-model="widget.content.style" class="border border-gray-200">
           <option v-for="style in styleOptions" :key="style" :value="style">{{ style }}</option>
         </select>
       </label>
+      <div v-if="widget.content.style == ELinkWidgetStyle.ICON">
+        <label>
+          <span>Use Custom Icon?</span>
+          <input type="checkbox" v-model="widget.content.useCustomIcon" />
+        </label>
+        <label v-if="widget.content.useCustomIcon">
+          <span>Icon</span>
+          <select v-model="widget.content.icon" class="border border-gray-200">
+            <option v-for="icon in supportedIcons" :key="icon" :value="icon">{{ icon }}</option>
+          </select>
+        </label>
+      </div>
     </div>
   </teleport>
 </template>
