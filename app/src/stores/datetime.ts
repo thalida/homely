@@ -53,14 +53,26 @@ export const useDateTimeStore = defineStore('datetime', () => {
     interval.value = null
   }
 
-  function format(datetime: IDateTime) {
+  function format(datetime: IDateTime, formatString: string) {
     let dayjsNow = dayjs(now.value)
 
     if (datetime.timezone) {
       dayjsNow = dayjsNow.tz(datetime.timezone)
     }
 
-    return dayjsNow.format(datetime.format)
+    return dayjsNow.format(formatString)
+  }
+
+  function isNight(datetime: IDateTime) {
+    let dayjsNow = dayjs(now.value)
+
+    if (datetime.timezone) {
+      dayjsNow = dayjsNow.tz(datetime.timezone)
+    }
+
+    const hour = dayjsNow.hour()
+
+    return hour < 6 || hour > 18
   }
 
   return {
@@ -70,5 +82,6 @@ export const useDateTimeStore = defineStore('datetime', () => {
     connect,
     disconnect,
     format,
+    isNight,
   };
 });

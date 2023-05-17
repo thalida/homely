@@ -16,8 +16,8 @@ const menuItem: IWidgetMenuItem = {
       lineHeight: 1.5,
     },
     layout: {
-      w: 6,
-      h: 1,
+      w: 3,
+      h: 3,
       isResizable: true,
       preserveAspectRatio: false,
     },

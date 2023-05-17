@@ -119,10 +119,9 @@ async function handleUrlChange() {
     :is="isEditing ? 'div' : 'a'"
     ref="linkEl"
     v-bind="$attrs"
-    class="flex w-full h-full cursor-pointer overflow-auto"
+    class="flex w-full h-full cursor-pointer overflow-auto bg-slate-100"
     :class="{
-      'bg-blue-100': isSelected,
-      'bg-slate-100': !isSelected,
+      'ring-2 ring-pink-500': isSelected,
       'justify-center items-center p-8': widget.content.style === ELinkWidgetStyle.ICON,
       'relative flex flex-row items-center justify-end': widget.content.style === ELinkWidgetStyle.FLAG,
       'relative flex flex-col': widget.content.style === ELinkWidgetStyle.CARD,

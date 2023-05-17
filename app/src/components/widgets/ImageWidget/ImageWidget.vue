@@ -39,12 +39,11 @@ const hasImage = computed(() => {
 <template>
   <div
     v-bind="$attrs"
-    class="flex w-full h-full cursor-pointer"
+    class="flex w-full h-full cursor-pointer bg-slate-100"
     :class="[
       {
         'items-center justify-center': !hasImage,
-        'bg-blue-100': isSelected,
-        'bg-slate-100': !isSelected,
+        'ring-2 ring-pink-500': isSelected,
         'bg-auto': widget.content.backgroundSize === EImageWidgetBackgroundSize.AUTO,
         'bg-contain': widget.content.backgroundSize === EImageWidgetBackgroundSize.CONTAIN,
         'bg-cover': widget.content.backgroundSize === EImageWidgetBackgroundSize.COVER,

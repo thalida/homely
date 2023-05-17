@@ -12,7 +12,14 @@ const menuItem: IWidgetMenuItem = {
         {
           timezone: null,
           useLocalTime: true,
-          format: "dddd, MMMM D YYYY, h:mm:ss a",
+          showIsLocalTimeLabel: true,
+          formatLine1: "h:mm A",
+          formatLine2: "dddd, MMMM D",
+          showCity: true,
+          showLine1: true,
+          showLine2: true,
+          showDayNightIcon: true,
+          showDayNightBackground: true,
         }
       ],
     },

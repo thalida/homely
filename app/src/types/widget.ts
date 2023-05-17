@@ -60,9 +60,16 @@ export interface IDateTimeWidget extends IWidget {
 }
 
 export interface IDateTime {
-  format: string
   timezone: string | null
   useLocalTime: boolean
+  formatLine1: string
+  formatLine2: string
+  showCity: boolean
+  showLine1: boolean
+  showLine2: boolean
+  showDayNightIcon: boolean
+  showDayNightBackground: boolean
+  showIsLocalTimeLabel: boolean
 }
 
 
