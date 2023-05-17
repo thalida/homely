@@ -8,10 +8,15 @@ const menuItem: IWidgetMenuItem = {
   widget: {
     widgetType,
     content: {
-      location: null,
-      weather: null,
-      useCurrentLocation: true,
-      units: EWeatherWidgetUnits.METRIC,
+      items: [
+        {
+          place: null,
+          currently: null,
+          useCurrentLocation: true,
+          units: EWeatherWidgetUnits.METRIC,
+          fetchedOn: null,
+        },
+      ],
     },
     layout: {
       w: 3,

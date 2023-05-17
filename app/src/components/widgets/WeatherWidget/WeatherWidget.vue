@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { computed, onMounted, onBeforeUnmount, watchEffect, ref } from 'vue'
-import { Loader } from '@googlemaps/js-api-loader';
+import { computed, onMounted, onBeforeUnmount, watchEffect, ref, nextTick } from 'vue'
 import { useWidgetStore } from '@/stores/widget'
 import { useWeatherStore } from '@/stores/weather';
-import { EWeatherWidgetUnits, type IWeatherWidget } from '@/types/widget'
+import { EWeatherWidgetUnits, type IWeatherItem, type IWeatherWidget } from '@/types/widget'
 import {
   SunIcon,
   MoonIcon,
@@ -18,13 +17,8 @@ import {
   CloudRainIcon,
   CloudSnowIcon
 } from 'lucide-vue-next';
-
-
-const loader = new Loader({
-  apiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY as string,
-  version: "weekly",
-  libraries: ["places"],
-});
+import PlaceInput from './PlaceInput.vue';
+import { cloneDeep } from 'lodash';
 
 const props = defineProps({
   widgetId: {
@@ -61,14 +55,9 @@ const widget = computed(() => {
   return widgetStore.getWidgetById(props.widgetId) as IWeatherWidget
 })
 const widgetId = ref<string | null>(null)
-const autocompleteInput = ref<HTMLInputElement>()
-const location = ref<string>('')
 
 const isSelected = computed(() => {
   return widget.value.state.selected;
-})
-const currentWeather = computed(() => {
-  return widget.value?.content.weatherForcecast?.weather[0]
 })
 const supportedUnits = computed(() => {
   return Object.values(EWeatherWidgetUnits)
@@ -91,44 +80,6 @@ onMounted(async () => {
   }
 
   await weatherStore.connect(widget.value.id)
-
-  location.value = widget.value.content.location.name
-  console.log(widget.value.content.location)
-  console.log(widget.value.content.weatherForcecast)
-
-  loader
-    .load()
-    .then((google) => {
-      if (autocompleteInput.value === null) {
-        return
-      }
-
-      const autocomplete = new google.maps.places.Autocomplete(autocompleteInput.value as HTMLInputElement, {
-        types: ['(cities)'],
-        fields: ["geometry", "name"],
-        strictBounds: false,
-      });
-      autocomplete.addListener("place_changed", () => {
-        const place = autocomplete.getPlace();
-
-        if (!place.geometry || !place.geometry.location) {
-          // User entered the name of a Place that was not suggested and
-          // pressed the Enter key, or the Place Details request failed.
-          window.alert("No details available for input: '" + place.name + "'");
-          return;
-        }
-
-        widget.value.content.location = {
-          name: place.name || "Unknown",
-          lat: place.geometry.location.lat(),
-          lng: place.geometry.location.lng(),
-        }
-        weatherStore.updateWeather(widget.value.id)
-      });
-    })
-    .catch(e => {
-      // do something
-    });
 })
 
 onBeforeUnmount(() => {
@@ -142,46 +93,89 @@ onBeforeUnmount(() => {
 function handleUnitsChange() {
   weatherStore.updateWeather(widget.value.id)
 }
+
+function handlePlaceChange(weatherRow: IWeatherItem, place: google.maps.places.PlaceResult) {
+  if (!place.geometry || !place.geometry.location) {
+    return;
+  }
+
+  weatherRow.place = {
+    name: place.name || "Unknown",
+    lat: place.geometry.location.lat(),
+    lng: place.geometry.location.lng(),
+  }
+
+  weatherStore.updateWeather(widget.value.id)
+}
+
+function handleRemoveWeatherItem(e: Event, weatherRow: IWeatherItem, index: number) {
+  e.preventDefault()
+  widget.value.content.items.splice(index, 1)
+}
+
+async function handleAddWeatherItem() {
+  if (!widget.value) {
+    return
+  }
+
+  widget.value.content.items.push({
+    place: null,
+    currently: null,
+    useCurrentLocation: true,
+    units: EWeatherWidgetUnits.METRIC,
+    fetchedOn: null,
+  })
+
+  await weatherStore.updateWeather(widget.value.id)
+}
 </script>
 
 <template>
   <div
     v-bind="$attrs"
-    class="flex w-full h-full cursor-pointer overflow-auto bg-slate-100"
+    class="flex flex-col w-full h-full cursor-pointer overflow-auto bg-slate-100"
     :class="{
       'ring-2 ring-pink-500': isSelected,
-      'flex-col justify-center items-center py-4 px-8 space-y-4': currentWeather,
     }">
-    <template v-if="currentWeather">
-      <div class="flex flex-row justify-between items-center w-full text-sm">
-        <span class="capitalize">
-          {{ currentWeather.description }}
-        </span>
-        <span>{{ widget.content.location?.name }}</span>
-      </div>
-      <div class="flex flex-row justify-between items-center w-full">
-        <div class="flex flex-row text-2xl font-bold">
-          {{ widget.content.weatherForcecast.temp }}&deg;
+    <div v-for="(weatherRow, index) in widget.content.items" :key="index" class="w-full py-2 px-8 grow">
+      <template v-if="weatherRow.currently">
+        <div class="flex flex-row justify-between items-center w-full text-sm">
+          <span class="capitalize">
+            {{ weatherRow.currently.weather[0].description }}
+          </span>
+          <span>{{ weatherRow.place?.name }}</span>
         </div>
-        <component :is="weatherIconMap[currentWeather.icon]" class="h-full w-auto max-h-16" />
-      </div>
-    </template>
+        <div class="flex flex-row justify-between items-center w-full">
+          <div class="flex flex-row text-2xl font-bold">
+            {{ weatherRow.currently.temp }}&deg;
+          </div>
+          <component :is="weatherIconMap[weatherRow.currently.weather[0].icon]" class="h-full w-auto max-h-16" />
+        </div>
+      </template>
+    </div>
   </div>
   <teleport to="#space__widget-menu">
-    <div v-show="widget.state.selected">
-      <label>
-        <span>Use Current Location</span>
-        <input type="checkbox" v-model="widget.content.useCurrentLocation" />
-      </label>
-      <input ref="autocompleteInput" type="text" v-model="location" :disabled="widget.content.useCurrentLocation" />
-      <label>
-        <span>Units</span>
-        <select v-model="widget.content.units" @change="handleUnitsChange">
-          <option v-for="unit in supportedUnits" :key="unit" :value="unit">
-            {{ unit }} (&deg;{{ unitsSymbolMap[unit] }})
-          </option>
-        </select>
-      </label>
+    <div v-show="widget.state.selected" class="flex flex-col">
+      <div v-for="(weatherRow, index) in widget.content.items" :key="index" class="flex flex-col">
+        <label>
+          <span>Use Current Location</span>
+          <input type="checkbox" v-model="weatherRow.useCurrentLocation" />
+        </label>
+        <label v-if="!weatherRow.useCurrentLocation">
+          <span>Location</span>
+          <PlaceInput v-model="weatherRow.place" @change="(place) => handlePlaceChange(weatherRow, place)" />
+        </label>
+        <label>
+          <span>Units</span>
+          <select v-model="weatherRow.units" @change="handleUnitsChange">
+            <option v-for="unit in supportedUnits" :key="unit" :value="unit">
+              {{ unit }} (&deg;{{ unitsSymbolMap[unit] }})
+            </option>
+          </select>
+        </label>
+        <button @click="handleRemoveWeatherItem($event, weatherRow, index)">Remove</button>
+      </div>
+      <button @click="handleAddWeatherItem">Add</button>
     </div>
   </teleport>
 </template>

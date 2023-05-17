@@ -1,14 +1,15 @@
 import { defineStore } from 'pinia';
-import { ref, type Ref } from 'vue';
+import { ref, triggerRef, type Ref, reactive } from 'vue';
 import axios from 'axios';
 import { useWidgetStore } from './widget';
-import { EWeatherWidgetUnits, type IWeatherLocation, type IWeatherWidget } from '@/types/widget';
+import { EWeatherWidgetUnits, type IWeatherItem, type IWeatherPlace, type IWeatherWidget } from '@/types/widget';
+import { cloneDeep } from 'lodash';
 
 export const useWeatherStore = defineStore('weather', () => {
   const widgetStore = useWidgetStore()
   const interval: Ref<number | null> = ref(null)
   const connectedWidgets: Ref<string[]> = ref([])
-  const currentLocation: Ref<IWeatherLocation | null> = ref(null)
+  const currentLocation: Ref<IWeatherPlace | null> = ref(null)
 
 
   async function connect(widgetId: string, timezone: string | null = null) {
@@ -94,14 +95,29 @@ export const useWeatherStore = defineStore('weather', () => {
       return;
     }
 
-    const location = (widget.content.useCurrentLocation) ? currentLocation.value : widget.content.location;
+    for (let i = 0; i < widget.content.items.length; i += 1) {
+      const weatherItem = widget.content.items[i]
+      const location = (weatherItem.useCurrentLocation) ? currentLocation.value : weatherItem.place;
 
-    if (!location) {
-      return;
+      if (!location) {
+        continue;
+      }
+
+      const units = weatherItem.units || EWeatherWidgetUnits.METRIC;
+      const res = await fetchWeather(location, units)
+      widget.content.items[i] = {
+        ...weatherItem,
+        ...res,
+      }
     }
 
+    widgetStore.updateWidget(widgetId, widget)
+
+    return widget
+  }
+
+  async function fetchWeather(location: IWeatherPlace , units = EWeatherWidgetUnits.METRIC) {
     const apiUrl = "https://api.openweathermap.org/data/3.0/onecall";
-    const units = widget.content.units || EWeatherWidgetUnits.METRIC;
     const res = await axios.get(apiUrl, {
       params: {
         lat: location.lat,
@@ -112,8 +128,11 @@ export const useWeatherStore = defineStore('weather', () => {
       }
     });
 
-    widget.content.location = location
-    widget.content.weatherForcecast = res.data.current
+    return {
+      currently: res.data.current,
+      place: location,
+      fetchedOn: Date.now(),
+    }
   }
 
   return {

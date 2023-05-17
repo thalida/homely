@@ -60,7 +60,20 @@ function handleAddDateTime() {
     return
   }
 
-  const copyFrom = widget.value.content.datetimes[widget.value.content.datetimes.length - 1]
+  const defaults = {
+    timezone: null,
+    useLocalTime: true,
+    showIsLocalTimeLabel: true,
+    formatLine1: "h:mm A",
+    formatLine2: "dddd, MMMM D",
+    showCity: true,
+    showLine1: true,
+    showLine2: true,
+    showDayNightIcon: true,
+    showDayNightBackground: true,
+  }
+
+  const copyFrom = widget.value.content.datetimes.length > 0 ? widget.value.content.datetimes[widget.value.content.datetimes.length - 1] : defaults
   const newDatetime = Object.assign({}, copyFrom)
   newDatetime.timezone = null
   newDatetime.useLocalTime = true
@@ -105,7 +118,7 @@ function timezoneDisplay(datetime: IDateTime) {
     <div
       v-for="(datetime, index) in widget.content.datetimes"
       :key="index"
-      class="flex flex-row items-center justify-between px-4 grow"
+      class="flex flex-row items-center justify-between px-4 py-2 grow"
       :class="{
         'bg-blue-950 text-white': datetime.showDayNightBackground && dateTimeStore.isNight(datetime),
         'bg-yellow-300': datetime.showDayNightBackground && !dateTimeStore.isNight(datetime),

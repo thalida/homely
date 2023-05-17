@@ -75,12 +75,18 @@ export interface IDateTime {
 
 export interface IWeatherWidget extends IWidget {
   content: {
-    location: IWeatherLocation,
-    weatherForcecast: any,
-    useCurrentLocation: boolean,
-    units: EWeatherWidgetUnits,
+    items: IWeatherItem[]
   }
 }
+
+export interface IWeatherItem {
+  place: IWeatherPlace | null,
+  currently: any,
+  useCurrentLocation: boolean,
+  units: EWeatherWidgetUnits,
+  fetchedOn: number | null,
+}
+
 
 export enum EWeatherWidgetUnits {
   IMPERIAL = 'imperial',
@@ -88,7 +94,7 @@ export enum EWeatherWidgetUnits {
   STANDARD = 'standard',
 }
 
-export interface IWeatherLocation {
+export interface IWeatherPlace {
   name: string
   lat: number
   lng: number
