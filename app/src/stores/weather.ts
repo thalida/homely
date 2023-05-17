@@ -71,8 +71,12 @@ export const useWeatherStore = defineStore('weather', () => {
       }
     });
 
+    const locationCity = geocodeRes.data.results[0].address_components.find((component) => component.types.includes('locality'));
+
+    const locationName = locationCity ? locationCity.long_name : geocodeRes.data.results[0].formatted_address;
+
     currentLocation.value = {
-      name: geocodeRes.data.results[0].formatted_address,
+      name: locationName,
       lat: geolocateRes.data.location.lat,
       lng: geolocateRes.data.location.lng,
     }

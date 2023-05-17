@@ -63,6 +63,10 @@ const widget = computed(() => {
 const widgetId = ref<string | null>(null)
 const autocompleteInput = ref<HTMLInputElement>()
 const location = ref<string>('')
+
+const isSelected = computed(() => {
+  return widget.value.state.selected;
+})
 const currentWeather = computed(() => {
   return widget.value?.content.weatherForcecast?.weather[0]
 })
@@ -134,16 +138,34 @@ onBeforeUnmount(() => {
 
   weatherStore.disconnect(widgetId.value)
 })
+
+function handleUnitsChange() {
+  weatherStore.updateWeather(widget.value.id)
+}
 </script>
 
 <template>
-  <div>
-    <div v-if="currentWeather">
-      <component :is="weatherIconMap[currentWeather.icon]" />
-      {{ currentWeather.description }}
-      {{ widget.content.weatherForcecast.temp }}&deg;{{ unitsSymbolMap[widget.content.units] }}
-      <span>{{ widget.content.location?.name }}</span>
-    </div>
+  <div
+    v-bind="$attrs"
+    class="flex w-full h-full cursor-pointer overflow-auto bg-slate-100"
+    :class="{
+      'ring-2 ring-pink-500': isSelected,
+      'flex-col justify-center items-center py-4 px-8 space-y-4': currentWeather,
+    }">
+    <template v-if="currentWeather">
+      <div class="flex flex-row justify-between items-center w-full text-sm">
+        <span class="capitalize">
+          {{ currentWeather.description }}
+        </span>
+        <span>{{ widget.content.location?.name }}</span>
+      </div>
+      <div class="flex flex-row justify-between items-center w-full">
+        <div class="flex flex-row text-2xl font-bold">
+          {{ widget.content.weatherForcecast.temp }}&deg;
+        </div>
+        <component :is="weatherIconMap[currentWeather.icon]" class="h-full w-auto max-h-16" />
+      </div>
+    </template>
   </div>
   <teleport to="#space__widget-menu">
     <div v-show="widget.state.selected">
@@ -154,9 +176,9 @@ onBeforeUnmount(() => {
       <input ref="autocompleteInput" type="text" v-model="location" :disabled="widget.content.useCurrentLocation" />
       <label>
         <span>Units</span>
-        <select v-model="widget.content.units">
+        <select v-model="widget.content.units" @change="handleUnitsChange">
           <option v-for="unit in supportedUnits" :key="unit" :value="unit">
-            {{ unit }} (&deg;{{ unitsSymbolMap[widget.content.units] }})
+            {{ unit }} (&deg;{{ unitsSymbolMap[unit] }})
           </option>
         </select>
       </label>

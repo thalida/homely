@@ -32,34 +32,8 @@ const isSelected = computed(() => {
   return widget.value.state.selected;
 })
 
-const width = ref()
-const height = ref()
-const dimensionDiff = computed(() => {
-  if (!width.value || !height.value) {
-    return 0
-  }
-
-  return Math.abs(width.value - height.value)
-})
 const styleOptions = computed(() => {
   return Object.values(ELinkWidgetStyle)
-})
-const selectedStyle = computed(() => {
-  // if (dimensionDiff.value < 10) {
-  //   return ELinkWidgetStyle.ICON
-  // }
-
-  // if (width.value > height.value) {
-  //   return ELinkWidgetStyle.FLAG
-  // }
-
-  // return ELinkWidgetStyle.CARD
-})
-
-useResizeObserver(linkEl, (entries) => {
-  const entry = entries[0]
-  width.value = entry.contentRect.width
-  height.value = entry.contentRect.height
 })
 
 const supportedIcons = computed(() => {
