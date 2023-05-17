@@ -1,11 +1,20 @@
 <script setup lang="ts">
+import type { IWeatherPlace } from '@/types/widget';
 import { Loader } from '@googlemaps/js-api-loader';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, type PropType, watchEffect } from 'vue';
 
+const props = defineProps({
+  place: {
+    type: Object as PropType<IWeatherPlace | null>,
+    required: false,
+    default: null
+  }
+})
 const emits = defineEmits<{
   (e: 'change', place: google.maps.places.PlaceResult): void
 }>()
 const autocompleteInput = ref<HTMLInputElement>()
+
 const loader = new Loader({
   apiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY as string,
   version: "weekly",
@@ -51,7 +60,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <input ref="autocompleteInput" type="text" />
+  <input ref="autocompleteInput" type="text" :value="place?.name" />
 </template>
 
 <style scoped>

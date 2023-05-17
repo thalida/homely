@@ -165,7 +165,7 @@ async function handleAddWeatherItem() {
         </label>
         <label v-if="!weatherRow.useCurrentLocation">
           <span>Location</span>
-          <PlaceInput v-model="weatherRow.place" @change="(place) => handlePlaceChange(weatherRow, place)" />
+          <PlaceInput :place="weatherRow.place" @change="(place) => handlePlaceChange(weatherRow, place)" />
         </label>
         <label>
           <span>Units</span>
