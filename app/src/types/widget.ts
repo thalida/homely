@@ -49,6 +49,7 @@ export interface ITextWidget extends IWidget {
     fontVariant: string
     fontSize: number
     textAlign: string
+    lineHeight: number
   }
 }
 

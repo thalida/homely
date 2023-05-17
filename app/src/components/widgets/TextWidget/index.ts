@@ -13,6 +13,7 @@ const menuItem: IWidgetMenuItem = {
       fontVariant: "regular",
       fontSize: 16,
       textAlign: "left",
+      lineHeight: 1.5,
     },
     layout: {
       w: 6,

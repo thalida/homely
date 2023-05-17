@@ -77,7 +77,9 @@ const parsedFontWeight = computed(() => {
     return null
   }
 
-  return selectedVariant.value.replace('italic', '')
+  const fontWeight = selectedVariant.value.replace('italic', '')
+
+  return fontWeight === 'regular' ? 400 : fontWeight
 })
 
 const parsedFontStyle = computed(() => {
@@ -120,7 +122,7 @@ const editor = useEditor({
   ],
   editorProps: {
     attributes: {
-      class: 'focus:outline-none',
+      class: 'p-4 focus:outline-none',
     },
   },
   content: widget.value?.content?.text || '',
@@ -200,13 +202,18 @@ onBeforeUnmount(() => {
 <template>
   <editor-content
     v-bind="$attrs"
-    class="text-widget cursor-auto w-full h-full flex flex-col prose prose-base max-w-none focus:outline-none"
+    class="text-widget cursor-auto w-full h-full flex flex-col prose prose-base max-w-none overflow-auto focus:outline-none"
+    :class="{
+      'bg-blue-100': isSelected,
+      'bg-slate-100': !isSelected,
+    }"
     :style="{
       fontFamily: widget.content.fontFamily,
       fontSize: widget.content.fontSize + 'px',
       textAlign: widget.content.textAlign,
       fontWeight: parsedFontWeight,
       fontStyle: parsedFontStyle,
+      lineHeight: widget.content.lineHeight,
     }"
     :editor="editor"/>
   <teleport to="#space__widget-menu">
@@ -234,6 +241,10 @@ onBeforeUnmount(() => {
           {{ alignment }}
         </option>
       </select>
+      <label>
+        <span>Line Height</span>
+        <input type="number" v-model="widget.content.lineHeight" step="0.1" max="2" />
+      </label>
       <template v-for="(item, index) in menuItems" :key="index">
         <button
           :class="{
@@ -267,13 +278,19 @@ onBeforeUnmount(() => {
   height: 0;
   pointer-events: none;
 }
+.text-widget.prose :where(ul):not(:where([class~="not-prose"] *)),
+.text-widget.prose :where(ol):not(:where([class~="not-prose"] *)),
 .text-widget.prose :where(p):not(:where([class~="not-prose"] *)) {
-  margin-top: 0.25em;
-  margin-bottom: 0.25em;
+  margin-top: 0;
+  margin-bottom: 0;
 }
 
 .text-widget.prose * {
   font-weight: inherit;
   font-family: inherit;
+}
+
+.text-widget.prose :where(strong):not(:where([class~="not-prose"] *)) {
+  font-weight: bolder;
 }
 </style>
