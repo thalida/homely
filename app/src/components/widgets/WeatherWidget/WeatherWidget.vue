@@ -118,11 +118,13 @@ async function handleAddWeatherItem() {
     return
   }
 
+
+  const units = widget.value.content.items.length > 0 ? widget.value.content.items[widget.value.content.items.length - 1].units : EWeatherWidgetUnits.METRIC
   widget.value.content.items.push({
     place: null,
     currently: null,
     useCurrentLocation: true,
-    units: EWeatherWidgetUnits.METRIC,
+    units,
     fetchedOn: null,
   })
 
