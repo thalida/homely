@@ -9,7 +9,7 @@ const menuItem: IWidgetMenuItem = {
     widgetType,
     content: {
       url: null,
-      backgroundSize: EImageWidgetBackgroundSize.CONTAIN,
+      backgroundSize: EImageWidgetBackgroundSize.COVER,
       backgroundPosition: EImageWidgetBackgroundPosition.CENTER,
       backgroundRepeat: EImageWidgetBackgroundRepeat.NO_REPEAT,
     },

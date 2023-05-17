@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useWidgetStore } from '@/stores/widget'
-import { ImageIcon } from 'lucide-vue-next'
+import { ImageOffIcon } from 'lucide-vue-next'
 import { EImageWidgetBackgroundPosition, EImageWidgetBackgroundSize, EImageWidgetBackgroundRepeat } from '@/types/widget';
 
 const props = defineProps({
@@ -16,6 +16,9 @@ const widgetStore = useWidgetStore()
 const widget = computed(() => {
   return widgetStore.getWidgetById(props.widgetId)
 })
+const isSelected = computed(() => {
+  return widget.value?.state?.selected;
+})
 const backgroundSizes = computed(() => {
   return Object.values(EImageWidgetBackgroundSize)
 })
@@ -28,6 +31,9 @@ const backgroundRepeats = computed(() => {
 const bgPositionStyle = computed(() => {
   return widget.value.content.backgroundPosition.replace('-', ' ')
 })
+const hasImage = computed(() => {
+  return widget.value.content.url !== null
+})
 </script>
 
 <template>
@@ -36,6 +42,9 @@ const bgPositionStyle = computed(() => {
     class="flex w-full h-full cursor-pointer"
     :class="[
       {
+        'items-center justify-center': !hasImage,
+        'bg-blue-100': isSelected,
+        'bg-slate-100': !isSelected,
         'bg-auto': widget.content.backgroundSize === EImageWidgetBackgroundSize.AUTO,
         'bg-contain': widget.content.backgroundSize === EImageWidgetBackgroundSize.CONTAIN,
         'bg-cover': widget.content.backgroundSize === EImageWidgetBackgroundSize.COVER,
@@ -50,7 +59,7 @@ const bgPositionStyle = computed(() => {
       'background-position': bgPositionStyle,
     }"
   >
-    <ImageIcon v-if="!widget.content.url" />
+    <ImageOffIcon v-if="!hasImage" />
   </div>
   <teleport to="#space__widget-menu">
     <div v-if="widget.state.selected">
