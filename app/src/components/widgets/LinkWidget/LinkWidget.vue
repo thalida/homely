@@ -143,7 +143,7 @@ async function handleUrlChange() {
         class="bg-cover bg-no-repeat bg-center shrink-0 from-indigo-500 via-purple-500 to-pink-500"
         :class="{
           'fixed inset-y-0 left-0 w-1/3 rounded-l-xl': widget.content.style === ELinkWidgetStyle.FLAG,
-          'inset-x-0 top-0 h-1/2 rounded-t-xl': widget.content.style === ELinkWidgetStyle.CARD,
+          'inset-x-0 top-0 h-1/2 rounded-t-xl grow': widget.content.style === ELinkWidgetStyle.CARD,
         }"
         :style="{
           backgroundImage: widget.content.metadata?.image ? `url(${widget.content.metadata?.image})` : 'linear-gradient(to bottom right, var(--tw-gradient-stops))',
@@ -151,6 +151,7 @@ async function handleUrlChange() {
         :title="widget.content.metadata['image:alt'] || widget.content.url"
       ></div>
       <div
+        v-if="widget.content.showDescription || widget.content.showTitle || widget.content.showUrl"
         class="flex flex-col p-4 my-auto space-y-2"
         :class="{
           'w-2/3': widget.content.style === ELinkWidgetStyle.FLAG && widget.content.showImage,
