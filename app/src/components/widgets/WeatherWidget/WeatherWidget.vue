@@ -139,7 +139,11 @@ async function handleAddWeatherItem() {
     :class="{
       'ring-2 ring-pink-500': isSelected,
     }">
-    <div v-for="(weatherRow, index) in widget.content.items" :key="index" class="w-full py-2 px-8 grow">
+    <div
+      v-for="(weatherRow, index) in widget.content.items"
+      :key="index"
+      class="flex flex-col w-full py-2 px-4 grow justify-center items-center space-y-2"
+    >
       <template v-if="weatherRow.currently">
         <div class="flex flex-row justify-between items-center w-full text-sm">
           <span class="capitalize">
