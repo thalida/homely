@@ -81,12 +81,20 @@ export interface IWeatherWidget extends IWidget {
 
 export interface IWeatherItem {
   place: IWeatherPlace | null,
-  currently: any,
+  currently: Record<string, any> | null
+  forecast: Record<string, any>[] | null
   useCurrentLocation: boolean,
   units: EWeatherWidgetUnits,
   fetchedOn: number | null,
+  style: EWeatherWidgetStyle,
+  showNumForecastDays: number,
 }
 
+
+export enum EWeatherWidgetStyle {
+  CURRENT = 'current',
+  FORECAST = 'forecast',
+}
 
 export enum EWeatherWidgetUnits {
   IMPERIAL = 'imperial',

@@ -1,17 +1,12 @@
 import { defineStore } from 'pinia';
 import { ref, type Ref } from 'vue';
-import dayjs from 'dayjs'
-import utc from 'dayjs/plugin/utc'
-import timezone from 'dayjs/plugin/timezone'
 import type { IDateTime } from '@/types/widget';
-
-dayjs.extend(utc)
-dayjs.extend(timezone)
+import * as datetimeUtils from '@/utils/datetime';
 
 export const useDateTimeStore = defineStore('datetime', () => {
   const now = ref(new Date())
   const supportedTimezones = ref(Intl.supportedValuesOf('timeZone'))
-  const localTimezone = ref(dayjs.tz.guess())
+  const localTimezone = ref(datetimeUtils.guessTimezone())
   const interval: Ref<number | null> = ref(null)
   const connectedWidgets: Ref<string[]> = ref([])
 
@@ -54,25 +49,11 @@ export const useDateTimeStore = defineStore('datetime', () => {
   }
 
   function format(datetime: IDateTime, formatString: string) {
-    let dayjsNow = dayjs(now.value)
-
-    if (datetime.timezone) {
-      dayjsNow = dayjsNow.tz(datetime.timezone)
-    }
-
-    return dayjsNow.format(formatString)
+    return datetimeUtils.format(now.value, formatString, datetime.timezone)
   }
 
   function isNight(datetime: IDateTime) {
-    let dayjsNow = dayjs(now.value)
-
-    if (datetime.timezone) {
-      dayjsNow = dayjsNow.tz(datetime.timezone)
-    }
-
-    const hour = dayjsNow.hour()
-
-    return hour < 6 || hour > 18
+    return datetimeUtils.isNightTime(now.value, datetime.timezone)
   }
 
   return {

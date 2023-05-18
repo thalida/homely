@@ -1,9 +1,8 @@
 import { defineStore } from 'pinia';
-import { ref, triggerRef, type Ref, reactive } from 'vue';
+import { ref, type Ref } from 'vue';
 import axios from 'axios';
 import { useWidgetStore } from './widget';
-import { EWeatherWidgetUnits, type IWeatherItem, type IWeatherPlace, type IWeatherWidget } from '@/types/widget';
-import { cloneDeep } from 'lodash';
+import { EWeatherWidgetUnits, type IWeatherPlace, type IWeatherWidget } from '@/types/widget';
 
 export const useWeatherStore = defineStore('weather', () => {
   const widgetStore = useWidgetStore()
@@ -12,7 +11,7 @@ export const useWeatherStore = defineStore('weather', () => {
   const currentLocation: Ref<IWeatherPlace | null> = ref(null)
 
 
-  async function connect(widgetId: string, timezone: string | null = null) {
+  async function connect(widgetId: string) {
     await setCurrentLocation()
     await updateWeather(widgetId)
     connectedWidgets.value.push(widgetId)
@@ -124,12 +123,13 @@ export const useWeatherStore = defineStore('weather', () => {
         lon: location.lng,
         appid: import.meta.env.VITE_OPEN_WEATHER_API_KEY,
         units,
-        exclude: 'minutely,hourly,daily,alerts',
+        exclude: 'minutely,hourly,alerts',
       }
     });
 
     return {
       currently: res.data.current,
+      forecast: res.data.daily,
       place: location,
       fetchedOn: Date.now(),
     }
