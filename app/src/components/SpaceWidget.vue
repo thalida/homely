@@ -16,6 +16,10 @@ const widget = computed(() => {
   return widgetStore.getWidgetById(props.widgetId)
 })
 
+const isSelected = computed(() => {
+  return widget.value.state.selected;
+})
+
 const component = computed(() => {
   if (!widget.value) {
     return null
@@ -25,7 +29,14 @@ const component = computed(() => {
 </script>
 
 <template>
-  <component :is="component" :widgetId="props.widgetId" class="rounded-xl" />
+  <component
+    :is="component"
+    :widgetId="props.widgetId"
+    class="rounded-2xl w-full h-full overflow-auto"
+    :class="{
+      'ring-2 ring-pink-500': isSelected,
+    }"
+  />
 </template>
 
 <style scoped>

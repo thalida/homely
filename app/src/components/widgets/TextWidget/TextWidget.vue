@@ -202,10 +202,7 @@ onBeforeUnmount(() => {
 <template>
   <editor-content
     v-bind="$attrs"
-    class="text-widget cursor-auto w-full h-full flex flex-col prose prose-base max-w-none overflow-auto bg-slate-100 focus:outline-none"
-    :class="{
-      'ring-2 ring-pink-500': isSelected,
-    }"
+    class="text-widget cursor-auto flex flex-col prose prose-base max-w-none bg-slate-100 focus:outline-none"
     :style="{
       fontFamily: widget.content.fontFamily,
       fontSize: widget.content.fontSize + 'px',

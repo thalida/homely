@@ -56,9 +56,6 @@ const widget = computed(() => {
 })
 const widgetId = ref<string | null>(null)
 
-const isSelected = computed(() => {
-  return widget.value.state.selected;
-})
 const supportedUnits = computed(() => {
   return Object.values(EWeatherWidgetUnits)
 })
@@ -135,10 +132,8 @@ async function handleAddWeatherItem() {
 <template>
   <div
     v-bind="$attrs"
-    class="flex flex-col w-full h-full cursor-pointer overflow-auto bg-slate-100"
-    :class="{
-      'ring-2 ring-pink-500': isSelected,
-    }">
+    class="flex flex-col bg-slate-100"
+  >
     <div
       v-for="(weatherRow, index) in widget.content.items"
       :key="index"

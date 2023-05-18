@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import axios from 'axios'
 import { computed, ref, watchEffect } from 'vue'
-import { useResizeObserver } from '@vueuse/core'
 import { useWidgetStore } from '@/stores/widget'
 import { ELinkWidgetStyle, type ILinkWidget } from '@/types/widget'
 import { useSpaceStore } from '@/stores/space'
@@ -26,10 +25,6 @@ const widget = computed(() => {
 
 const isEditing = computed(() => {
   return spaceStore.isEditMode
-})
-
-const isSelected = computed(() => {
-  return widget.value.state.selected;
 })
 
 const styleOptions = computed(() => {
@@ -93,9 +88,8 @@ async function handleUrlChange() {
     :is="isEditing ? 'div' : 'a'"
     ref="linkEl"
     v-bind="$attrs"
-    class="flex w-full h-full cursor-pointer overflow-auto bg-slate-100"
+    class="flex cursor-pointer bg-slate-100"
     :class="{
-      'ring-2 ring-pink-500': isSelected,
       'justify-center items-center p-8': widget.content.style === ELinkWidgetStyle.ICON,
       'relative flex flex-row items-center justify-end': widget.content.style === ELinkWidgetStyle.FLAG,
       'relative flex flex-col': widget.content.style === ELinkWidgetStyle.CARD,
@@ -117,9 +111,9 @@ async function handleUrlChange() {
         :class="{
           'fixed inset-y-0 left-0': widget.content.style === ELinkWidgetStyle.FLAG,
           'inset-x-0 top-0 grow': widget.content.style === ELinkWidgetStyle.CARD,
-          'w-1/3 rounded-l-xl': widget.content.style === ELinkWidgetStyle.FLAG && (widget.content.showDescription || widget.content.showTitle || widget.content.showUrl),
-          'h-1/2 rounded-t-xl': widget.content.style === ELinkWidgetStyle.CARD && (widget.content.showDescription || widget.content.showTitle || widget.content.showUrl),
-          'w-full h-full rounded-xl': !widget.content.showDescription && !widget.content.showTitle && !widget.content.showUrl,
+          'w-1/3 rounded-l-2xl': widget.content.style === ELinkWidgetStyle.FLAG && (widget.content.showDescription || widget.content.showTitle || widget.content.showUrl),
+          'h-1/2 rounded-t-2xl': widget.content.style === ELinkWidgetStyle.CARD && (widget.content.showDescription || widget.content.showTitle || widget.content.showUrl),
+          'w-full h-full rounded-2xl': !widget.content.showDescription && !widget.content.showTitle && !widget.content.showUrl,
         }"
         :style="{
           backgroundImage: widget.content.metadata?.image ? `url(${widget.content.metadata?.image})` : 'linear-gradient(to bottom right, var(--tw-gradient-stops))',

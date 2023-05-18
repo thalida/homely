@@ -16,9 +16,6 @@ const widgetStore = useWidgetStore()
 const widget = computed(() => {
   return widgetStore.getWidgetById(props.widgetId)
 })
-const isSelected = computed(() => {
-  return widget.value?.state?.selected;
-})
 const backgroundSizes = computed(() => {
   return Object.values(EImageWidgetBackgroundSize)
 })
@@ -39,11 +36,10 @@ const hasImage = computed(() => {
 <template>
   <div
     v-bind="$attrs"
-    class="flex w-full h-full cursor-pointer bg-slate-100"
+    class="flex bg-slate-100"
     :class="[
       {
         'items-center justify-center': !hasImage,
-        'ring-2 ring-pink-500': isSelected,
         'bg-auto': widget.content.backgroundSize === EImageWidgetBackgroundSize.AUTO,
         'bg-contain': widget.content.backgroundSize === EImageWidgetBackgroundSize.CONTAIN,
         'bg-cover': widget.content.backgroundSize === EImageWidgetBackgroundSize.COVER,

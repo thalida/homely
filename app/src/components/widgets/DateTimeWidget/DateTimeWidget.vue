@@ -21,10 +21,6 @@ const widget = computed(() => {
 })
 const widgetId = ref<string | null>(null)
 
-const isSelected = computed(() => {
-  return widget.value?.state?.selected;
-})
-
 watchEffect(() => {
   if (widget.value) {
     widgetId.value = widget.value.id
@@ -111,10 +107,7 @@ function timezoneDisplay(datetime: IDateTime) {
 <template>
   <div
     v-bind="$attrs"
-    class="bg-slate-100 flex flex-col w-full h-full overflow-auto"
-    :class="{
-      'ring-2 ring-pink-500': isSelected,
-    }">
+    class="bg-slate-100 flex flex-col">
     <div
       v-for="(datetime, index) in widget.content.datetimes"
       :key="index"
