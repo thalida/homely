@@ -1,22 +1,33 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref } from 'vue'
+import { onBeforeUnmount, onMounted, ref, type Component } from 'vue'
 import { throttle } from 'lodash'
 import { GridLayout, GridItem } from 'grid-layout-plus'
 import { useSpaceStore } from '@/stores/space'
 import type { IWidget, IWidgetButton, IWidgetLayout } from '@/types/widget'
 import SpaceMenu from './SpaceMenu.vue'
 import SpaceWidget from './SpaceWidget.vue'
+import { widgetComponents } from './widgets'
 
 const spaceStore = useSpaceStore()
-
 const isReady = ref(false)
 const spaceRef = ref<HTMLElement>()
 const gridLayoutRef = ref<InstanceType<typeof GridLayout>>()
+const gridItemRefs = ref<{[key: string]: InstanceType<typeof GridItem>}>({})
+const widgetRefs = ref<{[key: string]: any}>({})
 const gridLayoutSettings = ref({
   rowHeight: 32,
   columns: 12,
   margin: [16, 16],
 })
+
+
+function gridItemRefHandler(el: InstanceType<typeof GridItem>, widgetId: string) {
+  gridItemRefs.value[widgetId] = el
+}
+
+function widgetRefHandler(el: Component, widgetId: string) {
+  widgetRefs.value[widgetId] = el
+}
 
 onMounted(() => {
   setRowHeight()
@@ -86,8 +97,8 @@ function handleGridItemClick(e:KeyboardEvent, item: any) {
   spaceStore.widgets.updateWidget(item.i, { state: { selected: true } })
 }
 
-function handleGridItemMove(itemId: string) {
-  spaceStore.widgets.updateWidget(itemId, { state: { selected: true } })
+function handleGridItemMove(widgetId: string) {
+  spaceStore.widgets.updateWidget(widgetId, { state: { selected: true } })
 }
 
 const mouseAt = { x: -1, y: -1 }
@@ -217,6 +228,15 @@ function handleAddModuleDragEnd(e: Event, widgetButton: IWidgetButton) {
 
   item.wrapper.style.display = ''
 }
+
+function getWidgetComponent(widgetId: string) {
+  const widget = spaceStore.widgets.getWidgetById(widgetId)
+  if (!widget) {
+    return null
+  }
+
+  return widgetComponents[widget.widgetType]
+}
 </script>
 
 <template>
@@ -245,6 +265,7 @@ function handleAddModuleDragEnd(e: Event, widgetButton: IWidgetButton) {
     >
       <GridItem
         v-for="item in spaceStore.widgets.layout"
+        :ref="($el) => gridItemRefHandler($el, item.i)"
         :key="item.i"
         :x="item.x"
         :y="item.y"
@@ -256,7 +277,16 @@ function handleAddModuleDragEnd(e: Event, widgetButton: IWidgetButton) {
         @click="handleGridItemClick($event, item)"
         @move="handleGridItemMove"
       >
-        <SpaceWidget :widget-id="item.i" />
+        <component
+          class="rounded-xl"
+          :is="getWidgetComponent(item.i)"
+          :widgetId="item.i"
+          :ref="($widgetEl) => widgetRefHandler($widgetEl, item.i)"
+        />
+        <!-- <SpaceWidget
+          :widget-id="item.i"
+          :ref="($widgetEl) => widgetRefHandler($widgetEl, item.i)"
+        /> -->
       </GridItem>
     </GridLayout>
 
