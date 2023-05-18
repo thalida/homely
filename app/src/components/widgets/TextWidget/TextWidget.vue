@@ -202,7 +202,7 @@ onBeforeUnmount(() => {
 <template>
   <editor-content
     v-bind="$attrs"
-    class="text-widget cursor-auto flex flex-col prose prose-base max-w-none bg-slate-100 focus:outline-none"
+    class="text-widget cursor-auto flex flex-col prose prose-base max-w-none focus:outline-none"
     :style="{
       fontFamily: widget.content.fontFamily,
       fontSize: widget.content.fontSize + 'px',

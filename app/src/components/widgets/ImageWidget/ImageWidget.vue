@@ -36,7 +36,7 @@ const hasImage = computed(() => {
 <template>
   <div
     v-bind="$attrs"
-    class="flex bg-slate-100"
+    class="flex"
     :class="[
       {
         'items-center justify-center': !hasImage,

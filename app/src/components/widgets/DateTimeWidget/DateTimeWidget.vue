@@ -107,7 +107,7 @@ function timezoneDisplay(datetime: IDateTime) {
 <template>
   <div
     v-bind="$attrs"
-    class="bg-slate-100 flex flex-col">
+    class="flex flex-col">
     <div
       v-for="(datetime, index) in widget.content.datetimes"
       :key="index"

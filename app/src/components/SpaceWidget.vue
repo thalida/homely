@@ -32,7 +32,7 @@ const component = computed(() => {
   <component
     :is="component"
     :widgetId="props.widgetId"
-    class="rounded-2xl w-full h-full overflow-auto"
+    class="rounded-2xl w-full h-full overflow-auto bg-slate-100"
     :class="{
       'ring-2 ring-pink-500': isSelected,
     }"

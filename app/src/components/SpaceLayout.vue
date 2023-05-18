@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref, type Component } from 'vue'
+import { onBeforeUnmount, onMounted, ref } from 'vue'
 import { throttle } from 'lodash'
 import { GridLayout, GridItem } from 'grid-layout-plus'
 import { useSpaceStore } from '@/stores/space'

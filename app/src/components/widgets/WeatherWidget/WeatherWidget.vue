@@ -132,7 +132,7 @@ async function handleAddWeatherItem() {
 <template>
   <div
     v-bind="$attrs"
-    class="flex flex-col bg-slate-100"
+    class="flex flex-col"
   >
     <div
       v-for="(weatherRow, index) in widget.content.items"
