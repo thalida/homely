@@ -214,7 +214,7 @@ function timezoneDisplay(datetime: IDateTime) {
 }
 /* fit font to container */
 .scale-text * {
-  font-size: calc(3cqw + 3cqh);
+  font-size: min(50cqw, 10cqh);
   line-height: 1;
   width: 100%;
   word-wrap: break-word;
