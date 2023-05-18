@@ -137,14 +137,25 @@ function timezoneDisplay(datetime: IDateTime) {
         v-if="datetime.showLine1 || datetime.showLine2"
         class="flex flex-col justify-center grow"
         :class="{
-          'items-center': !datetime.showDayNightIcon && !datetime.showCity,
+          'scale-text items-center text-center': !datetime.showDayNightIcon && !datetime.showCity,
           'items-end text-right': datetime.showDayNightIcon || datetime.showCity,
         }"
       >
-        <div class="text-lg" v-if="datetime.showLine1">
+        <div
+          v-if="datetime.showLine1"
+          :class="{
+            'text-lg': datetime.showDayNightIcon || datetime.showCity,
+            'font-bold': !datetime.showDayNightIcon && !datetime.showCity,
+          }"
+        >
           {{ dateTimeStore.format(datetime, datetime.formatLine1) }}
         </div>
-        <div class="text-sm" v-if="datetime.showLine2">
+        <div
+          v-if="datetime.showLine2"
+          :class="{
+            'text-lg': datetime.showDayNightIcon || datetime.showCity,
+            'font-bold': !datetime.showDayNightIcon && !datetime.showCity,
+          }">
           {{ dateTimeStore.format(datetime, datetime.formatLine2) }}
         </div>
       </div>
@@ -205,5 +216,14 @@ function timezoneDisplay(datetime: IDateTime) {
 </template>
 
 <style scoped>
-
+.scale-text {
+  container-type: inline-size;
+}
+/* fit font to container */
+.scale-text * {
+  font-size: calc(3cqw + 3cqh);
+  line-height: 1;
+  width: 100%;
+  word-wrap: break-word;
+}
 </style>
