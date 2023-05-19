@@ -34,7 +34,8 @@
     "pinia": "^2.0.36",
     "type-fest": "^3.10.0",
     "uuid": "^9.0.0",
-    "vue": "^3.3.2"
+    "vue": "^3.3.2",
+    "vue3-google-login": "^2.0.15"
   },
   "devDependencies": {
     "@pinia/testing": "^0.1.0",

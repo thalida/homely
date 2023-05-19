@@ -3,8 +3,8 @@ from django.contrib.auth.admin import GroupAdmin as BaseGroupAdmin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import Group
 from django.utils.translation import gettext_lazy as _
-from social_django.admin import UserSocialAuthOption as BaseUserSocialAuthAdmin
-from social_django.models import UserSocialAuth
+from allauth.socialaccount.admin import SocialAppAdmin as BaseSocialAppAdmin, SocialTokenAdmin as BaseSocialTokenAdmin, SocialAccountAdmin as BaseSocialAccountAdmin
+from allauth.socialaccount.models import SocialApp, SocialToken, SocialAccount
 from unfold.admin import ModelAdmin
 from unfold.decorators import display
 from unfold.forms import AdminPasswordChangeForm, UserChangeForm, UserCreationForm
@@ -12,7 +12,9 @@ from unfold.forms import AdminPasswordChangeForm, UserChangeForm, UserCreationFo
 from authentication.models import User
 
 admin.site.unregister(Group)
-admin.site.unregister(UserSocialAuth)
+admin.site.unregister(SocialApp)
+admin.site.unregister(SocialToken)
+admin.site.unregister(SocialAccount)
 
 
 @admin.register(User)
@@ -40,6 +42,15 @@ class GroupAdmin(BaseGroupAdmin, ModelAdmin):
     pass
 
 
-@admin.register(UserSocialAuth)
-class UserSocialAuthAdmin(BaseUserSocialAuthAdmin, ModelAdmin):
+@admin.register(SocialApp)
+class SocialAppAdmin(BaseSocialAppAdmin, ModelAdmin):
+    pass
+
+
+@admin.register(SocialToken)
+class SocialTokenAdmin(BaseSocialTokenAdmin, ModelAdmin):
+    pass
+
+@admin.register(SocialAccount)
+class SocialAccountAdmin(BaseSocialAccountAdmin, ModelAdmin):
     pass

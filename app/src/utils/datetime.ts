@@ -35,7 +35,6 @@ export function isNightTime(date: Date | number, timezone?: string | null) {
 }
 
 export function format(date: Date | number, formatString: string, timezone?: string | null) {
-  console.log('format', date, formatString, timezone)
   const dayjsDate = getDayJs(date, timezone)
 
   return dayjsDate.format(formatString)

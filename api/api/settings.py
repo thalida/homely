@@ -30,6 +30,8 @@ SECRET_KEY = "django-insecure-*s@cf%hhyx-ksf)sj5gp!@ua7wwz=2a&3f7l2wfpmnu#ak3cm3
 # SECURITY WARNING: don"t run with debug turned on in production!
 DEBUG = "RENDER" not in os.environ
 
+SITE_ID = 1
+
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGIN_REGEXES = []
 ALLOWED_HOSTS = []
@@ -66,13 +68,16 @@ INSTALLED_APPS = [
 
     "corsheaders",
 
-    "rest_framework",
     "drf_spectacular",
     "django_filters",
-
-    "oauth2_provider",
-    "social_django",
-    "drf_social_oauth2",
+    "rest_framework",
+    "rest_framework.authtoken",
+    "dj_rest_auth",
+    "allauth",
+    "allauth.account",
+    "dj_rest_auth.registration",
+    "allauth.socialaccount",
+    "allauth.socialaccount.providers.google",
 
     "authentication.apps.AuthenticationConfig",
     "common.apps.CommonConfig",
@@ -105,28 +110,15 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
-                "social_django.context_processors.backends",
-                "social_django.context_processors.login_redirect",
+
+                # `allauth` needs this from django
+                "django.template.context_processors.request",
             ],
         },
     },
 ]
 
 WSGI_APPLICATION = "api.wsgi.application"
-
-
-# REST Framework
-
-REST_FRAMEWORK = {
-    # YOUR SETTINGS
-    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
-    "DEFAULT_AUTHENTICATION_CLASSES": [
-        "rest_framework.authentication.BasicAuthentication",
-        "rest_framework.authentication.SessionAuthentication",
-        "oauth2_provider.contrib.rest_framework.OAuth2Authentication",  # django-oauth-toolkit >= 1.0.0
-        "drf_social_oauth2.authentication.SocialAuthentication",
-    ],
-}
 
 SPECTACULAR_SETTINGS = {
     "TITLE": "Homely API",
@@ -146,38 +138,60 @@ DATABASES = {
     )
 }
 
+
+# REST Framework
+
+REST_FRAMEWORK = {
+    # YOUR SETTINGS
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "dj_rest_auth.jwt_auth.JWTCookieAuthentication",
+        "rest_framework.authentication.BasicAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
+    ],
+}
+
 # User & Authentication
 
 AUTH_USER_MODEL = "authentication.User"
+
+SIMPLE_JWT = {
+    "USER_ID_FIELD": "uid"
+}
+
 AUTHENTICATION_BACKENDS = (
-    "social_core.backends.google.GoogleOAuth2",
-    "social_core.backends.email.EmailAuth",
-    "drf_social_oauth2.backends.DjangoOAuth2",
-    "authentication.backends.EmailBackend",
     "django.contrib.auth.backends.ModelBackend",
+    "allauth.account.auth_backends.AuthenticationBackend",
 )
 
-SOCIAL_AUTH_USER_MODEL = "authentication.User"
-SOCIAL_AUTH_JSONFIELD_ENABLED = True
-SOCIAL_AUTH_UUID_LENGTH = 4
-SOCIAL_AUTH_USERNAME_IS_FULL_EMAIL = False
-SOCIAL_AUTH_SLUGIFY_USERNAMES = True
-SOCIAL_AUTH_URL_NAMESPACE = "social"
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.environ.get("GOOGLE_OAUTH2_CLIENT_ID")
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.environ.get("GOOGLE_OAUTH2_SECRET")
-SOCIAL_AUTH_PIPELINE = (
-    "social_core.pipeline.social_auth.social_details",
-    "social_core.pipeline.social_auth.social_uid",
-    "social_core.pipeline.social_auth.social_user",
-    "authentication.pipeline.get_username",
-    "social_core.pipeline.user.get_username",
-    "social_core.pipeline.social_auth.associate_by_email",
-    "social_core.pipeline.user.create_user",
-    "social_core.pipeline.social_auth.associate_user",
-    "social_core.pipeline.social_auth.load_extra_data",
-    "social_core.pipeline.user.user_details",
-    "authentication.pipeline.assign_default_groups",
-)
+REST_AUTH = {
+    "USE_JWT": True,
+    "JWT_AUTH_COOKIE": "homely-api-auth",
+    "JWT_AUTH_REFRESH_COOKIE": "homely-api-refresh-token",
+}
+
+ACCOUNT_AUTHENTICATION_METHOD = "email"
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_EMAIL_VERIFICATION = "none"
+SOCIALACCOUNT_PROVIDERS = {
+    "google": {
+        # For each OAuth based provider, either add a ``SocialApp``
+        # (``socialaccount`` app) containing the required client
+        # credentials, or list them here:
+        "APP": {
+            "client_id": os.environ.get("GOOGLE_OAUTH2_CLIENT_ID"),
+            "secret": os.environ.get("GOOGLE_OAUTH2_SECRET"),
+            "key": ""
+        },
+        "SCOPE": [
+            "profile",
+            "email",
+        ],
+        "AUTH_PARAMS": {
+            "access_type": "offline",
+        },
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -252,13 +266,22 @@ UNFOLD = {
                         "title": _("Dashboard"),
                         "icon": "dashboard",  # Supported icon set: https://fonts.google.com/icons
                         "link": reverse_lazy("admin:index"),
-                        # "badge": "sample_app.badge_callback",
                     },
-                    # {
-                    #     "title": _("Collections"),
-                    #     "icon": "collections_bookmark",
-                    #     "link": reverse_lazy("admin:core_collection_changelist"),
-                    # },
+                    {
+                        "title": _("Spaces"),
+                        "icon": "collections_bookmark",
+                        "link": reverse_lazy("admin:spaces_space_changelist"),
+                    },
+                    {
+                        "title": _("Links"),
+                        "icon": "link",
+                        "link": reverse_lazy("admin:links_link_changelist"),
+                    },
+                    {
+                        "title": _("Users"),
+                        "icon": "group",
+                        "link": reverse_lazy("admin:authentication_user_changelist"),
+                    },
                 ],
             },
         ],
@@ -268,7 +291,7 @@ UNFOLD = {
             "models": [
                 "authentication.user",
                 "auth.group",
-                "social_django.usersocialauth",
+                "socialaccount.socialaccount",
             ],
             "items": [
                 {
@@ -282,31 +305,26 @@ UNFOLD = {
                 {
                     "title": _("All Social Accounts"),
                     "link": reverse_lazy(
-                        "admin:social_django_usersocialauth_changelist"
+                        "admin:socialaccount_socialaccount_changelist"
                     ),
                 },
             ],
         },
-        # {
-        #     "models": [
-        #         "core.collection",
-        #         "core.collectionlink",
-        #         "core.usertag",
-        #     ],
-        #     "items": [
-        #         {
-        #             "title": _("My Collections"),
-        #             "link": reverse_lazy("admin:core_collection_changelist"),
-        #         },
-        #         {
-        #             "title": _("My Links"),
-        #             "link": reverse_lazy("admin:core_collectionlink_changelist"),
-        #         },
-        #         {
-        #             "title": _("My Tags"),
-        #             "link": reverse_lazy("admin:core_usertag_changelist"),
-        #         },
-        #     ],
-        # },
+        {
+            "models": [
+                "spaces.space",
+                "spaces.widget",
+            ],
+            "items": [
+                {
+                    "title": _("My Spaces"),
+                    "link": reverse_lazy("admin:spaces_space_changelist"),
+                },
+                {
+                    "title": _("My Widgets"),
+                    "link": reverse_lazy("admin:spaces_widget_changelist"),
+                },
+            ],
+        },
     ],
 }

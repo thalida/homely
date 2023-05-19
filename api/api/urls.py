@@ -17,9 +17,10 @@ Including another URLconf
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import include, path, re_path
+from django.urls import include, path
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView
 from rest_framework import routers
+from authentication.views import GoogleLogin
 from links.views import LinkGetCreateView
 from spaces.views import SpaceViewSet, WidgetViewSet
 
@@ -30,13 +31,12 @@ router.register(r'widgets', WidgetViewSet)
 
 urlpatterns = [
     path("api/", include(router.urls)),
-    # path("api/links/", LinkGetCreateView.as_view(), name="link-retrieve"),
     path("api/links/", LinkGetCreateView.as_view(), name="link-detail"),
+    path('api/auth/', include('dj_rest_auth.urls')),
+    path('api/auth/registration/', include('dj_rest_auth.registration.urls')),
+    path('api/auth/google/', GoogleLogin.as_view(), name='google_login'),
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
     path("api/docs/", SpectacularRedocView.as_view(url_name="schema"), name="redoc"),
-
-    re_path(r"^api/auth/", include("drf_social_oauth2.urls", namespace="drf-social")),
-    # path("social/", include("social_django.urls", namespace="social")),
     path("admin/", admin.site.urls),
 ]
 
