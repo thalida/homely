@@ -1,21 +1,16 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the
-// README at: https://github.com/devcontainers/templates/tree/main/src/python
+// README at: https://github.com/devcontainers/templates/tree/main/src/postgres
 {
 	"name": "Homely",
-	"build": {
-		"dockerfile": "Dockerfile"
-	},
+	"dockerComposeFile": "docker-compose.yml",
+	"service": "app",
+	"workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
 	"features": {
-		"ghcr.io/devcontainers-contrib/features/black:2": {
-			"version": "latest"
-		},
-		"ghcr.io/devcontainers-contrib/features/poetry:2": {
-			"version": "latest"
-		},
-		"ghcr.io/devcontainers/features/node:1": {
-			"nodeGypDependencies": true,
-			"version": "lts"
-		}
+		"ghcr.io/devcontainers-contrib/features/pnpm:2": {},
+		"ghcr.io/devcontainers-contrib/features/poetry:2": {},
+		"ghcr.io/devcontainers/features/node:1": {},
+		"ghcr.io/devcontainers-contrib/features/black:2": {},
+		"ghcr.io/devcontainers-contrib/features/flake8:2": {}
 	},
 	"customizations": {
 		"vscode": {
@@ -42,6 +37,10 @@
 				"python.testing.pytestEnabled": true,
 				"python.analysis.extraPaths": [
 					"/workspaces/homely/api"
+				],
+				"python.linting.pylintArgs": [
+					"--load-plugins pylint_django",
+					"--django-settings-module=api.settings"
 				]
 			},
 			// Add the IDs of extensions you want installed when the container is created.

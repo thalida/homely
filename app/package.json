@@ -25,7 +25,6 @@
     "@vueuse/core": "^10.1.2",
     "@vueuse/gesture": "2.0.0-beta.1",
     "@vueuse/motion": "2.0.0-beta.12",
-    "advancedFormat": "link:dayjs/plugin/advancedFormat",
     "axios": "^1.4.0",
     "dayjs": "^1.11.7",
     "grid-layout-plus": "^1.0.2",
@@ -33,9 +32,7 @@
     "lucide-static": "^0.216.0",
     "lucide-vue-next": "^0.215.0",
     "pinia": "^2.0.36",
-    "timezone": "link:dayjs/plugin/timezone",
     "type-fest": "^3.10.0",
-    "utc": "link:dayjs/plugin/utc",
     "uuid": "^9.0.0",
     "vue": "^3.3.2"
   },
