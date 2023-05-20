@@ -19,7 +19,6 @@ export const useUserStore = defineStore('user', () => {
       headers: {
         Authorization: `Bearer ${accessToken.value}`,
       },
-      // withCredentials: true,
     });
 
     user.value = res.data

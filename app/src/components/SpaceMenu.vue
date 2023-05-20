@@ -25,7 +25,7 @@ const emits = defineEmits<{
 }>();
 
 const selectedWidgets = computed(() => {
-  const widgetIds = widgetsStore.widgetsBySpace[props.spaceId];
+  const widgetIds = widgetsStore.activeWidgetsBySpace[props.spaceId];
   return filter(widgetIds, (widgetId) => {
     const widget = widgetsStore.getWidgetById(widgetId);
     return widget.state.selected;
@@ -51,7 +51,7 @@ function handleEditModeToggle() {
 
 async function handleDelete() {
   for (const widget of selectedWidgets.value) {
-    widgetsStore.deleteWidget(widget);
+    widgetsStore.draftDeleteWidget(widget);
   }
 }
 

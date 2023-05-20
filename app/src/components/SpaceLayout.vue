@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
-import { clone, cloneDeep, throttle } from 'lodash'
+import { cloneDeep, throttle } from 'lodash'
 import { GridLayout, GridItem } from 'grid-layout-plus'
 import { useSpaceStore } from '@/stores/space'
 import { useWidgetStore } from '@/stores/widget'
@@ -19,7 +19,7 @@ const props = defineProps({
 })
 
 const widgets = computed(() => {
-  return widgetsStore.widgetsBySpace[props.spaceId] || []
+  return widgetsStore.activeWidgetsBySpace[props.spaceId] || []
 })
 const isReady = ref(false)
 const spaceRef = ref<HTMLElement>()
@@ -63,24 +63,19 @@ function startEditMode({ storeBackup = true } = {}) {
   spaceStore.setEditMode(true)
 
   if (storeBackup) {
-    spaceStore.createBackup(props.spaceId)
+    spaceStore.createBackup()
   }
 }
 
 function stopEditMode() {
-  const widgets = widgetsStore.widgetsBySpace[props.spaceId]
-  if (!widgets) {
-    return
-  }
-
   widgetsStore.saveDraftWidgets(props.spaceId)
   spaceStore.setEditMode(false)
-  spaceStore.deleteBackup(props.spaceId)
+  spaceStore.deleteBackup()
   widgetsStore.unselectAllWidgets(props.spaceId)
 }
 
 function cancelEditMode() {
-  spaceStore.resetFromBackup(props.spaceId)
+  spaceStore.resetFromBackup()
   stopEditMode()
 }
 
@@ -262,7 +257,7 @@ function handleGridItemMoved(widgetId: string, x: number, y: number) {
       :prevent-collision="true"
     >
       <GridItem
-        v-for="widgetId in widgetsStore.widgetsBySpace[props.spaceId]"
+        v-for="widgetId in widgetsStore.activeWidgetsBySpace[props.spaceId]"
         :key="widgetId"
         :x="widgetsStore.collection[widgetId].layout.x"
         :y="widgetsStore.collection[widgetId].layout.y"

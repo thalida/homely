@@ -20,6 +20,10 @@ const isSelected = computed(() => {
   return widget.value ? widget.value.state.selected : false;
 })
 
+const isDeleted = computed(() => {
+  return widget.value ? widget.value.state.deleted : false;
+})
+
 const component = computed(() => {
   if (!widget.value) {
     return null
@@ -30,6 +34,7 @@ const component = computed(() => {
 
 <template>
   <component
+    v-if="component && !isDeleted"
     :is="component"
     :widgetId="props.widgetId"
     class="rounded-2xl w-full h-full overflow-auto bg-slate-100"

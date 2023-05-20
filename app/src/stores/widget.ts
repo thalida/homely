@@ -1,11 +1,11 @@
-import { computed, ref, type ComputedRef, type Ref } from 'vue'
-import { v4 as uuidv4 } from 'uuid'
+import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
+import { v4 as uuidv4 } from 'uuid'
+import axios from 'axios'
 import type { PartialDeep } from 'type-fest'
-import { merge, cloneDeep, omit } from 'lodash'
+import { merge, omit } from 'lodash'
 import type { IWidgets, IWidgetLayout, IWidget } from '@/types/widget';
 import { useUserStore } from './user';
-import axios from 'axios'
 
 export const useWidgetStore = defineStore('widget', () => {
   const userStore = useUserStore()
@@ -13,11 +13,28 @@ export const useWidgetStore = defineStore('widget', () => {
 
   const spaces = ref<string[]>([])
   const getWidgetById = computed(() => (uid: string) => collection.value[uid])
-  const widgetsBySpace = computed(() => {
+  const allWidgetsBySpace = computed(() => {
     const bySpace = Object.keys(collection.value).reduce((acc, widgetId) => {
       const widget = collection.value[widgetId]
       if (!acc[widget.space]) {
         acc[widget.space] = []
+      }
+
+      acc[widget.space].push(widgetId)
+      return acc
+    }, {} as Record<string, string[]>);
+
+    return bySpace
+  });
+  const activeWidgetsBySpace = computed(() => {
+    const bySpace = Object.keys(collection.value).reduce((acc, widgetId) => {
+      const widget = collection.value[widgetId]
+      if (!acc[widget.space]) {
+        acc[widget.space] = []
+      }
+
+      if (widget.state.deleted) {
+        return acc
       }
 
       acc[widget.space].push(widgetId)
@@ -32,13 +49,21 @@ export const useWidgetStore = defineStore('widget', () => {
       for (const spaceId of spaces.value) {
         res[spaceId] = []
 
-        const widgets = widgetsBySpace.value[spaceId]
+        const widgets = activeWidgetsBySpace.value[spaceId]
         if (!widgets) {
           continue
         }
 
         for (const widgetId of widgets) {
-            res[spaceId].push(collection.value[widgetId].layout)
+          if (!collection.value[widgetId]) {
+            continue
+          }
+
+          if (collection.value[widgetId].state.deleted) {
+            continue
+          }
+
+          res[spaceId].push(collection.value[widgetId].layout)
         }
       }
 
@@ -58,7 +83,7 @@ export const useWidgetStore = defineStore('widget', () => {
   }
 
   function unselectAllWidgets(spaceId: string) {
-    const spaceWidgets = widgetsBySpace.value[spaceId]
+    const spaceWidgets = allWidgetsBySpace.value[spaceId]
     if (!spaceWidgets) {
       return;
     }
@@ -76,7 +101,7 @@ export const useWidgetStore = defineStore('widget', () => {
     collection.value[uid].state.selected = true
   }
 
-  function draftCreateWidget(spaceId: string, widgetInput: Omit<IWidget, 'id' | 'state' | 'space'>) {
+  function draftCreateWidget(spaceId: string, widgetInput: Omit<IWidget, 'uid' | 'state' | 'space'>) {
     const widgetId = `draft-${uuidv4()}`
     const newWidget: IWidget = {
       ...widgetInput,
@@ -89,6 +114,7 @@ export const useWidgetStore = defineStore('widget', () => {
         draft: true,
       },
     }
+    newWidget.layout.i = newWidget.uid
     collection.value[newWidget.uid] = newWidget;
 
     return collection.value[newWidget.uid]
@@ -121,13 +147,15 @@ export const useWidgetStore = defineStore('widget', () => {
   }
 
   async function saveDraftWidgets(spaceId: string) {
-    const spaceWidgets = widgetsBySpace.value[spaceId]
+    const spaceWidgets = allWidgetsBySpace.value[spaceId]
+
     if (!spaceWidgets) {
       return;
     }
 
     for (const widgetId of spaceWidgets) {
       const widget = collection.value[widgetId]
+
       if (!widget || !widget.state.draft) {
         continue
       }
@@ -172,7 +200,7 @@ export const useWidgetStore = defineStore('widget', () => {
         continue
       }
 
-      const updateWidgetRes = await axios.patch(`http://localhost:8000/api/widgets/${widget.uid}/`, {
+      await axios.patch(`http://localhost:8000/api/widgets/${widget.uid}/`, {
         content: widget.content,
         layout: widget.layout,
       }, {
@@ -181,7 +209,6 @@ export const useWidgetStore = defineStore('widget', () => {
         },
       })
 
-      collection.value[widget.uid] = updateWidgetRes.data
       collection.value[widget.uid].state.draft = false
     }
   }
@@ -191,7 +218,8 @@ export const useWidgetStore = defineStore('widget', () => {
     collection,
 
     getWidgetById,
-    widgetsBySpace,
+    allWidgetsBySpace,
+    activeWidgetsBySpace,
     layoutsBySpace,
     setSpaceWidgets,
 
