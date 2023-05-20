@@ -1,30 +1,32 @@
 from rest_framework import permissions
-from rest_framework import generics
+from rest_framework import generics, mixins, viewsets
 from rest_framework.response import Response
 
 from links.models import Link
 from links.serializers import LinkSerializer
-from links.utils import fetch_metadata
+from links.utils import fetch_metadata, format_url
 
 
-class LinkGetCreateView(generics.RetrieveAPIView):
+class LinkViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
+    """
+    API endpoint that allows links to be viewed or edited.
+    """
     queryset = Link.objects.all()
     serializer_class = LinkSerializer
     permission_classes = [permissions.IsAuthenticated,]
-    lookup_field = "url"
-    lookup_url_kwarg = "url"
 
-    def retrieve(self, request, *args, **kwargs):
-        try:
-            instance = self.get_object()
-
+    def create(self, request, *args, **kwargs):
+        url = format_url(request.data["url"])
+        try :
+            instance = Link.objects.get(url=url)
+            serializer = self.get_serializer(instance)
+            return Response(serializer.data)
         except Link.DoesNotExist:
-            link = Link.objects.create(url=kwargs["url"])
-            link.created_by = request.user
-            link.metadata = fetch_metadata(kwargs["url"])
-            link.save()
-            instance = link
+            metadata = fetch_metadata(url)
+            request.data["url"] = url
+            request.data["metadata"] = metadata
+            return super().create(request, *args, **kwargs)
 
-        serializer = self.get_serializer(instance)
-
-        return Response(serializer.data)
+    def perform_create(self, serializer):
+        serializer.save(created_by=self.request.user)
+        return super().perform_create(serializer)

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, watchEffect } from 'vue'
+import { computed, watch } from 'vue'
 import { useWidgetStore } from '@/stores/widget'
 import {  widgetComponents } from './widgets'
 
@@ -29,6 +29,16 @@ const component = computed(() => {
     return null
   }
   return widgetComponents[widget.value.widget_type]
+})
+
+watch(() => widget.value?.content, (before, after) => {
+  if (typeof before === 'undefined' || typeof after === 'undefined') {
+    return
+  }
+
+  widgetStore.markWidgetAsDraft(props.widgetId)
+}, {
+  deep: true
 })
 </script>
 

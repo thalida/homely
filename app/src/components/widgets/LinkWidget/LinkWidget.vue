@@ -5,6 +5,7 @@ import { useWidgetStore } from '@/stores/widget'
 import { ELinkWidgetStyle, type ILinkWidget } from '@/types/widget'
 import { useSpaceStore } from '@/stores/space'
 import iconTags from 'lucide-static/tags.json'
+import { useUserStore } from '@/stores/user'
 
 const props = defineProps({
   widgetId: {
@@ -14,6 +15,7 @@ const props = defineProps({
   }
 })
 
+const userStore = useUserStore()
 const spaceStore = useSpaceStore()
 const widgetStore = useWidgetStore()
 
@@ -59,22 +61,34 @@ watchEffect(() => {
   }
 })
 
-async function getMetadata(url: string) {
-  const apiUrl = `http://0.0.0.0:8000/metadata`
-  const res = await axios.get(apiUrl, {
-    params: { url }
-  })
+async function getLink(url: string) {
+  if (!url) {
+    return null
+  }
+
+  const apiUrl = `http://localhost:8000/api/links/`
+  const res = await axios.post(
+    apiUrl,
+    {
+      url,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${userStore.accessToken}`,
+      },
+    }
+  )
 
   return res.data
 }
 
 async function handleUrlChange() {
   try {
-    const metadata = await getMetadata(url.value)
+    const link = await getLink(url.value)
     widgetStore.draftUpdateWidget(props.widgetId, {
       content: {
         url: url.value,
-        metadata,
+        metadata: link.metadata,
       },
     })
   } catch (e) {

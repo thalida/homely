@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, onBeforeUnmount, watchEffect, ref } from 'vue'
 import { useWidgetStore } from '@/stores/widget'
-import { useDateTimeStore } from '@/stores/datetime'
+import { useDateTimeStore } from '@/components/widgets/DateTimeWidget/datetimeStore'
 import type { IDateTime, IDateTimeWidget } from '@/types/widget'
 import { SunIcon } from 'lucide-vue-next';
 import { MoonIcon } from 'lucide-vue-next';

@@ -1,5 +1,12 @@
+import re
 import requests
 from bs4 import BeautifulSoup
+
+
+def format_url(url):
+    if not re.match('(?:http|ftp|https)://', url):
+        return 'https://{}'.format(url)
+    return url
 
 def fetch_metadata(url: str) -> dict:
     """Fetch metadata from a URL"""

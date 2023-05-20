@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { ref, type Ref } from 'vue';
 import axios from 'axios';
-import { useWidgetStore } from './widget';
+import { useWidgetStore } from '@/stores/widget';
 import { EWeatherWidgetUnits, type IWeatherPlace, type IWeatherWidget } from '@/types/widget';
 
 export const useWeatherStore = defineStore('weather', () => {

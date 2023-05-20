@@ -101,6 +101,14 @@ export const useWidgetStore = defineStore('widget', () => {
     collection.value[uid].state.selected = true
   }
 
+  function markWidgetAsDraft(uid: string) {
+    if (!collection.value[uid]) {
+      return;
+    }
+
+    collection.value[uid].state.draft = true
+  }
+
   function draftCreateWidget(spaceId: string, widgetInput: Omit<IWidget, 'uid' | 'state' | 'space'>) {
     const widgetId = `draft-${uuidv4()}`
     const newWidget: IWidget = {
@@ -226,6 +234,7 @@ export const useWidgetStore = defineStore('widget', () => {
     unselectAllWidgets,
     selectWidgetById,
 
+    markWidgetAsDraft,
     draftUpdateWidget,
     draftDeleteWidget,
     draftCreateWidget,

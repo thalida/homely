@@ -34,13 +34,6 @@ class Widget(models.Model):
     widget_type = models.IntegerField(choices=WidgetType.choices)
     layout = models.JSONField()
     content = models.JSONField()
-    link = models.ForeignKey(
-        "links.Link",
-        on_delete=models.CASCADE,
-        related_name="widgets",
-        null=True,
-        blank=True,
-    )
 
 
 @receiver(post_save, sender=User)
