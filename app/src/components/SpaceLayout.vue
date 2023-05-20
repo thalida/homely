@@ -36,7 +36,7 @@ onMounted(async () => {
   setRowHeight()
 
   if (spaceStore.isEditMode) {
-    startEditMode({ storeBackup: false })
+    startEditMode()
   }
 
   window.addEventListener('resize', throttle(setRowHeight))
@@ -59,12 +59,9 @@ function setRowHeight() {
   gridLayoutSettings.value.rowHeight = (parentRect.width / gridLayoutSettings.value.columns) - gridLayoutSettings.value.margin[0]
 }
 
-function startEditMode({ storeBackup = true } = {}) {
+function startEditMode() {
   spaceStore.setEditMode(true)
-
-  if (storeBackup) {
-    spaceStore.createBackup()
-  }
+  spaceStore.createBackup()
 }
 
 function stopEditMode() {
