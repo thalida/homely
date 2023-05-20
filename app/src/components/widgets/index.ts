@@ -15,7 +15,7 @@ const supportedWidgets = [
 ]
 
 export const widgetComponents: Record<EWidgetType, Component | null> = supportedWidgets.reduce((acc, widget) => {
-  acc[widget.widgetType] = widget.component
+  acc[widget.widget_type] = widget.component
   return acc
 }, {} as Record<EWidgetType, Component>)
 

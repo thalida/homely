@@ -23,7 +23,7 @@ const widgetId = ref<string | null>(null)
 
 watchEffect(() => {
   if (widget.value) {
-    widgetId.value = widget.value.id
+    widgetId.value = widget.value.uid
   }
 })
 
@@ -32,7 +32,7 @@ onMounted(() => {
     return
   }
 
-  dateTimeStore.connect(widget.value.id)
+  dateTimeStore.connect(widget.value.uid)
 })
 
 onBeforeUnmount(() => {

@@ -1,12 +1,12 @@
 import { EWidgetType, type IWidgetMenuItem } from "@/types/widget";
 import component from "./DateTimeWidget.vue";
 
-const widgetType = EWidgetType.DATETIME;
+const widget_type = EWidgetType.DATETIME;
 
 const menuItem: IWidgetMenuItem = {
   label: 'Date and Time',
   widget: {
-    widgetType,
+    widget_type,
     content: {
       datetimes: [
         {
@@ -33,7 +33,7 @@ const menuItem: IWidgetMenuItem = {
 }
 
 export default {
-  widgetType,
+  widget_type,
   component,
   menuItem,
 }

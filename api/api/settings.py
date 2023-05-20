@@ -41,6 +41,10 @@ if RENDER_EXTERNAL_HOSTNAME:
     ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
 
 if DEBUG:
+    CSRF_TRUSTED_ORIGINS = [
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+    ]
     ALLOWED_HOSTS += [
         "localhost",
         "127.0.0.1",
@@ -147,7 +151,6 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "dj_rest_auth.jwt_auth.JWTCookieAuthentication",
         "rest_framework.authentication.BasicAuthentication",
-        "rest_framework.authentication.SessionAuthentication",
     ],
 }
 
@@ -166,8 +169,10 @@ AUTHENTICATION_BACKENDS = (
 
 REST_AUTH = {
     "USE_JWT": True,
+    "JWT_AUTH_HTTPONLY": False,
     "JWT_AUTH_COOKIE": "homely-api-auth",
     "JWT_AUTH_REFRESH_COOKIE": "homely-api-refresh-token",
+    "USER_DETAILS_SERIALIZER": "authentication.serializers.UserSerializer",
 }
 
 ACCOUNT_AUTHENTICATION_METHOD = "email"

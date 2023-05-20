@@ -1,9 +1,9 @@
 export enum EWidgetType {
-  LINK = 'link',
-  TEXT = 'text',
-  IMAGE = 'image',
-  DATETIME = 'datetime',
-  WEATHER = 'weather',
+  TEXT = 1,
+  LINK = 10,
+  IMAGE = 20,
+  DATETIME = 30,
+  WEATHER = 40,
 }
 
 export interface IWidgets {
@@ -11,16 +11,19 @@ export interface IWidgets {
 }
 
 export interface IWidget {
-  id: string
-  widgetType: EWidgetType
+  uid: string
+  widget_type: EWidgetType
   content: Record<string, any>
   state: IWidgetState
-  layout: Omit<IWidgetLayout, 'i' | 'x' | 'y'>
+  layout: IWidgetLayout,
+  space: string,
 }
 
 export interface IWidgetState {
   selected: boolean,
   temporary: boolean,
+  deleted: boolean,
+  draft: boolean,
 }
 
 export interface IWidgetLayout {
@@ -39,7 +42,7 @@ export interface IWidgetMenuItem {
   widget: IWidgetButton
 }
 
-export interface IWidgetButton extends Pick<IWidget, 'widgetType' | 'content' | 'layout'> { }
+export interface IWidgetButton extends Pick<IWidget, 'widget_type' | 'content' | 'layout'> { }
 
 export interface ITextWidget extends IWidget {
   content: {

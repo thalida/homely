@@ -1,13 +1,26 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref } from 'vue'
-import { throttle } from 'lodash'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { clone, cloneDeep, throttle } from 'lodash'
 import { GridLayout, GridItem } from 'grid-layout-plus'
 import { useSpaceStore } from '@/stores/space'
+import { useWidgetStore } from '@/stores/widget'
 import type { IWidget, IWidgetButton, IWidgetLayout } from '@/types/widget'
 import SpaceWidget from './SpaceWidget.vue'
 import SpaceMenu from './SpaceMenu.vue'
 
 const spaceStore = useSpaceStore()
+const widgetsStore = useWidgetStore()
+
+const props = defineProps({
+  spaceId: {
+    type: String,
+    required: true
+  }
+})
+
+const widgets = computed(() => {
+  return widgetsStore.widgetsBySpace[props.spaceId] || []
+})
 const isReady = ref(false)
 const spaceRef = ref<HTMLElement>()
 const gridLayoutRef = ref<InstanceType<typeof GridLayout>>()
@@ -17,7 +30,9 @@ const gridLayoutSettings = ref({
   margin: [12, 12],
 })
 
-onMounted(() => {
+
+onMounted(async () => {
+  await spaceStore.fetchSpace(props.spaceId)
   setRowHeight()
 
   if (spaceStore.isEditMode) {
@@ -48,18 +63,24 @@ function startEditMode({ storeBackup = true } = {}) {
   spaceStore.setEditMode(true)
 
   if (storeBackup) {
-    spaceStore.widgets.createBackup()
+    spaceStore.createBackup(props.spaceId)
   }
 }
 
 function stopEditMode() {
+  const widgets = widgetsStore.widgetsBySpace[props.spaceId]
+  if (!widgets) {
+    return
+  }
+
+  widgetsStore.saveDraftWidgets(props.spaceId)
   spaceStore.setEditMode(false)
-  spaceStore.widgets.deleteBackup()
-  spaceStore.widgets.updateAllWidgets({ state: { selected: false } })
+  spaceStore.deleteBackup(props.spaceId)
+  widgetsStore.unselectAllWidgets(props.spaceId)
 }
 
 function cancelEditMode() {
-  spaceStore.widgets.resetFromBackup()
+  spaceStore.resetFromBackup(props.spaceId)
   stopEditMode()
 }
 
@@ -70,29 +91,28 @@ function handleSpaceClick(e: Event) {
   const isWrapper = target.classList.contains('space-layout')
 
   if (isGridElement || isWrapper) {
-    spaceStore.widgets.updateAllWidgets({ state: { selected: false } })
+    widgetsStore.unselectAllWidgets(props.spaceId)
   }
 }
 
-function handleGridItemClick(e:KeyboardEvent, item: any) {
+function handleGridItemClick(e:KeyboardEvent, widgetId: string) {
   if (!spaceStore.isEditMode) {
     return
   }
 
   e.stopPropagation()
   e.preventDefault()
-  spaceStore.widgets.updateAllWidgets({ state: { selected: false } })
-  spaceStore.widgets.updateWidget(item.i, { state: { selected: true } })
+  widgetsStore.unselectAllWidgets(props.spaceId)
+  widgetsStore.selectWidgetById(widgetId)
 }
 
 function handleGridItemMove(widgetId: string) {
-  spaceStore.widgets.updateWidget(widgetId, { state: { selected: true } })
+  widgetsStore.selectWidgetById(widgetId)
 }
 
 const mouseAt = { x: -1, y: -1 }
 const TMP_WIDGET_ID = 'tmp-widget'
-let tmpWidget: IWidget | null = null
-let tmpWidgetLayout: IWidgetLayout | null = null
+const tmpWidget = ref<IWidget | null>(null)
 
 function syncMousePosition(event: MouseEvent) {
   mouseAt.x = event.clientX
@@ -117,13 +137,11 @@ function cleanupTmpWidgetStore({ x, y, w, h}: { x: number, y: number, w: number,
   if (!gridLayoutRef.value) return
 
   gridLayoutRef.value.dragEvent('dragend', TMP_WIDGET_ID, x, y, h, w)
-  spaceStore.widgets.layout = spaceStore.widgets.layout.filter(item => item.i !== TMP_WIDGET_ID)
-  delete spaceStore.widgets.collection[TMP_WIDGET_ID]
+  delete widgetsStore.collection[TMP_WIDGET_ID]
 }
 
 function cleanupTmpWidgetSettings() {
-  tmpWidget = null
-  tmpWidgetLayout = null
+  tmpWidget.value = null
 }
 
 const handleAddModuleDrag = throttle((_, widgetButton: IWidgetButton) => {
@@ -134,36 +152,29 @@ const handleAddModuleDrag = throttle((_, widgetButton: IWidgetButton) => {
   const mouseInGrid = isMouseInGrid()
 
   if (mouseInGrid) {
-    const hasTmpWidget = TMP_WIDGET_ID in spaceStore.widgets.collection
+    const hasTmpWidget = widgets.value.indexOf(TMP_WIDGET_ID) !== -1
     if (!hasTmpWidget) {
-      tmpWidget = {
-        id: TMP_WIDGET_ID,
+      tmpWidget.value = {
+        uid: TMP_WIDGET_ID,
+        space: props.spaceId,
         state: {
           temporary: true,
-          selected: false
+          draft: true,
+          selected: false,
+          deleted: false,
         },
         ...widgetButton
       }
-      spaceStore.widgets.collection[TMP_WIDGET_ID] = tmpWidget
-    }
-
-    const hasTmpWidgetLayout = spaceStore.widgets.layout.some(item => item.i === TMP_WIDGET_ID)
-    if (!hasTmpWidgetLayout) {
-      tmpWidgetLayout = {
-        x: (spaceStore.widgets.layout.length * 2) % 12,
-        y: spaceStore.widgets.layout.length + 12,
-        i: TMP_WIDGET_ID,
-        ...widgetButton.layout
-      }
-      spaceStore.widgets.layout.push(tmpWidgetLayout)
+      tmpWidget.value.layout.i = TMP_WIDGET_ID
+      tmpWidget.value.layout.x = (widgets.value.length * 2) % 12
+      tmpWidget.value.layout.y = widgets.value.length + 12
+      widgetsStore.collection[TMP_WIDGET_ID] = tmpWidget.value
     }
   }
 
-  if (tmpWidgetLayout === null) {
-    return
-  }
+  if (widgetsStore.collection[TMP_WIDGET_ID] === null || tmpWidget.value === null) return
 
-  const index = spaceStore.widgets.layout.findIndex(item => item.i === TMP_WIDGET_ID)
+  const index = widgets.value.indexOf(TMP_WIDGET_ID)
 
   if (index === -1) return
 
@@ -184,37 +195,45 @@ const handleAddModuleDrag = throttle((_, widgetButton: IWidgetButton) => {
     cleanupTmpWidgetStore({
       x: newPos.x,
       y: newPos.y,
-      w: tmpWidgetLayout.w,
-      h: tmpWidgetLayout.h
+      w: tmpWidget.value.layout.w,
+      h: tmpWidget.value.layout.h
     })
     return
   }
 
-  gridLayoutRef.value.dragEvent('dragstart', TMP_WIDGET_ID, newPos.x, newPos.y, tmpWidgetLayout.h, tmpWidgetLayout.w)
-  tmpWidgetLayout.i = TMP_WIDGET_ID
-  tmpWidgetLayout.x = spaceStore.widgets.layout[index].x
-  tmpWidgetLayout.y = spaceStore.widgets.layout[index].y
+  gridLayoutRef.value.dragEvent('dragstart', TMP_WIDGET_ID, newPos.x, newPos.y,  tmpWidget.value.layout.h,  tmpWidget.value.layout.w)
+  tmpWidget.value.layout.i = TMP_WIDGET_ID
+  tmpWidget.value.layout.x = widgetsStore.collection[TMP_WIDGET_ID].layout.x
+  tmpWidget.value.layout.y = widgetsStore.collection[TMP_WIDGET_ID].layout.y
 })
 
 function handleAddModuleDragEnd(e: Event, widgetButton: IWidgetButton) {
-  if (!gridLayoutRef.value || !isMouseInGrid() || tmpWidgetLayout === null) return
+  if (!gridLayoutRef.value || !isMouseInGrid() || widgetsStore.collection[TMP_WIDGET_ID] === null) return
 
-  cleanupTmpWidgetStore(tmpWidgetLayout)
+  const newWidgetInput = cloneDeep(widgetButton)
+  newWidgetInput.layout.x = widgetsStore.collection[TMP_WIDGET_ID].layout.x
+  newWidgetInput.layout.y = widgetsStore.collection[TMP_WIDGET_ID].layout.y
 
-  const { widget, layout } = spaceStore.widgets.createWidget(widgetButton, {
-    x: tmpWidgetLayout.x,
-    y: tmpWidgetLayout.y,
-    ...widgetButton.layout
-  })
-  gridLayoutRef.value.dragEvent('dragend', widget.id, layout.x, layout.y, layout.h, layout.w)
-
+  cleanupTmpWidgetStore(widgetsStore.collection[TMP_WIDGET_ID].layout)
   cleanupTmpWidgetSettings()
 
-  const item = gridLayoutRef.value.getItem(widget.id)
+  const widget = widgetsStore.draftCreateWidget(props.spaceId, newWidgetInput)
+  gridLayoutRef.value.dragEvent('dragend', widget.uid, widget.layout.x, widget.layout.y, widget.layout.h, widget.layout.w)
+
+  const item = gridLayoutRef.value.getItem(widget.uid)
 
   if (!item) return
 
   item.wrapper.style.display = ''
+}
+
+function handleGridItemMoved(widgetId: string, x: number, y: number) {
+  const widget = widgetsStore.getWidgetById(widgetId)
+  if (!widget) return
+
+  widgetsStore.draftUpdateWidget(widgetId, {
+    layout: { x, y }
+  })
 }
 </script>
 
@@ -231,7 +250,7 @@ function handleAddModuleDragEnd(e: Event, widgetButton: IWidgetButton) {
       :class="{
         'mr-80': spaceStore.isEditMode,
       }"
-      v-model:layout="spaceStore.widgets.layout"
+      v-model:layout="widgetsStore.layoutsBySpace[props.spaceId]"
       :col-num="gridLayoutSettings.columns"
       :row-height="gridLayoutSettings.rowHeight"
       :margin="gridLayoutSettings.margin"
@@ -243,24 +262,26 @@ function handleAddModuleDragEnd(e: Event, widgetButton: IWidgetButton) {
       :prevent-collision="true"
     >
       <GridItem
-        v-for="item in spaceStore.widgets.layout"
-        :key="item.i"
-        :x="item.x"
-        :y="item.y"
-        :w="item.w"
-        :h="item.h"
-        :i="item.i"
-        :preserve-aspect-ratio="item.preserveAspectRatio"
-        :is-resizable="spaceStore.isEditMode && item.isResizable"
-        @click="handleGridItemClick($event, item)"
+        v-for="widgetId in widgetsStore.widgetsBySpace[props.spaceId]"
+        :key="widgetId"
+        :x="widgetsStore.collection[widgetId].layout.x"
+        :y="widgetsStore.collection[widgetId].layout.y"
+        :w="widgetsStore.collection[widgetId].layout.w"
+        :h="widgetsStore.collection[widgetId].layout.h"
+        :i="widgetId"
+        :preserve-aspect-ratio="widgetsStore.collection[widgetId].layout.preserveAspectRatio"
+        :is-resizable="spaceStore.isEditMode && widgetsStore.collection[widgetId].layout.isResizable"
+        @click="handleGridItemClick($event, widgetId)"
         @move="handleGridItemMove"
+        @moved="handleGridItemMoved"
       >
-        <SpaceWidget :widget-id="item.i" />
+        <SpaceWidget :widget-id="widgetId" />
       </GridItem>
     </GridLayout>
 
     <SpaceMenu
       class="shrink-0"
+      :spaceId="props.spaceId"
       @editModeStart="startEditMode"
       @editModeDone="stopEditMode"
       @editModeCancel="cancelEditMode"

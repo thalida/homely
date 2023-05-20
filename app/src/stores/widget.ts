@@ -1,105 +1,206 @@
-import { v4 as uuidv4 } from 'uuid';
-import { computed, type Ref } from 'vue'
+import { computed, ref, type ComputedRef, type Ref } from 'vue'
+import { v4 as uuidv4 } from 'uuid'
 import { defineStore } from 'pinia'
 import type { PartialDeep } from 'type-fest'
-import { merge, cloneDeep } from 'lodash'
-import { useLocalStorage } from '@vueuse/core'
+import { merge, cloneDeep, omit } from 'lodash'
 import type { IWidgets, IWidgetLayout, IWidget } from '@/types/widget';
+import { useUserStore } from './user';
+import axios from 'axios'
 
 export const useWidgetStore = defineStore('widget', () => {
-  const collection: Ref<IWidgets> = useLocalStorage('homely/widget/collection', {});
-  const layout: Ref<IWidgetLayout[]> = useLocalStorage('homely/widget/layout', []);
+  const userStore = useUserStore()
+  const collection = ref<IWidgets>({})
 
-  const backupCollection: Ref<IWidgets> = useLocalStorage('homely/widget/backupCollection', {});
-  const backupLayout: Ref<IWidgetLayout[]> = useLocalStorage('homely/widget/backupLayout', []);
+  const spaces = ref<string[]>([])
+  const getWidgetById = computed(() => (uid: string) => collection.value[uid])
+  const widgetsBySpace = computed(() => {
+    const bySpace = Object.keys(collection.value).reduce((acc, widgetId) => {
+      const widget = collection.value[widgetId]
+      if (!acc[widget.space]) {
+        acc[widget.space] = []
+      }
 
-  const getWidgetById = computed(() => (id: string) => collection.value[id])
-  const getWidgetLayoutById = computed(() => (id: string) => layout.value.find((item) => item.i === id))
+      acc[widget.space].push(widgetId)
+      return acc
+    }, {} as Record<string, string[]>);
 
+    return bySpace
+  });
+  const layoutsBySpace = computed({
+    get() {
+      const res: Record<string, IWidgetLayout[]> = {}
+      for (const spaceId of spaces.value) {
+        res[spaceId] = []
 
-  function createBackup() {
-    backupCollection.value = cloneDeep(collection.value);
-    backupLayout.value = cloneDeep(layout.value);
-  }
+        const widgets = widgetsBySpace.value[spaceId]
+        if (!widgets) {
+          continue
+        }
 
-  function deleteBackup() {
-    backupCollection.value = {};
-    backupLayout.value = [];
-  }
+        for (const widgetId of widgets) {
+            res[spaceId].push(collection.value[widgetId].layout)
+        }
+      }
 
-  function resetFromBackup() {
-    collection.value = cloneDeep(backupCollection.value);
-    layout.value = cloneDeep(backupLayout.value);
+      return res
+    },
+    set() {},
+  });
 
-    deleteBackup()
-  }
-
-  function createWidget(widgetInput: Omit<IWidget, 'id' | 'state'>, widgetLayout: PartialDeep<IWidgetLayout> = {}) {
-    const newWidget: IWidget = {
-      ...widgetInput,
-      id: uuidv4(),
-      state: {
-        selected: true,
-        temporary: false,
-      },
+  function setSpaceWidgets(spaceId: string, widgets: IWidget[]) {
+    if (spaces.value.indexOf(spaceId) === -1) {
+      spaces.value.push(spaceId)
     }
 
-    const newWidgetLayout: IWidgetLayout = {
-      i: newWidget.id,
-      w: widgetLayout.w || 1,
-      h: widgetLayout.h || 1,
-      x: (layout.value.length * 2) % 12,
-      y: layout.value.length + 12,
-      ...widgetLayout,
-    }
-
-    collection.value[newWidget.id] = newWidget;
-    layout.value.push(newWidgetLayout);
-
-    return {
-      widget: collection.value[newWidget.id],
-      layout: layout.value[layout.value.length - 1],
+    for (const widget of widgets) {
+      collection.value[widget.uid] = widget
     }
   }
 
-  function updateWidget(id: string, widget: PartialDeep<IWidget>) {
-    if (!collection.value[id]) {
+  function unselectAllWidgets(spaceId: string) {
+    const spaceWidgets = widgetsBySpace.value[spaceId]
+    if (!spaceWidgets) {
       return;
     }
 
-    collection.value[id] = merge(collection.value[id], widget);
-    return collection.value[id];
+    for (const widgetId of spaceWidgets) {
+      collection.value[widgetId].state.selected = false
+    }
   }
 
-  function updateAllWidgets(settings: PartialDeep<IWidget>) {
-    Object.keys(collection.value).forEach((id) => {
-      collection.value[id] = merge(collection.value[id], settings);
-    })
-  }
-
-  function deleteWidget(id: string) {
-    const index = layout.value.findIndex((item) => item.i === id);
-    if (index > -1) {
-      layout.value.splice(index, 1);
+  function selectWidgetById(uid: string) {
+    if (!collection.value[uid]) {
+      return;
     }
 
-    delete collection.value[id];
+    collection.value[uid].state.selected = true
   }
+
+  function draftCreateWidget(spaceId: string, widgetInput: Omit<IWidget, 'id' | 'state' | 'space'>) {
+    const widgetId = `draft-${uuidv4()}`
+    const newWidget: IWidget = {
+      ...widgetInput,
+      uid: widgetId,
+      space: spaceId,
+      state: {
+        deleted: false,
+        selected: true,
+        temporary: false,
+        draft: true,
+      },
+    }
+    collection.value[newWidget.uid] = newWidget;
+
+    return collection.value[newWidget.uid]
+  }
+
+  function draftUpdateWidget(uid: string, widget: PartialDeep<IWidget>) {
+    if (!collection.value[uid]) {
+      return;
+    }
+
+    collection.value[uid] = merge(collection.value[uid], widget);
+    collection.value[uid].state.draft = true
+    return collection.value[uid];
+  }
+
+  function draftDeleteWidget(uid: string) {
+    if (!collection.value[uid]) {
+      return;
+    }
+
+    const isNew = uid.startsWith('draft-')
+    if (isNew) {
+      delete collection.value[uid]
+      return;
+    }
+
+    collection.value[uid].state.deleted = true
+    collection.value[uid].state.draft = true
+    collection.value[uid].state.selected = false
+  }
+
+  async function saveDraftWidgets(spaceId: string) {
+    const spaceWidgets = widgetsBySpace.value[spaceId]
+    if (!spaceWidgets) {
+      return;
+    }
+
+    for (const widgetId of spaceWidgets) {
+      const widget = collection.value[widgetId]
+      if (!widget || !widget.state.draft) {
+        continue
+      }
+
+      const isNew = widget.uid.startsWith('draft-')
+
+      if (isNew) {
+        const newWidgetRes = await axios.post('http://localhost:8000/api/widgets/', {
+          widget_type: widget.widget_type,
+          space: widget.space,
+          content: widget.content,
+          layout: omit(widget.layout, ['i']),
+        }, {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${userStore.accessToken}`,
+          },
+        })
+        const newWidget = newWidgetRes.data
+        newWidget.layout.i = newWidget.uid
+        newWidget.state = {
+          selected: false,
+          draft: false,
+          deleted: false,
+          temporary: false,
+        }
+
+        delete collection.value[widget.uid]
+        collection.value[newWidget.uid] = newWidget
+        continue
+      }
+
+      const isDeleted = widget.state.deleted
+      if (isDeleted) {
+        await axios.delete(`http://localhost:8000/api/widgets/${widget.uid}/`, {
+          headers: {
+            Authorization: `Bearer ${userStore.accessToken}`,
+          },
+        })
+
+        delete collection.value[widget.uid]
+        continue
+      }
+
+      const updateWidgetRes = await axios.patch(`http://localhost:8000/api/widgets/${widget.uid}/`, {
+        content: widget.content,
+        layout: widget.layout,
+      }, {
+        headers: {
+          Authorization: `Bearer ${userStore.accessToken}`,
+        },
+      })
+
+      collection.value[widget.uid] = updateWidgetRes.data
+      collection.value[widget.uid].state.draft = false
+    }
+  }
+
 
   return {
     collection,
-    layout,
 
     getWidgetById,
-    getWidgetLayoutById,
+    widgetsBySpace,
+    layoutsBySpace,
+    setSpaceWidgets,
 
-    createBackup,
-    deleteBackup,
-    resetFromBackup,
+    unselectAllWidgets,
+    selectWidgetById,
 
-    createWidget,
-    updateWidget,
-    deleteWidget,
-    updateAllWidgets,
+    draftUpdateWidget,
+    draftDeleteWidget,
+    draftCreateWidget,
+    saveDraftWidgets,
   }
 })

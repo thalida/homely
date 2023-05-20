@@ -1,12 +1,12 @@
 import { EWeatherWidgetStyle, EWeatherWidgetUnits, EWidgetType, type IWidgetMenuItem } from "@/types/widget";
 import component from "./WeatherWidget.vue";
 
-const widgetType = EWidgetType.WEATHER;
+const widget_type = EWidgetType.WEATHER;
 
 const menuItem: IWidgetMenuItem = {
   label: 'Weather',
   widget: {
-    widgetType,
+    widget_type,
     content: {
       items: [
         {
@@ -31,7 +31,7 @@ const menuItem: IWidgetMenuItem = {
 }
 
 export default {
-  widgetType,
+  widget_type,
   component,
   menuItem,
 }

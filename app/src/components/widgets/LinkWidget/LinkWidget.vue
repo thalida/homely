@@ -71,7 +71,7 @@ async function getMetadata(url: string) {
 async function handleUrlChange() {
   try {
     const metadata = await getMetadata(url.value)
-    widgetStore.updateWidget(props.widgetId, {
+    widgetStore.draftUpdateWidget(props.widgetId, {
       content: {
         url: url.value,
         metadata,

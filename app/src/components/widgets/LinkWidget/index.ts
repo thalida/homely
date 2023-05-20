@@ -1,12 +1,12 @@
 import { ELinkWidgetStyle, EWidgetType, type IWidgetMenuItem } from "@/types/widget";
 import component from "./LinkWidget.vue";
 
-const widgetType = EWidgetType.LINK;
+const widget_type = EWidgetType.LINK;
 
 const menuItem: IWidgetMenuItem = {
   label: 'Link',
   widget: {
-    widgetType,
+    widget_type,
     content: {
       url: null,
       style: ELinkWidgetStyle.FLAG,
@@ -28,7 +28,7 @@ const menuItem: IWidgetMenuItem = {
 }
 
 export default {
-  widgetType,
+  widget_type,
   component,
   menuItem,
 }

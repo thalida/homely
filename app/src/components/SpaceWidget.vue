@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, watchEffect } from 'vue'
 import { useWidgetStore } from '@/stores/widget'
 import {  widgetComponents } from './widgets'
 
@@ -17,14 +17,14 @@ const widget = computed(() => {
 })
 
 const isSelected = computed(() => {
-  return widget.value.state.selected;
+  return widget.value ? widget.value.state.selected : false;
 })
 
 const component = computed(() => {
   if (!widget.value) {
     return null
   }
-  return widgetComponents[widget.value.widgetType]
+  return widgetComponents[widget.value.widget_type]
 })
 </script>
 

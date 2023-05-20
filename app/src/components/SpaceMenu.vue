@@ -1,11 +1,20 @@
 <script setup lang="ts">
 import { filter } from 'lodash';
 import { useSpaceStore } from '@/stores/space';
+import { useWidgetStore } from '@/stores/widget';
 import { computed } from 'vue';
 import type { IWidgetButton } from '@/types/widget';
 import { widgetMenuItems } from './widgets';
 
 const spaceStore = useSpaceStore();
+const widgetsStore = useWidgetStore();
+
+const props = defineProps({
+  spaceId: {
+    type: String,
+    required: true
+  }
+});
 
 const emits = defineEmits<{
   (e: 'editModeCancel'): void
@@ -16,7 +25,11 @@ const emits = defineEmits<{
 }>();
 
 const selectedWidgets = computed(() => {
-  return filter(spaceStore.widgets.collection, (w) => w.state.selected);
+  const widgetIds = widgetsStore.widgetsBySpace[props.spaceId];
+  return filter(widgetIds, (widgetId) => {
+    const widget = widgetsStore.getWidgetById(widgetId);
+    return widget.state.selected;
+  });
 });
 
 const numSelectedWidgets = computed(() => {
@@ -38,17 +51,17 @@ function handleEditModeToggle() {
 
 async function handleDelete() {
   for (const widget of selectedWidgets.value) {
-    spaceStore.widgets.deleteWidget(widget.id);
+    widgetsStore.deleteWidget(widget);
   }
 }
 
 function drag(e: DragEvent, widgetButton: IWidgetButton) {
-  spaceStore.widgets.updateAllWidgets({ state: { selected: false } })
+  widgetsStore.unselectAllWidgets(props.spaceId)
   emits('addModuleDrag', e, widgetButton);
 }
 
 function dragEnd(e: DragEvent, widgetButton: IWidgetButton) {
-  spaceStore.widgets.updateAllWidgets({ state: { selected: false } })
+  widgetsStore.unselectAllWidgets(props.spaceId)
   emits('addModuleDragEnd', e, widgetButton);
 }
 </script>

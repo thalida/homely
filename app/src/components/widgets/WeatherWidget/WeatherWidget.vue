@@ -84,7 +84,7 @@ const forecastDays = computed(() => {
 
 watchEffect(() => {
   if (widget.value) {
-    widgetId.value = widget.value.id
+    widgetId.value = widget.value.uid
   }
 })
 
@@ -93,7 +93,7 @@ onMounted(async () => {
     return
   }
 
-  await weatherStore.connect(widget.value.id)
+  await weatherStore.connect(widget.value.uid)
 })
 
 onBeforeUnmount(() => {
@@ -105,7 +105,7 @@ onBeforeUnmount(() => {
 })
 
 function handleUnitsChange() {
-  weatherStore.updateWeather(widget.value.id)
+  weatherStore.updateWeather(widget.value.uid)
 }
 
 function handlePlaceChange(weatherRow: IWeatherItem, place: google.maps.places.PlaceResult) {
@@ -119,7 +119,7 @@ function handlePlaceChange(weatherRow: IWeatherItem, place: google.maps.places.P
     lng: place.geometry.location.lng(),
   }
 
-  weatherStore.updateWeather(widget.value.id)
+  weatherStore.updateWeather(widget.value.uid)
 }
 
 function handleRemoveWeatherItem(e: Event, weatherRow: IWeatherItem, index: number) {
@@ -145,7 +145,7 @@ async function handleAddWeatherItem() {
     style: EWeatherWidgetStyle.CURRENT,
   })
 
-  await weatherStore.updateWeather(widget.value.id)
+  await weatherStore.updateWeather(widget.value.uid)
 }
 </script>
 

@@ -128,7 +128,7 @@ const editor = useEditor({
   content: widget.value?.content?.text || '',
   onUpdate: () => {
     if (typeof widget.value === 'undefined') return
-    widgetStore.updateWidget(widget.value.id, {
+    widgetStore.draftUpdateWidget(widget.value.uid, {
       content: {
         text: editor.value?.getHTML() || ''
       }
@@ -171,7 +171,7 @@ const menuItems = ref([
 
 watchEffect(() => {
   if (widget.value) {
-    widgetId.value = widget.value.id
+    widgetId.value = widget.value.uid
   }
 })
 
@@ -186,7 +186,7 @@ watch(() => widget.value?.content?.text, (value: string) => {
 })
 
 onMounted(() => {
-  fontStore.connect(widget.value.id)
+  fontStore.connect(widget.value.uid)
 })
 
 onBeforeUnmount(() => {

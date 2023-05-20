@@ -110,7 +110,7 @@ export const useWeatherStore = defineStore('weather', () => {
       }
     }
 
-    widgetStore.updateWidget(widgetId, widget)
+    // widgetStore.updateWidget(widgetId, widget)
 
     return widget
   }

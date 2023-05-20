@@ -1,11 +1,11 @@
 import { EWidgetType, type IWidgetMenuItem } from "@/types/widget";
 import component from "./TextWidget.vue";
 
-const widgetType = EWidgetType.TEXT;
+const widget_type = EWidgetType.TEXT;
 const menuItem: IWidgetMenuItem = {
   label: 'Text',
   widget: {
-    widgetType,
+    widget_type,
     content: {
       text: null,
       isInteractive: false,
@@ -25,7 +25,7 @@ const menuItem: IWidgetMenuItem = {
 }
 
 export default {
-  widgetType,
+  widget_type,
   component,
   menuItem,
 }
