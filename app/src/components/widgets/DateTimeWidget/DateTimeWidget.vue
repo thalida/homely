@@ -4,6 +4,7 @@ import { useWidgetStore } from '@/stores/widget'
 import { useDateTimeStore } from '@/stores/datetime'
 import type { IDateTime, IDateTimeWidget } from '@/types/widget'
 import DateTimeItem from './DateTimeItem.vue';
+import { moveItemInArray } from '@/utils/array';
 
 const props = defineProps({
   widgetId: {
@@ -19,6 +20,9 @@ const widget = computed(() => {
   return widgetStore.getWidgetById(props.widgetId) as IDateTimeWidget
 })
 const widgetId = ref<string | null>(null)
+const numDateTimeItems = computed(() => {
+  return widget.value ? widget.value.content.datetimes.length : 0
+})
 
 watchEffect(() => {
   if (widget.value) {
@@ -84,6 +88,22 @@ function handleRemoveDateTime(e: Event, datetime: IDateTime, index: number) {
   widget.value.content.datetimes.splice(index, 1)
 }
 
+function handleDateTimeMoveUp(e: Event, datetime: IDateTime, index: number) {
+  if (!widget.value) {
+    return
+  }
+
+  moveItemInArray(widget.value.content.datetimes, index, index - 1)
+}
+
+function handleDateTimeMoveDown(e: Event, datetime: IDateTime, index: number) {
+  if (!widget.value) {
+    return
+  }
+
+  moveItemInArray(widget.value.content.datetimes, index, index + 1)
+}
+
 </script>
 
 <template>
@@ -137,6 +157,10 @@ function handleRemoveDateTime(e: Event, datetime: IDateTime, index: number) {
           <span>Show Dynamic Background</span>
           <input type="checkbox" v-model="datetime.showDynamicBackground" />
         </label>
+        <div>
+          <button v-if="index > 0" @click="handleDateTimeMoveUp($event, datetime, index)">Move Up</button>
+          <button v-if="index < numDateTimeItems - 1" @click="handleDateTimeMoveDown($event, datetime, index)">Move Down</button>
+        </div>
         <button @click="handleRemoveDateTime($event, datetime, index)">Remove</button>
       </div>
       <div>
