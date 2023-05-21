@@ -4,8 +4,9 @@ import { useWidgetStore } from '@/stores/widget'
 import { useWeatherStore } from '@/stores/weather';
 import { EWeatherWidgetStyle, EWeatherWidgetUnits, type IWeatherItem, type IWeatherWidget } from '@/types/widget'
 
-import WeatherPlaceInput from './WeatherPlaceInput.vue';
+import GooglePlaceInput from '@/components/GooglePlaceInput.vue';
 import WeatherItem from './WeatherItem.vue';
+import type { ILocation } from '@/types/location';
 
 const props = defineProps({
   widgetId: {
@@ -60,21 +61,12 @@ onBeforeUnmount(() => {
 })
 
 function handleUnitsChange() {
-  weatherStore.updateWeather(widget.value.uid)
+  weatherStore.updateWeatherByWidget(widget.value.uid)
 }
 
-function handlePlaceChange(weatherRow: IWeatherItem, place: google.maps.places.PlaceResult) {
-  if (!place.geometry || !place.geometry.location) {
-    return;
-  }
-
-  weatherRow.place = {
-    name: place.name || "Unknown",
-    lat: place.geometry.location.lat(),
-    lng: place.geometry.location.lng(),
-  }
-
-  weatherStore.updateWeather(widget.value.uid)
+function handlePlaceChange(weatherRow: IWeatherItem, location: ILocation) {
+  weatherRow.location = location
+  weatherStore.updateWeatherByWidget(widget.value.uid)
 }
 
 function handleRemoveWeatherItem(e: Event, weatherRow: IWeatherItem, index: number) {
@@ -88,21 +80,19 @@ async function handleAddWeatherItem() {
   }
 
 
-  const showCity = widget.value.content.items.length === 0 ? true : widget.value.content.items[widget.value.content.items.length - 1].showCity
-  const units = widget.value.content.items.length > 0 ? widget.value.content.items[widget.value.content.items.length - 1].units : EWeatherWidgetUnits.METRIC
+  const showLocation = widget.value.content.items.length === 0 ? true : widget.value.content.items[widget.value.content.items.length - 1].showLocation
+  const units = widget.value.content.items.length === 0 ? EWeatherWidgetUnits.METRIC : widget.value.content.items[widget.value.content.items.length - 1].units
   widget.value.content.items.push({
-    place: null,
-    currently: null,
-    forecast: null,
+    location: null,
     useCurrentLocation: true,
     fetchedOn: null,
     showNumForecastDays: 5,
     style: EWeatherWidgetStyle.CURRENT,
     units,
-    showCity,
+    showLocation,
   })
 
-  await weatherStore.updateWeather(widget.value.uid)
+  await weatherStore.updateWeatherByWidget(widget.value.uid)
 }
 </script>
 
@@ -144,11 +134,11 @@ async function handleAddWeatherItem() {
         </label>
         <label v-if="!weatherRow.useCurrentLocation">
           <span>Location</span>
-          <WeatherPlaceInput :place="weatherRow.place" @change="(place) => handlePlaceChange(weatherRow, place)" />
+          <GooglePlaceInput :place="weatherRow.location" @change="(location) => handlePlaceChange(weatherRow, location)" />
         </label>
         <label>
           <span>Show City</span>
-          <input type="checkbox" v-model="weatherRow.showCity" />
+          <input type="checkbox" v-model="weatherRow.showLocation" />
         </label>
         <label>
           <span>Units</span>

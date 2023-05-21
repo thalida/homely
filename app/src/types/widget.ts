@@ -1,9 +1,12 @@
+import type { ILocation } from './location'
+
 export enum EWidgetType {
   TEXT = 1,
   LINK = 10,
   IMAGE = 20,
   DATETIME = 30,
   WEATHER = 40,
+  WEATHER_WINDOW = 41,
 }
 
 export interface IWidgets {
@@ -88,15 +91,13 @@ export interface IWeatherWidget extends IWidget {
 }
 
 export interface IWeatherItem {
-  place: IWeatherPlace | null,
-  currently: Record<string, any> | null
-  forecast: Record<string, any>[] | null
-  useCurrentLocation: boolean,
-  units: EWeatherWidgetUnits,
-  fetchedOn: number | null,
   style: EWeatherWidgetStyle,
+  units: EWeatherWidgetUnits,
+  useCurrentLocation: boolean,
+  location: ILocation | null,
+  fetchedOn: number | null,
   showNumForecastDays: number,
-  showCity: boolean,
+  showLocation: boolean,
 }
 
 
@@ -111,18 +112,17 @@ export enum EWeatherWidgetUnits {
   STANDARD = 'standard',
 }
 
-export interface IWeatherPlace {
-  name: string
-  lat: number
-  lng: number
-}
-
 export interface IWeatherByLocation {
   [key: string]: IWeather
 }
 export interface IWeather {
   currently: Record<string, any>
   forecast: Record<string, any>[]
+  fetchedOn: number
+  fetchedWith: {
+    units: EWeatherWidgetUnits,
+    location: ILocation,
+  }
 }
 
 export interface ILinkWidget extends IWidget {

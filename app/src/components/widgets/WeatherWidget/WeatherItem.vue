@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, type PropType } from 'vue';
+import { computed, ref, type PropType, watch } from 'vue';
 import { EWeatherWidgetStyle, type IWeatherItem } from '@/types/widget'
 import { useWeatherStore } from '@/stores/weather';
 import {
@@ -17,6 +17,7 @@ import {
   CloudSnowIcon
 } from 'lucide-vue-next';
 import * as datetimeUtils from '@/utils/datetime'
+import { useLocationStore } from '@/stores/location';
 
 const props = defineProps({
   widgetId: {
@@ -32,14 +33,23 @@ const props = defineProps({
 })
 
 const weatherStore = useWeatherStore()
+const locationStore = useLocationStore()
 
 const weatherLocation = computed(() => {
-  return props.weatherItem.useCurrentLocation ? weatherStore.currentLocation : props.weatherItem.place
+  return props.weatherItem.useCurrentLocation ? locationStore.currentLocation : props.weatherItem.location
 })
 
 const weatherData = computed(() => {
-  return weatherStore.weatherByLocation[weatherLocation.value.name]
+  if (!weatherLocation.value) {
+    return null
+  }
+  return weatherStore.weatherByLocation[weatherLocation.value.formatted_address]
 })
+
+const forecastDays = computed(() => {
+  return weatherData.value ? weatherData.value.forecast.slice(0, props.weatherItem.showNumForecastDays) : []
+})
+
 
 const weatherIconMap = ref({
   "01d": SunIcon,
@@ -62,23 +72,22 @@ const weatherIconMap = ref({
   "50n": CloudFogIcon,
 } as Record<string, any>)
 
-
-const forecastDays = computed(() => {
-  return weatherData.value.forecast.slice(0, props.weatherItem.showNumForecastDays)
-})
-
+watch(() => props.weatherItem, () => {
+  console.log('update weather item')
+  weatherStore.updateWeatherByWigetItem(props.weatherItem)
+}, { deep: true })
 </script>
 
 <template>
 <div
   class="flex flex-col w-full py-2 px-4 grow justify-center items-center space-y-2"
 >
-  <template v-if="weatherItem.style === EWeatherWidgetStyle.CURRENT && weatherData.currently">
+  <template v-if="weatherData && weatherItem.style === EWeatherWidgetStyle.CURRENT && weatherData.currently">
     <div class="flex flex-row justify-between items-center w-full text-sm">
       <span class="capitalize">
         {{ weatherData.currently.weather[0].description }}
       </span>
-      <span v-if="weatherItem.showCity">{{ weatherLocation?.name }}</span>
+      <span v-if="weatherItem.showLocation">{{ weatherLocation?.name }}</span>
     </div>
     <div class="flex flex-row justify-between items-center w-full">
       <div class="flex flex-row text-2xl font-bold">
@@ -87,8 +96,8 @@ const forecastDays = computed(() => {
       <component :is="weatherIconMap[weatherData.currently.weather[0].icon]" class="h-full w-auto max-h-16" />
     </div>
   </template>
-  <template v-else-if="weatherItem.style === EWeatherWidgetStyle.FORECAST && weatherData.forecast">
-    <span v-if="weatherItem.showCity">{{ weatherLocation?.name }}</span>
+  <template v-else-if="weatherData && weatherItem.style === EWeatherWidgetStyle.FORECAST && weatherData.forecast">
+    <span v-if="weatherItem.showLocation">{{ weatherLocation?.name }}</span>
     <div
       class="grid w-full"
       :class="{

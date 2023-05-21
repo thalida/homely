@@ -1,17 +1,17 @@
 <script setup lang="ts">
-import type { IWeatherPlace } from '@/types/widget';
+import type { ILocation } from '@/types/location';
 import { Loader } from '@googlemaps/js-api-loader';
 import { ref, onMounted, type PropType } from 'vue';
 
 defineProps({
   place: {
-    type: Object as PropType<IWeatherPlace | null>,
+    type: Object as PropType<ILocation | null>,
     required: false,
     default: null
   }
 })
 const emits = defineEmits<{
-  (e: 'change', place: google.maps.places.PlaceResult): void
+  (e: 'change', location: ILocation, place: google.maps.places.PlaceResult): void
 }>()
 const autocompleteInput = ref<HTMLInputElement>()
 
@@ -35,7 +35,7 @@ onMounted(() => {
 
       const autocomplete = new google.maps.places.Autocomplete(autocompleteInput.value as HTMLInputElement, {
         types: ['(cities)'],
-        fields: ["geometry", "name"],
+        fields: ["geometry", "name", "formatted_address"],
         strictBounds: false,
       });
       autocomplete.addListener("place_changed", () => {
@@ -48,7 +48,13 @@ onMounted(() => {
           return;
         }
 
-        emits('change', place)
+        const location: ILocation = {
+          name: place.name || "Unknown",
+          formatted_address: place.formatted_address || "Unknown",
+          lat: place.geometry.location.lat(),
+          lng: place.geometry.location.lng(),
+        }
+        emits('change', location, place)
       });
     })
     .catch(e => {
@@ -60,7 +66,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <input ref="autocompleteInput" type="text" :value="place?.name" />
+  <input ref="autocompleteInput" type="text" :value="place?.formatted_address" />
 </template>
 
 <style scoped>

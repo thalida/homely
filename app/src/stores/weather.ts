@@ -2,19 +2,22 @@ import { defineStore } from 'pinia';
 import { ref, type Ref } from 'vue';
 import axios from 'axios';
 import { useWidgetStore } from '@/stores/widget';
-import { EWeatherWidgetUnits, type IWeatherByLocation, type IWeatherPlace, type IWeatherWidget } from '@/types/widget';
+import { useLocationStore } from './location';
+import { EWeatherWidgetUnits, type IWeatherByLocation, type IWeatherItem, type IWeatherWidget } from '@/types/widget';
+import type { ILocation } from '@/types/location';
 
 export const useWeatherStore = defineStore('weather', () => {
+  const locationStore = useLocationStore()
   const widgetStore = useWidgetStore()
   const interval: Ref<number | null> = ref(null)
   const connectedWidgets: Ref<string[]> = ref([])
-  const currentLocation: Ref<IWeatherPlace | null> = ref(null)
   const weatherByLocation = ref<IWeatherByLocation>({})
+  const ONE_HOUR = 60 * 60 * 1000
 
 
   async function connect(widgetId: string) {
-    await setCurrentLocation()
-    await updateWeather(widgetId)
+    await locationStore.setCurrentLocation()
+    await updateWeatherByWidget(widgetId)
     connectedWidgets.value.push(widgetId)
     startInterval()
   }
@@ -38,8 +41,7 @@ export const useWeatherStore = defineStore('weather', () => {
       return;
     }
 
-    const hourly = 60 * 60 * 1000
-    interval.value = window.setInterval(updateAllWeather, hourly)
+    interval.value = window.setInterval(updateAllWeatherWidgets, ONE_HOUR)
   }
 
   function stopInterval() {
@@ -51,44 +53,13 @@ export const useWeatherStore = defineStore('weather', () => {
     interval.value = null
   }
 
-  async function setCurrentLocation() {
-    if (currentLocation.value !== null) {
-      return;
-    }
-
-    const geolocateApiUrl = "https://www.googleapis.com/geolocation/v1/geolocate";
-    const geolocateRes = await axios.post(geolocateApiUrl, {}, {
-      params: {
-        key: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
-      }
-    });
-
-    const geocodeApiUrl = "https://maps.googleapis.com/maps/api/geocode/json";
-    const geocodeRes = await axios.get(geocodeApiUrl, {
-      params: {
-        key: import.meta.env.VITE_GOOGLE_GEOCODING_API_KEY,
-        latlng: `${geolocateRes.data.location.lat},${geolocateRes.data.location.lng}`,
-      }
-    });
-
-    const locationCity = geocodeRes.data.results[0].address_components.find((component: any) => component.types.includes('locality'));
-
-    const locationName = locationCity ? locationCity.long_name : geocodeRes.data.results[0].formatted_address;
-
-    currentLocation.value = {
-      name: locationName,
-      lat: geolocateRes.data.location.lat,
-      lng: geolocateRes.data.location.lng,
-    }
-  }
-
-  async function updateAllWeather() {
+  async function updateAllWeatherWidgets() {
     for (const widgetId of connectedWidgets.value) {
-      updateWeather(widgetId)
+      updateWeatherByWidget(widgetId)
     }
   }
 
-  async function updateWeather(widgetId: string) {
+  async function updateWeatherByWidget(widgetId: string) {
     const widget = widgetStore.getWidgetById(widgetId) as IWeatherWidget;
     if (!widget) {
       return weatherByLocation.value;
@@ -96,21 +67,50 @@ export const useWeatherStore = defineStore('weather', () => {
 
     for (let i = 0; i < widget.content.items.length; i += 1) {
       const weatherItem = widget.content.items[i]
-      const location = (weatherItem.useCurrentLocation) ? currentLocation.value : weatherItem.place;
-
-      if (!location) {
-        continue;
-      }
-
-      const units = weatherItem.units || EWeatherWidgetUnits.METRIC;
-      const res = await fetchWeather(location, units)
-      weatherByLocation.value[location.name] = res
+      updateWeatherByWigetItem(weatherItem)
     }
 
     return weatherByLocation.value
   }
 
-  async function fetchWeather(location: IWeatherPlace , units = EWeatherWidgetUnits.METRIC) {
+  async function updateWeatherByWigetItem(weatherItem: IWeatherItem) {
+    const location = (weatherItem.useCurrentLocation) ? locationStore.currentLocation : weatherItem.location;
+
+    if (!location) {
+      return
+    }
+
+    const units = weatherItem.units || EWeatherWidgetUnits.METRIC;
+    await fetchWeather(location, units)
+  }
+
+  function shouldFetch(location: ILocation, units: EWeatherWidgetUnits) {
+    const existingWeather = weatherByLocation.value[location.formatted_address];
+    const lastFetchedOn = existingWeather?.fetchedOn || null;
+
+    if (lastFetchedOn === null) {
+      return true;
+    }
+
+    if (existingWeather.fetchedWith.units !== units) {
+      return true;
+    }
+
+    const now = Date.now();
+    const timeSinceLastFetch = now - lastFetchedOn;
+    if (timeSinceLastFetch >= ONE_HOUR) {
+      return true;
+    }
+
+    return false;
+  }
+
+  async function fetchWeather(location: ILocation , units = EWeatherWidgetUnits.METRIC) {
+    if (!shouldFetch(location, units)) {
+      return weatherByLocation.value[location.formatted_address];
+    }
+
+
     const apiUrl = "https://api.openweathermap.org/data/3.0/onecall";
     const res = await axios.get(apiUrl, {
       params: {
@@ -122,18 +122,24 @@ export const useWeatherStore = defineStore('weather', () => {
       }
     });
 
-    return {
+    weatherByLocation.value[location.formatted_address] = {
       currently: res.data.current,
       forecast: res.data.daily,
       fetchedOn: Date.now(),
+      fetchedWith: {
+        units,
+        location,
+      }
     }
+
+    return weatherByLocation.value[location.formatted_address];
   }
 
   return {
     connect,
     disconnect,
-    updateWeather,
     weatherByLocation,
-    currentLocation,
+    updateWeatherByWidget,
+    updateWeatherByWigetItem,
   };
 });

@@ -1,22 +1,20 @@
-import { EWeatherWidgetStyle, EWeatherWidgetUnits, EWidgetType, type IWidgetMenuItem } from "@/types/widget";
-import component from "./WeatherWidget.vue";
+import { EWidgetType, type IWidgetMenuItem } from "@/types/widget";
+import component from "./WeatherWindowWidget.vue";
 
 const widget_type = EWidgetType.WEATHER;
 
 const menuItem: IWidgetMenuItem = {
-  label: 'Weather',
+  label: 'Weather Window',
   widget: {
     widget_type,
     content: {
       items: [
         {
-          style: EWeatherWidgetStyle.CURRENT,
-          units: EWeatherWidgetUnits.METRIC,
-          location: null,
+          place: null,
           useCurrentLocation: true,
           fetchedOn: null,
-          showLocation: true,
           showNumForecastDays: 5,
+          showCity: true,
         },
       ],
     },
