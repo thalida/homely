@@ -34,7 +34,7 @@ const isSelected = computed(() => {
   return widget.value?.state?.selected;
 })
 
-const isEditing = computed(() => {
+const isEditMode = computed(() => {
   return spaceStore.isEditMode
 })
 
@@ -107,6 +107,7 @@ function handleFontChange() {
 }
 
 const editor = useEditor({
+  editable: isEditMode.value || widget.value?.content?.isInteractive,
   extensions: [
     StarterKit.configure({
       blockquote: false,
@@ -126,14 +127,6 @@ const editor = useEditor({
     },
   },
   content: widget.value?.content?.text || '',
-  onUpdate: () => {
-    if (typeof widget.value === 'undefined') return
-    widgetStore.draftUpdateWidget(widget.value.uid, {
-      content: {
-        text: editor.value?.getHTML() || ''
-      }
-    })
-  },
 })
 
 const menuItems = ref([
@@ -176,14 +169,44 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
-  const editable = isEditing.value || widget.value?.content?.isInteractive
+  const editable = isEditMode.value || widget.value?.content?.isInteractive
   editor.value?.setEditable(editable)
+
+  // if (editable) {
+  //   editor.value?.on('update', onUpdate)
+  // } else {
+  //   editor.value?.off('update', onUpdate)
+  // }
 })
 
-watch(() => widget.value?.content?.text, (value: string) => {
-  if (editor.value?.getHTML() === value) return
-  editor.value?.commands.setContent(value, false)
-})
+watch(
+  () => editor.value?.getHTML() || '',
+  (newValue: string, oldValue: string) => {
+    if (typeof oldValue === 'undefined') return
+
+    console.log('updated', widget.value.uid, newValue, oldValue)
+
+    if (!editor.value?.isEditable) {
+      widgetStore.updateWidget(widget.value.uid, {
+        content: {
+          text: editor.value?.getHTML() || ''
+        }
+      });
+      return
+    }
+
+    widgetStore.draftUpdateWidget(widget.value.uid, {
+      content: {
+        text: editor.value?.getHTML() || ''
+      }
+    })
+
+    if (editor.value?.isEditable && !isEditMode.value && newValue !== oldValue) {
+      widgetStore.markWidgetAsDirty(widget.value.uid)
+      widgetStore.debouncedSaveDirtyWidgets(widget.value.space)
+    }
+  }
+)
 
 onMounted(() => {
   fontStore.connect(widget.value.uid)
@@ -213,7 +236,7 @@ onBeforeUnmount(() => {
     }"
     :editor="editor"/>
   <teleport to="#space__widget-menu">
-    <div v-if="isEditing && isSelected && hasFonts">
+    <div v-if="isEditMode && isSelected && hasFonts">
       <select @change="handleFontChange" v-model="widget.content.fontFamily">
         <option v-for="font in fontStore.fonts" :key="font.family" :value="font.family">
           {{ font.family }}

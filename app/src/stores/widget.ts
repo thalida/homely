@@ -3,7 +3,7 @@ import { defineStore } from 'pinia'
 import { v4 as uuidv4 } from 'uuid'
 import axios from 'axios'
 import type { PartialDeep } from 'type-fest'
-import { merge, omit } from 'lodash'
+import { debounce, merge, omit } from 'lodash'
 import type { IWidgets, IWidgetLayout, IWidget } from '@/types/widget';
 import { useUserStore } from './user';
 
@@ -130,6 +130,15 @@ export const useWidgetStore = defineStore('widget', () => {
     return collection.value[newWidget.uid]
   }
 
+  function updateWidget(uid: string, widget: PartialDeep<IWidget>) {
+    if (!collection.value[uid]) {
+      return;
+    }
+
+    collection.value[uid] = merge(collection.value[uid], widget);
+    return collection.value[uid];
+  }
+
   function draftUpdateWidget(uid: string, widget: PartialDeep<IWidget>) {
     if (!collection.value[uid]) {
       return;
@@ -224,9 +233,11 @@ export const useWidgetStore = defineStore('widget', () => {
 
       collection.value[widget.uid].state.dirty = false
     }
+
+    isSaving.value = false
   }
 
-  isSaving.value = false
+  const debouncedSaveDirtyWidgets = debounce(saveDirtyWidgets, 500)
 
 
   return {
@@ -242,9 +253,12 @@ export const useWidgetStore = defineStore('widget', () => {
     selectWidgetById,
 
     markWidgetAsDirty,
+    saveDirtyWidgets,
+    debouncedSaveDirtyWidgets,
+
+    updateWidget,
     draftUpdateWidget,
     draftDeleteWidget,
     draftCreateWidget,
-    saveDirtyWidgets,
   }
 })

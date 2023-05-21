@@ -31,7 +31,7 @@ const component = computed(() => {
   return widgetComponents[widget.value.widget_type]
 })
 
-watch(() => widget.value?.content, (before, after) => {
+watch(() => widget.value?.content, (after, before) => {
   if (typeof before === 'undefined' || typeof after === 'undefined') {
     return
   }
