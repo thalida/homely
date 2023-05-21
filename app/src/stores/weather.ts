@@ -130,6 +130,7 @@ export const useWeatherStore = defineStore('weather', () => {
     });
 
     weatherByLocation.value[location.formatted_address] = {
+      timezone: res.data.timezone,
       currently: res.data.current,
       forecast: res.data.daily,
       fetchedOn: Date.now(),

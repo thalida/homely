@@ -83,8 +83,8 @@ export const useDateTimeStore = defineStore('datetime', () => {
     return blendedColor;
   }
 
-  function getColorGradient(datetime: IDateTime) {
-    const date = datetimeUtils.getDayJs(now.value, datetime.timezone)
+  function getColorGradient(timezone: string | null = null, flipAtSunset: boolean = false) {
+    const date = datetimeUtils.getDayJs(now.value, timezone)
     const hour = date.hour();
     const minute = date.minute();
     const numSegements = HOURS_IN_DAY / TIME_COLORS.length;
@@ -124,6 +124,11 @@ export const useDateTimeStore = defineStore('datetime', () => {
       start: gradientStart,
       end: gradientEnd,
     };
+
+    if (flipAtSunset) {
+      gradient.start = gradientEnd;
+      gradient.end = gradientStart;
+    }
 
     return gradient;
   }

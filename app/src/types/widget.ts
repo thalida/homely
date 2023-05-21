@@ -114,6 +114,7 @@ export interface IWeatherByLocation {
   [key: string]: IWeather
 }
 export interface IWeather {
+  timezone: string
   currently: Record<string, any>
   forecast: Record<string, any>[]
   fetchedOn: number

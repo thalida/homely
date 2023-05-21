@@ -3,6 +3,7 @@ import { computed, type PropType, watch, ref } from 'vue';
 import type { IWeatherWindowWidgetItem } from '@/types/widget'
 import { useWeatherStore } from '@/stores/weather';
 import { useLocationStore } from '@/stores/location';
+import { useDateTimeStore } from '@/stores/datetime';
 
 const props = defineProps({
   widgetId: {
@@ -17,6 +18,7 @@ const props = defineProps({
   },
 })
 
+const dateTimeStore = useDateTimeStore()
 const weatherStore = useWeatherStore()
 const locationStore = useLocationStore()
 
@@ -31,6 +33,25 @@ const weatherData = computed(() => {
   return weatherStore.weatherByLocation[weatherLocation.value.formatted_address]
 })
 
+const colorGradient = computed(() => {
+  if (!weatherData.value) {
+    return null
+  }
+
+  return dateTimeStore.getColorGradient(weatherData.value.timezone)
+})
+
+const colorGradientCss = computed(() => {
+  if (colorGradient.value === null) {
+    return ""
+  }
+
+  const startCss = `rgb(${colorGradient.value.start.r}, ${colorGradient.value.start.g}, ${colorGradient.value.start.b})`
+  const endCss = `rgb(${colorGradient.value.end.r}, ${colorGradient.value.end.g}, ${colorGradient.value.end.b})`
+  return `linear-gradient(180deg, ${startCss}, ${endCss})`
+})
+
+
 watch(() => props.weatherItem, () => {
   weatherStore.updateWeatherByWigetItem(props.weatherItem)
 }, { deep: true })
@@ -38,6 +59,12 @@ watch(() => props.weatherItem, () => {
 
 <template>
   <div class="weather-window">
+    <div
+      class="weather-window__sky"
+      :style="{
+        backgroundImage: colorGradientCss
+      }"
+    ></div>
     <div class="seams-wrapper">
       <div class="seams seams--horizontal">
         <div class="seam">
@@ -64,6 +91,14 @@ watch(() => props.weatherItem, () => {
   overflow: hidden;
   position: relative;
   border: var(--weather-window-seam-width) solid var(--weather-window-border);
+
+  &__sky {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
 
   .seams-wrapper {
     width: 100%;

@@ -24,7 +24,7 @@ const showOnlyDatetimes = computed(() => {
 })
 
 const colorGradient = computed(() => {
-  return dateTimeStore.getColorGradient(props.datetime)
+  return dateTimeStore.getColorGradient(props.datetime.timezone)
 })
 
 const colorGradientCss = computed(() => {
