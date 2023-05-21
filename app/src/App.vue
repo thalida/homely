@@ -39,7 +39,6 @@ const callback: CallbackTypes.TokenResponseCallback = (response) => {
       </GoogleLogin>
     </template>
     <template v-else-if="defaultSpaceId">
-      <button @click="userStore.logout()">Logout</button>
       <teleport to="body">
         <link rel="preconnect" href="https://fonts.gstatic.com" />
         <link v-if="fontStore.fontsUrl" :key="fontStore.fontsUrl" :href="fontStore.fontsUrl" rel="stylesheet" type="text/css" />

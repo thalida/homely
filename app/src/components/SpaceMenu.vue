@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import { filter } from 'lodash';
+import { useUserStore } from '@/stores/user';
 import { useSpaceStore } from '@/stores/space';
 import { useWidgetStore } from '@/stores/widget';
 import { computed } from 'vue';
 import type { IWidgetButton } from '@/types/widget';
 import { widgetMenuItems } from './widgets';
+import { SettingsIcon } from 'lucide-vue-next';
 
+const userStore = useUserStore();
 const spaceStore = useSpaceStore();
 const widgetsStore = useWidgetStore();
 
@@ -73,10 +76,14 @@ function dragEnd(e: DragEvent, widgetButton: IWidgetButton) {
     'h-full w-80 p-4 m-0': spaceStore.isEditMode,
   }">
     <button v-if="spaceStore.isEditMode" @click="handleEditModeCancel" class="p-2 bg-slate-400">Cancel</button>
-    <button @click="handleEditModeToggle" class="p-2 bg-green-300">
-      {{ spaceStore.isEditMode ? 'Save' : 'Edit' }}
+    <button v-if="spaceStore.isEditMode" @click="handleEditModeToggle" class="p-2 bg-green-300">
+      Save
+    </button>
+    <button v-else @click="handleEditModeToggle" class="p-2 bg-green-300">
+      <SettingsIcon />
     </button>
     <template v-if="spaceStore.isEditMode">
+      <button @click="userStore.logout()">Logout</button>
       {{ numSelectedWidgets }} selected:
       <button @click="handleDelete" class="p-2 bg-red-400 disabled:opacity-50" :disabled="numSelectedWidgets === 0">Delete</button>
       <button
