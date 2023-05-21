@@ -114,8 +114,9 @@ watch(() => props.weatherItem, () => {
       <div v-for="(day, i) in forecastDays" :key="i" class="flex flex-col items-center justify-between space-y-2">
         <span class="uppercase text-xs font-bold opacity-50">{{ datetimeUtils.format(day.dt * 1000, "ddd") }}</span>
         <component :is="weatherIconMap[day.weather[0].icon]" class="h-auto w-full max-h-6" />
-        <div>
-          <span class="font-bold">{{ Math.round(day.temp.max) }}&deg;</span> <span class="opacity-30">/</span> <span class="opacity-50">{{ Math.round(day.temp.min) }}&deg;</span>
+        <div class="text-center flex flex-col items-center justify-center">
+          <span class="font-bold">{{ Math.round(day.temp.max) }}&deg;</span>
+          <span class="opacity-50">{{ Math.round(day.temp.min) }}&deg;</span>
         </div>
       </div>
     </div>
