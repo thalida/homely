@@ -2,23 +2,10 @@
 import { computed, onMounted, onBeforeUnmount, watchEffect, ref } from 'vue'
 import { useWidgetStore } from '@/stores/widget'
 import { useWeatherStore } from '@/components/widgets/WeatherWidget/weatherStore';
-import { EWeatherWidgetStyle, EWeatherWidgetUnits, type IWeatherItem, type IWeatherWidget } from '@/types/widget'
-import {
-  SunIcon,
-  MoonIcon,
-  CloudSunIcon,
-  CloudMoonIcon,
-  CloudIcon,
-  CloudyIcon,
-  CloudSunRainIcon,
-  CloudMoonRainIcon,
-  CloudFogIcon,
-  CloudLightningIcon,
-  CloudRainIcon,
-  CloudSnowIcon
-} from 'lucide-vue-next';
-import PlaceInput from './PlaceInput.vue';
-import * as datetimeUtils from '@/utils/datetime'
+import { EWeatherWidgetStyle, EWeatherWidgetUnits, type IWeather, type IWeatherItem, type IWeatherWidget } from '@/types/widget'
+
+import WeatherPlaceInput from './WeatherPlaceInput.vue';
+import WeatherItem from './WeatherItem.vue';
 
 const props = defineProps({
   widgetId: {
@@ -28,27 +15,7 @@ const props = defineProps({
   }
 })
 
-const weatherIconMap = ref({
-  "01d": SunIcon,
-  "01n": MoonIcon,
-  "02d": CloudSunIcon,
-  "02n": CloudMoonIcon,
-  "03d": CloudIcon,
-  "03n": CloudIcon,
-  "04d": CloudyIcon,
-  "04n": CloudyIcon,
-  "09d": CloudSunRainIcon,
-  "09n": CloudMoonRainIcon,
-  "10d": CloudRainIcon,
-  "10n": CloudRainIcon,
-  "11d": CloudLightningIcon,
-  "11n": CloudLightningIcon,
-  "13d": CloudSnowIcon,
-  "13n": CloudSnowIcon,
-  "50d": CloudFogIcon,
-  "50n": CloudFogIcon,
-} as Record<string, any>)
-
+const isReady = ref(false)
 const widgetStore = useWidgetStore()
 const weatherStore = useWeatherStore()
 const widget = computed(() => {
@@ -68,19 +35,6 @@ const unitsSymbolMap = ref({
   [EWeatherWidgetUnits.IMPERIAL]: 'F',
 } as Record<string, string>)
 
-const forecastDays = computed(() => {
-  if (!widget.value) {
-    return []
-  }
-
-  return widget.value.content.items.map((item) => {
-    if (!item.forecast) {
-      return []
-    }
-
-    return item.forecast.slice(0, item.showNumForecastDays)
-  })
-})
 
 watchEffect(() => {
   if (widget.value) {
@@ -94,6 +48,7 @@ onMounted(async () => {
   }
 
   await weatherStore.connect(widget.value.uid)
+  isReady.value = true
 })
 
 onBeforeUnmount(() => {
@@ -154,51 +109,17 @@ async function handleAddWeatherItem() {
     v-bind="$attrs"
     class="flex flex-col"
   >
-    <div
-      v-for="(weatherRow, rowI) in widget.content.items"
-      :key="rowI"
-      class="flex flex-col w-full py-2 px-4 grow justify-center items-center space-y-2"
-    >
-      <template v-if="weatherRow.style === EWeatherWidgetStyle.CURRENT && weatherRow.currently">
-        <div class="flex flex-row justify-between items-center w-full text-sm">
-          <span class="capitalize">
-            {{ weatherRow.currently.weather[0].description }}
-          </span>
-          <span>{{ weatherRow.place?.name }}</span>
-        </div>
-        <div class="flex flex-row justify-between items-center w-full">
-          <div class="flex flex-row text-2xl font-bold">
-            {{ weatherRow.currently.temp }}&deg;
-          </div>
-          <component :is="weatherIconMap[weatherRow.currently.weather[0].icon]" class="h-full w-auto max-h-16" />
-        </div>
-      </template>
-      <template v-else-if="weatherRow.style === EWeatherWidgetStyle.FORECAST && weatherRow.forecast">
-        <span>{{ weatherRow.place?.name }}</span>
-        <div
-          class="grid w-full"
-          :class="{
-            'grid-cols-1': weatherRow.showNumForecastDays === 1,
-            'grid-cols-2': weatherRow.showNumForecastDays === 2,
-            'grid-cols-3': weatherRow.showNumForecastDays === 3,
-            'grid-cols-4': weatherRow.showNumForecastDays === 4,
-            'grid-cols-5': weatherRow.showNumForecastDays === 5,
-            'grid-cols-6': weatherRow.showNumForecastDays === 6,
-            'grid-cols-7': weatherRow.showNumForecastDays === 7,
-            'grid-cols-8': weatherRow.showNumForecastDays === 8,
-          }"
-        >
-          <div v-for="(day, i) in forecastDays[rowI]" :key="i" class="flex flex-col items-center justify-between space-y-2">
-            <span class="uppercase text-xs font-bold opacity-50">{{ datetimeUtils.format(day.dt * 1000, "ddd") }}</span>
-            <component :is="weatherIconMap[day.weather[0].icon]" class="h-auto w-full max-h-6" />
-            <div class="flex flex-col items-center justify-center">
-              <span class="font-bold">{{ day.temp.max }}</span>
-              <span class="opacity-50">{{ day.temp.min }}</span>
-            </div>
-          </div>
-        </div>
-      </template>
-    </div>
+    <template v-if="isReady">
+      <WeatherItem
+        v-for="(weatherRow, rowI) in widget.content.items"
+        :key="rowI"
+        class="flex flex-col w-full py-2 px-4 grow justify-center items-center space-y-2"
+        :weatherItem="weatherRow"
+      />
+    </template>
+    <template v-else>
+      Loading...
+    </template>
   </div>
   <teleport to="#space__widget-menu">
     <div v-show="widget.state.selected" class="flex flex-col">
@@ -221,7 +142,7 @@ async function handleAddWeatherItem() {
         </label>
         <label v-if="!weatherRow.useCurrentLocation">
           <span>Location</span>
-          <PlaceInput :place="weatherRow.place" @change="(place) => handlePlaceChange(weatherRow, place)" />
+          <WeatherPlaceInput :place="weatherRow.place" @change="(place) => handlePlaceChange(weatherRow, place)" />
         </label>
         <label>
           <span>Units</span>

@@ -2,13 +2,14 @@ import { defineStore } from 'pinia';
 import { ref, type Ref } from 'vue';
 import axios from 'axios';
 import { useWidgetStore } from '@/stores/widget';
-import { EWeatherWidgetUnits, type IWeatherPlace, type IWeatherWidget } from '@/types/widget';
+import { EWeatherWidgetUnits, type IWeatherByLocation, type IWeatherPlace, type IWeatherWidget } from '@/types/widget';
 
 export const useWeatherStore = defineStore('weather', () => {
   const widgetStore = useWidgetStore()
   const interval: Ref<number | null> = ref(null)
   const connectedWidgets: Ref<string[]> = ref([])
   const currentLocation: Ref<IWeatherPlace | null> = ref(null)
+  const weatherByLocation = ref<IWeatherByLocation>({})
 
 
   async function connect(widgetId: string) {
@@ -65,13 +66,12 @@ export const useWeatherStore = defineStore('weather', () => {
     const geocodeApiUrl = "https://maps.googleapis.com/maps/api/geocode/json";
     const geocodeRes = await axios.get(geocodeApiUrl, {
       params: {
-        key: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
+        key: import.meta.env.VITE_GOOGLE_GEOCODING_API_KEY,
         latlng: `${geolocateRes.data.location.lat},${geolocateRes.data.location.lng}`,
-        result_type: 'locality',
       }
     });
 
-    const locationCity = geocodeRes.data.results[0].address_components.find((component) => component.types.includes('locality'));
+    const locationCity = geocodeRes.data.results[0].address_components.find((component: any) => component.types.includes('locality'));
 
     const locationName = locationCity ? locationCity.long_name : geocodeRes.data.results[0].formatted_address;
 
@@ -91,7 +91,7 @@ export const useWeatherStore = defineStore('weather', () => {
   async function updateWeather(widgetId: string) {
     const widget = widgetStore.getWidgetById(widgetId) as IWeatherWidget;
     if (!widget) {
-      return;
+      return weatherByLocation.value;
     }
 
     for (let i = 0; i < widget.content.items.length; i += 1) {
@@ -104,15 +104,10 @@ export const useWeatherStore = defineStore('weather', () => {
 
       const units = weatherItem.units || EWeatherWidgetUnits.METRIC;
       const res = await fetchWeather(location, units)
-      widget.content.items[i] = {
-        ...weatherItem,
-        ...res,
-      }
+      weatherByLocation.value[location.name] = res
     }
 
-    // widgetStore.updateWidget(widgetId, widget)
-
-    return widget
+    return weatherByLocation.value
   }
 
   async function fetchWeather(location: IWeatherPlace , units = EWeatherWidgetUnits.METRIC) {
@@ -130,7 +125,6 @@ export const useWeatherStore = defineStore('weather', () => {
     return {
       currently: res.data.current,
       forecast: res.data.daily,
-      place: location,
       fetchedOn: Date.now(),
     }
   }
@@ -139,5 +133,7 @@ export const useWeatherStore = defineStore('weather', () => {
     connect,
     disconnect,
     updateWeather,
+    weatherByLocation,
+    currentLocation,
   };
 });

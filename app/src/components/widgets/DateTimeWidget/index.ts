@@ -24,7 +24,7 @@ const menuItem: IWidgetMenuItem = {
       ],
     },
     layout: {
-      w: 2,
+      w: 3,
       h: 1,
       isResizable: true,
       preserveAspectRatio: false,

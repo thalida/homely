@@ -1,0 +1,120 @@
+<script setup lang="ts">
+import { computed, ref } from 'vue';
+import { EWeatherWidgetStyle } from '@/types/widget'
+import { useWeatherStore } from './weatherStore';
+import {
+  SunIcon,
+  MoonIcon,
+  CloudSunIcon,
+  CloudMoonIcon,
+  CloudIcon,
+  CloudyIcon,
+  CloudSunRainIcon,
+  CloudMoonRainIcon,
+  CloudFogIcon,
+  CloudLightningIcon,
+  CloudRainIcon,
+  CloudSnowIcon
+} from 'lucide-vue-next';
+import * as datetimeUtils from '@/utils/datetime'
+
+const props = defineProps({
+  widgetId: {
+    type: String,
+    required: false,
+    default: null
+  },
+  weatherItem: {
+    type: Object,
+    required: true,
+    default: null
+  },
+})
+
+const weatherStore = useWeatherStore()
+
+const weatherLocation = computed(() => {
+  return props.weatherItem.useCurrentLocation ? weatherStore.currentLocation : props.weatherItem.place
+})
+
+const weatherData = computed(() => {
+  return weatherStore.weatherByLocation[weatherLocation.value.name]
+})
+
+const weatherIconMap = ref({
+  "01d": SunIcon,
+  "01n": MoonIcon,
+  "02d": CloudSunIcon,
+  "02n": CloudMoonIcon,
+  "03d": CloudIcon,
+  "03n": CloudIcon,
+  "04d": CloudyIcon,
+  "04n": CloudyIcon,
+  "09d": CloudSunRainIcon,
+  "09n": CloudMoonRainIcon,
+  "10d": CloudRainIcon,
+  "10n": CloudRainIcon,
+  "11d": CloudLightningIcon,
+  "11n": CloudLightningIcon,
+  "13d": CloudSnowIcon,
+  "13n": CloudSnowIcon,
+  "50d": CloudFogIcon,
+  "50n": CloudFogIcon,
+} as Record<string, any>)
+
+
+const forecastDays = computed(() => {
+  return weatherData.value.forecast.slice(0, props.weatherItem.showNumForecastDays)
+})
+
+</script>
+
+<template>
+<div
+  class="flex flex-col w-full py-2 px-4 grow justify-center items-center space-y-2"
+>
+  <template v-if="weatherItem.style === EWeatherWidgetStyle.CURRENT && weatherData.currently">
+    <div class="flex flex-row justify-between items-center w-full text-sm">
+      <span class="capitalize">
+        {{ weatherData.currently.weather[0].description }}
+      </span>
+      <span>{{ weatherLocation.name }}</span>
+    </div>
+    <div class="flex flex-row justify-between items-center w-full">
+      <div class="flex flex-row text-2xl font-bold">
+        {{ weatherData.currently.temp }}&deg;
+      </div>
+      <component :is="weatherIconMap[weatherData.currently.weather[0].icon]" class="h-full w-auto max-h-16" />
+    </div>
+  </template>
+  <template v-else-if="weatherItem.style === EWeatherWidgetStyle.FORECAST && weatherData.forecast">
+    <span>{{ weatherLocation.name }}</span>
+    <div
+      class="grid w-full"
+      :class="{
+        'grid-cols-1': weatherItem.showNumForecastDays === 1,
+        'grid-cols-2': weatherItem.showNumForecastDays === 2,
+        'grid-cols-3': weatherItem.showNumForecastDays === 3,
+        'grid-cols-4': weatherItem.showNumForecastDays === 4,
+        'grid-cols-5': weatherItem.showNumForecastDays === 5,
+        'grid-cols-6': weatherItem.showNumForecastDays === 6,
+        'grid-cols-7': weatherItem.showNumForecastDays === 7,
+        'grid-cols-8': weatherItem.showNumForecastDays === 8,
+      }"
+    >
+      <div v-for="(day, i) in forecastDays" :key="i" class="flex flex-col items-center justify-between space-y-2">
+        <span class="uppercase text-xs font-bold opacity-50">{{ datetimeUtils.format(day.dt * 1000, "ddd") }}</span>
+        <component :is="weatherIconMap[day.weather[0].icon]" class="h-auto w-full max-h-6" />
+        <div class="flex flex-col items-center justify-center">
+          <span class="font-bold">{{ day.temp.max }}</span>
+          <span class="opacity-50">{{ day.temp.min }}</span>
+        </div>
+      </div>
+    </div>
+  </template>
+</div>
+</template>
+
+<style scoped>
+
+</style>

@@ -43,7 +43,11 @@ export interface IWidgetMenuItem {
   widget: IWidgetButton
 }
 
-export interface IWidgetButton extends Pick<IWidget, 'widget_type' | 'content' | 'layout'> { }
+export interface IWidgetButton {
+  widget_type: EWidgetType
+  content: Record<string, any>
+  layout: Pick<IWidgetLayout, 'w' | 'h' | 'isResizable' | 'preserveAspectRatio'>
+}
 
 export interface ITextWidget extends IWidget {
   content: {
@@ -110,6 +114,14 @@ export interface IWeatherPlace {
   name: string
   lat: number
   lng: number
+}
+
+export interface IWeatherByLocation {
+  [key: string]: IWeather
+}
+export interface IWeather {
+  currently: Record<string, any>
+  forecast: Record<string, any>[]
 }
 
 export interface ILinkWidget extends IWidget {

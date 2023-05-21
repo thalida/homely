@@ -4,7 +4,7 @@ import { cloneDeep, throttle } from 'lodash'
 import { GridLayout, GridItem } from 'grid-layout-plus'
 import { useSpaceStore } from '@/stores/space'
 import { useWidgetStore } from '@/stores/widget'
-import type { IWidget, IWidgetButton, IWidgetLayout } from '@/types/widget'
+import type { IWidget, IWidgetButton } from '@/types/widget'
 import SpaceWidget from './SpaceWidget.vue'
 import SpaceMenu from './SpaceMenu.vue'
 
@@ -148,18 +148,26 @@ const handleAddModuleDrag = throttle((_, widgetButton: IWidgetButton) => {
     if (!hasTmpWidget) {
       tmpWidget.value = {
         uid: TMP_WIDGET_ID,
+        widget_type: widgetButton.widget_type,
+        content: widgetButton.content,
+        layout: {
+          i: TMP_WIDGET_ID,
+          x: (widgets.value.length * 2) % 12,
+          y: widgets.value.length + 12,
+          w: widgetButton.layout.w,
+          h: widgetButton.layout.h,
+          isResizable: widgetButton.layout.isResizable,
+          preserveAspectRatio: widgetButton.layout.preserveAspectRatio,
+        },
         space: props.spaceId,
         state: {
           temporary: true,
           dirty: true,
           selected: false,
           deleted: false,
+          new: true,
         },
-        ...widgetButton
       }
-      tmpWidget.value.layout.i = TMP_WIDGET_ID
-      tmpWidget.value.layout.x = (widgets.value.length * 2) % 12
-      tmpWidget.value.layout.y = widgets.value.length + 12
       widgetsStore.collection[TMP_WIDGET_ID] = tmpWidget.value
     }
   }
@@ -202,7 +210,7 @@ const handleAddModuleDrag = throttle((_, widgetButton: IWidgetButton) => {
 function handleAddModuleDragEnd(e: Event, widgetButton: IWidgetButton) {
   if (!gridLayoutRef.value || !isMouseInGrid() || widgetsStore.collection[TMP_WIDGET_ID] === null) return
 
-  const newWidgetInput = cloneDeep(widgetButton)
+  const newWidgetInput: IWidget = cloneDeep(widgetButton) as IWidget
   newWidgetInput.layout.x = widgetsStore.collection[TMP_WIDGET_ID].layout.x
   newWidgetInput.layout.y = widgetsStore.collection[TMP_WIDGET_ID].layout.y
 
