@@ -98,6 +98,10 @@ export interface IWeatherWidgetItem {
   location: ILocation | null,
   showNumForecastDays: number,
   showLocation: boolean,
+  showTemperature: boolean,
+  showUnits: boolean,
+  showIcon: boolean,
+  showDescription: boolean,
 }
 
 export enum EWeatherWidgetStyle {

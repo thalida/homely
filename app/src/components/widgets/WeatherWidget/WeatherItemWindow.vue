@@ -4,7 +4,7 @@ import type { IWeatherWidgetItem } from '@/types/widget'
 import { useWeatherStore } from '@/stores/weather';
 import { useLocationStore } from '@/stores/location';
 import { useDateTimeStore } from '@/stores/datetime';
-import { weatherLottieMap } from './index'
+import { unitsSymbolMap, weatherLottieMap } from './index'
 
 const props = defineProps({
   widgetId: {
@@ -87,7 +87,18 @@ const currentLottie = computed(() => {
     </div>
 
     <div>
-      <span v-if="weatherItem.showLocation">{{ weatherLocation?.name }}</span>
+      <div v-if="weatherItem.showLocation">{{ weatherLocation?.name }}</div>
+      <div>
+        <span v-if="weatherItem.showTemperature">
+          {{ Math.round(weatherData.currently.temp) }}&deg;
+          <span v-if="weatherItem.showUnits">
+            {{ unitsSymbolMap[weatherItem.units] }}
+          </span>
+        </span>
+        <span v-if="weatherItem.showDescription" class="capitalize">
+          {{ weatherData.currently.weather[0].description }}
+        </span>
+      </div>
     </div>
   </div>
 </template>

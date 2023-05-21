@@ -45,6 +45,10 @@ const menuItem: IWidgetMenuItem = {
           useCurrentLocation: true,
           showLocation: true,
           showNumForecastDays: 5,
+          showTemperature: true,
+          showUnits: true,
+          showIcon: true,
+          showDescription: true,
         },
       ],
     },
@@ -60,7 +64,7 @@ const menuItem: IWidgetMenuItem = {
   },
 }
 
-export const weatherIconMap = {
+export const weatherIconMap: Record<string, any> = {
   "01d": SunIcon,
   "01n": MoonIcon,
   "02d": CloudSunIcon,
@@ -101,6 +105,13 @@ export const weatherLottieMap: Record<string, any> = {
   "50d": null,
   "50n": null,
 }
+
+export const unitsSymbolMap: Record<string, string> = {
+  [EWeatherWidgetUnits.STANDARD]: 'K',
+  [EWeatherWidgetUnits.METRIC]: 'C',
+  [EWeatherWidgetUnits.IMPERIAL]: 'F',
+}
+
 export default {
   widget_type,
   component,

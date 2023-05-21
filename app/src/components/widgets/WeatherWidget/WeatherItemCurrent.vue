@@ -3,7 +3,7 @@ import { computed, type PropType } from 'vue';
 import type { IWeatherWidgetItem } from '@/types/widget'
 import { useWeatherStore } from '@/stores/weather';
 import { useLocationStore } from '@/stores/location';
-import { weatherIconMap } from './index'
+import { unitsSymbolMap, weatherIconMap, weatherLottieMap } from './index'
 
 const props = defineProps({
   widgetId: {
@@ -31,22 +31,41 @@ const weatherData = computed(() => {
   }
   return weatherStore.weatherByLocation[weatherLocation.value.formatted_address]
 })
+
+
+
+const currentLottie = computed(() => {
+  if (!weatherData.value) {
+    return null
+  }
+
+  return weatherLottieMap[weatherData.value.currently.weather[0].icon]
+})
 </script>
 
 
 <template>
   <div v-if="weatherData && weatherData.currently" class="flex flex-col w-full py-2 px-4 grow justify-center items-center space-y-2">
     <div class="flex flex-row justify-between items-center w-full text-sm">
-      <span class="capitalize">
+      <span v-if="weatherItem.showLocation">{{ weatherLocation?.name }}</span>
+      <span v-if="weatherItem.showDescription" class="capitalize">
         {{ weatherData.currently.weather[0].description }}
       </span>
-      <span v-if="weatherItem.showLocation">{{ weatherLocation?.name }}</span>
     </div>
-    <div class="flex flex-row justify-between items-center w-full">
-      <div class="flex flex-row text-2xl font-bold">
+    <div
+      class="flex flex-row justify-between items-center w-full"
+      :class="{
+        'justify-between': weatherItem.showTemperature && weatherItem.showUnits,
+      }">
+      <div v-if="weatherItem.showTemperature" class="flex flex-row text-2xl font-bold">
         {{ Math.round(weatherData.currently.temp) }}&deg;
+        <span v-if="weatherItem.showUnits">
+          {{ unitsSymbolMap[weatherItem.units] }}
+        </span>
       </div>
-      <component :is="weatherIconMap[weatherData.currently.weather[0].icon as any]" class="h-full w-auto max-h-16" />
+      <component
+        v-if="weatherItem.showIcon"
+        :is="weatherIconMap[weatherData.currently.weather[0].icon]" class="h-full w-auto max-h-16" />
     </div>
   </div>
 </template>

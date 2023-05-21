@@ -3,7 +3,7 @@ import { computed, type PropType } from 'vue';
 import type { IWeatherWidgetItem } from '@/types/widget'
 import { useWeatherStore } from '@/stores/weather';
 import { useLocationStore } from '@/stores/location';
-import { weatherIconMap } from './index'
+import { unitsSymbolMap, weatherIconMap } from './index'
 import * as datetimeUtils from '@/utils/datetime'
 
 const props = defineProps({
@@ -58,10 +58,20 @@ const forecastDays = computed(() => {
     >
       <div v-for="(day, i) in forecastDays" :key="i" class="flex flex-col items-center justify-between space-y-2">
         <span class="uppercase text-xs font-bold opacity-50">{{ datetimeUtils.format(day.dt * 1000, "ddd") }}</span>
-        <component :is="weatherIconMap[day.weather[0].icon]" class="h-auto w-full max-h-6" />
-        <div class="text-center flex flex-col items-center justify-center">
-          <span class="font-bold">{{ Math.round(day.temp.max) }}&deg;</span>
-          <span class="opacity-50">{{ Math.round(day.temp.min) }}&deg;</span>
+        <component v-if="weatherItem.showIcon" :is="weatherIconMap[day.weather[0].icon]" class="h-auto w-full max-h-6" />
+        <div v-if="weatherItem.showTemperature" class="text-center flex flex-col items-center justify-center">
+          <span class="font-bold">
+            {{ Math.round(day.temp.max) }}&deg;
+            <span v-if="weatherItem.showUnits">
+              {{ unitsSymbolMap[weatherItem.units] }}
+            </span>
+          </span>
+          <span class="opacity-50">
+            {{ Math.round(day.temp.min) }}&deg;
+            <span v-if="weatherItem.showUnits">
+              {{ unitsSymbolMap[weatherItem.units] }}
+            </span>
+          </span>
         </div>
       </div>
     </div>

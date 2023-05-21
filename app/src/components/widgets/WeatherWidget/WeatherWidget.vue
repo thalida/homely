@@ -3,11 +3,12 @@ import { computed, onMounted, onBeforeUnmount, watchEffect, ref } from 'vue'
 import { useWidgetStore } from '@/stores/widget'
 import { useWeatherStore } from '@/stores/weather';
 import { EWeatherWidgetStyle, EWeatherWidgetUnits, type IWeatherWidgetItem, type IWeatherWidget } from '@/types/widget'
-
-import GooglePlaceInput from '@/components/GooglePlaceInput.vue';
-import WeatherItem from './WeatherItem.vue';
 import type { ILocation } from '@/types/location';
 import { moveItemInArray } from '@/utils/array';
+import GooglePlaceInput from '@/components/GooglePlaceInput.vue';
+import WeatherItem from './WeatherItem.vue';
+import { unitsSymbolMap } from './index'
+
 
 const props = defineProps({
   widgetId: {
@@ -34,11 +35,6 @@ const supportedUnits = computed(() => {
 const supportedStyles = computed(() => {
   return Object.values(EWeatherWidgetStyle)
 })
-const unitsSymbolMap = ref({
-  [EWeatherWidgetUnits.STANDARD]: 'K',
-  [EWeatherWidgetUnits.METRIC]: 'C',
-  [EWeatherWidgetUnits.IMPERIAL]: 'F',
-} as Record<string, string>)
 
 
 watchEffect(() => {
@@ -78,16 +74,26 @@ async function handleAddWeatherItem() {
     return
   }
 
-  const showLocation = widget.value.content.items.length === 0 ? true : widget.value.content.items[widget.value.content.items.length - 1].showLocation
-  const units = widget.value.content.items.length === 0 ? EWeatherWidgetUnits.METRIC : widget.value.content.items[widget.value.content.items.length - 1].units
-  widget.value.content.items.push({
+  const defaultItem: IWeatherWidgetItem = {
     location: null,
     useCurrentLocation: true,
     showNumForecastDays: 5,
     style: EWeatherWidgetStyle.CURRENT,
-    units,
-    showLocation,
-  })
+    units: EWeatherWidgetUnits.METRIC,
+    showLocation: true,
+    showTemperature: true,
+    showUnits: true,
+    showIcon: true,
+    showDescription: true,
+  }
+
+  const lastItem = widget.value.content.items.length > 0 ? widget.value.content.items[widget.value.content.items.length - 1] : {}
+  const newWidget = {
+    ...defaultItem,
+    ...lastItem,
+  }
+
+  widget.value.content.items.push(newWidget)
 
   await weatherStore.updateWeatherByWidget(widget.value.uid)
 }
@@ -152,13 +158,29 @@ function handleItemMoveDown(e: Event, weatherItem: IWeatherWidgetItem, index: nu
           <span>Show Location</span>
           <input type="checkbox" v-model="weatherRow.showLocation" />
         </label>
-        <label>
+        <label v-if="weatherRow.style !== EWeatherWidgetStyle.FORECAST">
+          <span>Show Temperature</span>
+          <input type="checkbox" v-model="weatherRow.showTemperature" />
+        </label>
+        <label v-if="weatherRow.showTemperature">
+          <span>Show Units</span>
+          <input type="checkbox" v-model="weatherRow.showUnits" />
+        </label>
+        <label v-if="weatherRow.showTemperature">
           <span>Units</span>
           <select v-model="weatherRow.units">
             <option v-for="unit in supportedUnits" :key="unit" :value="unit">
               {{ unit }} (&deg;{{ unitsSymbolMap[unit] }})
             </option>
           </select>
+        </label>
+        <label v-if="weatherRow.style !== EWeatherWidgetStyle.WINDOW">
+          <span>Show Icon</span>
+          <input type="checkbox" v-model="weatherRow.showIcon" />
+        </label>
+        <label v-if="weatherRow.style !== EWeatherWidgetStyle.FORECAST">
+          <span>Show Description</span>
+          <input type="checkbox" v-model="weatherRow.showDescription" />
         </label>
         <div>
           <button v-if="index > 0" @click="handleItemMoveUp($event, weatherRow, index)">Move Up</button>
