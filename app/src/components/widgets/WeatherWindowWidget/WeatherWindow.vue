@@ -1,9 +1,12 @@
 <script setup lang="ts">
-import { computed, type PropType, watch } from 'vue';
+import { computed, type PropType, watch, ref } from 'vue';
 import type { IWeatherWindowWidgetItem } from '@/types/widget'
 import { useWeatherStore } from '@/stores/weather';
 import { useLocationStore } from '@/stores/location';
 import { useDateTimeStore } from '@/stores/datetime';
+import * as lottieFiles from './weatherLottie'
+
+console.log(lottieFiles)
 
 const props = defineProps({
   widgetId: {
@@ -38,7 +41,7 @@ const colorGradient = computed(() => {
     return null
   }
 
-  return dateTimeStore.getColorGradient(weatherData.value.timezone)
+  return dateTimeStore.getColorGradient(weatherData.value.timezone, true)
 })
 
 const colorGradientCss = computed(() => {
@@ -49,6 +52,35 @@ const colorGradientCss = computed(() => {
   const startCss = `rgb(${colorGradient.value.start.r}, ${colorGradient.value.start.g}, ${colorGradient.value.start.b})`
   const endCss = `rgb(${colorGradient.value.end.r}, ${colorGradient.value.end.g}, ${colorGradient.value.end.b})`
   return `linear-gradient(180deg, ${startCss}, ${endCss})`
+})
+
+const weatherLottieMap = ref({
+  "01d": lottieFiles.sunLottie,
+  "01n": lottieFiles.moonLottie,
+  "02d": lottieFiles.cloudSunLottie,
+  "02n": lottieFiles.cloudMoonLottie,
+  "03d": lottieFiles.cloudLottie,
+  "03n": lottieFiles.cloudLottie,
+  "04d": lottieFiles.cloudLottie,
+  "04n": lottieFiles.cloudLottie,
+  "09d": lottieFiles.cloudSunRainLottie,
+  "09n": lottieFiles.cloudMoonRainLottie,
+  "10d": lottieFiles.cloudSunHeavyrainLottie,
+  "10n": lottieFiles.cloudMoonHeavyrainLottie,
+  "11d": lottieFiles.cloudThunderHeavyrainLottie,
+  "11n": lottieFiles.cloudThunderHeavyrainLottie,
+  "13d": lottieFiles.cloudSunSnowLottie,
+  "13n": lottieFiles.cloudMoonSnowLottie,
+  "50d": null,
+  "50n": null,
+} as Record<string, any>)
+
+const currentLottie = computed(() => {
+  if (!weatherData.value) {
+    return null
+  }
+
+  return weatherLottieMap.value[weatherData.value.currently.weather[0].icon]
 })
 
 
@@ -65,6 +97,9 @@ watch(() => props.weatherItem, () => {
         backgroundImage: colorGradientCss
       }"
     ></div>
+    <div class="weather-window__sky">
+      <Vue3Lottie v-if="currentLottie" :animationData="currentLottie" />
+    </div>
     <div class="seams-wrapper">
       <div class="seams seams--horizontal">
         <div class="seam">
