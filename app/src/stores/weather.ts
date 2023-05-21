@@ -8,8 +8,6 @@ import {
   type IWeatherByLocation,
   type IWeatherWidget,
   type IWeatherWidgetItem,
-  type IWeatherWindowWidget,
-  type IWeatherWindowWidgetItem,
 } from '@/types/widget';
 import type { ILocation } from '@/types/location';
 import { useLocalStorage } from '@vueuse/core';
@@ -68,7 +66,7 @@ export const useWeatherStore = defineStore('weather', () => {
   }
 
   async function updateWeatherByWidget(widgetId: string) {
-    const widget = widgetStore.getWidgetById(widgetId) as IWeatherWidget | IWeatherWindowWidget;
+    const widget = widgetStore.getWidgetById(widgetId) as IWeatherWidget;
     if (!widget) {
       return weatherByLocation.value;
     }
@@ -81,7 +79,7 @@ export const useWeatherStore = defineStore('weather', () => {
     return weatherByLocation.value
   }
 
-  async function updateWeatherByWigetItem(weatherItem: IWeatherWidgetItem | IWeatherWindowWidgetItem) {
+  async function updateWeatherByWigetItem(weatherItem: IWeatherWidgetItem) {
     const location = (weatherItem.useCurrentLocation) ? locationStore.currentLocation : weatherItem.location;
 
     if (!location) {

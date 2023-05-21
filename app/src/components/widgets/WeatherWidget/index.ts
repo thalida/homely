@@ -1,5 +1,19 @@
 import { EWeatherWidgetStyle, EWeatherWidgetUnits, EWidgetType, type IWidgetMenuItem } from "@/types/widget";
 import component from "./WeatherWidget.vue";
+import {
+  SunIcon,
+  MoonIcon,
+  CloudSunIcon,
+  CloudMoonIcon,
+  CloudIcon,
+  CloudyIcon,
+  CloudSunRainIcon,
+  CloudMoonRainIcon,
+  CloudFogIcon,
+  CloudLightningIcon,
+  CloudRainIcon,
+  CloudSnowIcon
+} from 'lucide-vue-next';
 
 const widget_type = EWidgetType.WEATHER;
 
@@ -20,7 +34,7 @@ const menuItem: IWidgetMenuItem = {
       ],
     },
     card_style: {
-      backgroundColor: 'red',
+      backgroundColor: null,
     },
     layout: {
       w: 3,
@@ -29,6 +43,27 @@ const menuItem: IWidgetMenuItem = {
       preserveAspectRatio: false,
     },
   },
+}
+
+export const weatherIconMap = {
+  "01d": SunIcon,
+  "01n": MoonIcon,
+  "02d": CloudSunIcon,
+  "02n": CloudMoonIcon,
+  "03d": CloudIcon,
+  "03n": CloudIcon,
+  "04d": CloudyIcon,
+  "04n": CloudyIcon,
+  "09d": CloudSunRainIcon,
+  "09n": CloudMoonRainIcon,
+  "10d": CloudRainIcon,
+  "10n": CloudRainIcon,
+  "11d": CloudLightningIcon,
+  "11n": CloudLightningIcon,
+  "13d": CloudSnowIcon,
+  "13n": CloudSnowIcon,
+  "50d": CloudFogIcon,
+  "50n": CloudFogIcon,
 }
 
 export default {

@@ -16,7 +16,7 @@ const menuItem: IWidgetMenuItem = {
       lineHeight: 1.5,
     },
     card_style: {
-      backgroundColor: 'red',
+      backgroundColor: null,
     },
     layout: {
       w: 3,

@@ -6,7 +6,6 @@ export enum EWidgetType {
   IMAGE = 20,
   DATETIME = 30,
   WEATHER = 40,
-  WEATHER_WINDOW = 41,
 }
 
 export interface IWidgets {
@@ -104,6 +103,7 @@ export interface IWeatherWidgetItem {
 export enum EWeatherWidgetStyle {
   CURRENT = 'current',
   FORECAST = 'forecast',
+  WINDOW = 'window',
 }
 
 export enum EWeatherWidgetUnits {
@@ -178,16 +178,4 @@ export enum EImageWidgetBackgroundRepeat {
   REPEAT_X = 'repeat-x',
   REPEAT_Y = 'repeat-y',
   NO_REPEAT = 'no-repeat',
-}
-
-export interface IWeatherWindowWidget extends IWidget {
-  content: {
-    items: IWeatherWidgetItem[]
-  }
-}
-
-export interface IWeatherWindowWidgetItem {
-  location: ILocation | null,
-  useCurrentLocation: boolean,
-  units: EWeatherWidgetUnits,
 }

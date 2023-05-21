@@ -1,0 +1,72 @@
+<script setup lang="ts">
+import { computed, type PropType } from 'vue';
+import type { IWeatherWidgetItem } from '@/types/widget'
+import { useWeatherStore } from '@/stores/weather';
+import { useLocationStore } from '@/stores/location';
+import { weatherIconMap } from './index'
+import * as datetimeUtils from '@/utils/datetime'
+
+const props = defineProps({
+  widgetId: {
+    type: String,
+    required: false,
+    default: null
+  },
+  weatherItem: {
+    type: Object as PropType<IWeatherWidgetItem>,
+    required: true,
+    default: null
+  },
+})
+
+const weatherStore = useWeatherStore()
+const locationStore = useLocationStore()
+
+const weatherLocation = computed(() => {
+  return props.weatherItem.useCurrentLocation ? locationStore.currentLocation : props.weatherItem.location
+})
+
+const weatherData = computed(() => {
+  if (!weatherLocation.value) {
+    return null
+  }
+  return weatherStore.weatherByLocation[weatherLocation.value.formatted_address]
+})
+
+const forecastDays = computed(() => {
+  return weatherData.value ? weatherData.value.forecast.slice(0, props.weatherItem.showNumForecastDays) : []
+})
+
+</script>
+
+
+<template>
+  <div v-if="weatherData && weatherData.forecast" class="flex flex-col w-full py-2 px-4 grow justify-center items-center space-y-2">
+    <span v-if="weatherItem.showLocation">{{ weatherLocation?.name }}</span>
+    <div
+      class="grid w-full"
+      :class="{
+        'grid-cols-1': weatherItem.showNumForecastDays === 1,
+        'grid-cols-2': weatherItem.showNumForecastDays === 2,
+        'grid-cols-3': weatherItem.showNumForecastDays === 3,
+        'grid-cols-4': weatherItem.showNumForecastDays === 4,
+        'grid-cols-5': weatherItem.showNumForecastDays === 5,
+        'grid-cols-6': weatherItem.showNumForecastDays === 6,
+        'grid-cols-7': weatherItem.showNumForecastDays === 7,
+        'grid-cols-8': weatherItem.showNumForecastDays === 8,
+      }"
+    >
+      <div v-for="(day, i) in forecastDays" :key="i" class="flex flex-col items-center justify-between space-y-2">
+        <span class="uppercase text-xs font-bold opacity-50">{{ datetimeUtils.format(day.dt * 1000, "ddd") }}</span>
+        <component :is="weatherIconMap[day.weather[0].icon]" class="h-auto w-full max-h-6" />
+        <div class="text-center flex flex-col items-center justify-center">
+          <span class="font-bold">{{ Math.round(day.temp.max) }}&deg;</span>
+          <span class="opacity-50">{{ Math.round(day.temp.min) }}&deg;</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<style scoped>
+</style>

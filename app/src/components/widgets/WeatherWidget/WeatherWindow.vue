@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, type PropType, watch, ref } from 'vue';
-import type { IWeatherWindowWidgetItem } from '@/types/widget'
+import type { IWeatherWidgetItem } from '@/types/widget'
 import { useWeatherStore } from '@/stores/weather';
 import { useLocationStore } from '@/stores/location';
 import { useDateTimeStore } from '@/stores/datetime';
@@ -13,7 +13,7 @@ const props = defineProps({
     default: null
   },
   weatherItem: {
-    type: Object as PropType<IWeatherWindowWidgetItem>,
+    type: Object as PropType<IWeatherWidgetItem>,
     required: true,
     default: null
   },
@@ -80,34 +80,35 @@ const currentLottie = computed(() => {
 
   return weatherLottieMap.value[weatherData.value.currently.weather[0].icon]
 })
-
-
-watch(() => props.weatherItem, () => {
-  weatherStore.updateWeatherByWigetItem(props.weatherItem)
-}, { deep: true })
 </script>
 
 <template>
-  <div class="weather-window">
-    <div
-      class="sky"
-      :style="{
-        backgroundImage: colorGradientCss
-      }"
-    >
-      <Vue3Lottie v-if="currentLottie" :animationData="currentLottie" />
-    </div>
-    <div class="seams-wrapper">
-      <div class="seams seams--horizontal">
-        <div class="seam">
-          <div class="seam--diagonal-left"></div>
-          <div class="seam--diagonal-right"></div>
+  <div v-if="weatherData && weatherData.currently">
+    <div class="weather-window">
+      <div
+        class="sky"
+        :style="{
+          backgroundImage: colorGradientCss
+        }"
+      >
+        <Vue3Lottie :key="currentLottie" v-if="currentLottie" :animationData="currentLottie" />
+      </div>
+      <div class="seams-wrapper">
+        <div class="seams seams--horizontal">
+          <div class="seam">
+            <div class="seam--diagonal-left"></div>
+            <div class="seam--diagonal-right"></div>
+          </div>
+          <div class="seam"></div>
         </div>
-        <div class="seam"></div>
+        <div class="seams seams--vertical">
+          <div class="seam"></div>
+        </div>
       </div>
-      <div class="seams seams--vertical">
-        <div class="seam"></div>
-      </div>
+    </div>
+    <div>
+
+
     </div>
   </div>
 </template>

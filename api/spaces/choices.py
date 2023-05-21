@@ -6,4 +6,3 @@ class WidgetType(models.IntegerChoices):
     IMAGE = 20, "Image"
     DATETIME = 30, "DateTime"
     WEAHTER = 40, "Weather"
-    WEATHER_WINDOW = 41, "WeatherWindow"

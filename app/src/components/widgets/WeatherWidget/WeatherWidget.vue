@@ -118,7 +118,6 @@ function handleItemMoveDown(e: Event, weatherItem: IWeatherWidgetItem, index: nu
       <WeatherItem
         v-for="(weatherRow, rowI) in widget.content.items"
         :key="rowI"
-        class="flex flex-col w-full py-2 px-4 grow justify-center items-center space-y-2"
         :weatherItem="weatherRow"
       />
     </template>
