@@ -13,6 +13,9 @@ const menuItem: IWidgetMenuItem = {
       backgroundPosition: EImageWidgetBackgroundPosition.CENTER,
       backgroundRepeat: EImageWidgetBackgroundRepeat.NO_REPEAT,
     },
+    card_style: {
+      backgroundColor: 'red',
+    },
     layout: {
       w: 2,
       h: 2,

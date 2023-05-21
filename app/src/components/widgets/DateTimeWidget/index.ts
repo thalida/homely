@@ -23,6 +23,9 @@ const menuItem: IWidgetMenuItem = {
         }
       ],
     },
+    card_style: {
+      backgroundColor: 'red',
+    },
     layout: {
       w: 3,
       h: 1,

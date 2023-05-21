@@ -34,6 +34,7 @@ class Widget(models.Model):
     widget_type = models.IntegerField(choices=WidgetType.choices)
     layout = models.JSONField()
     content = models.JSONField()
+    card_style = models.JSONField(default=dict)
 
 
 @receiver(post_save, sender=User)

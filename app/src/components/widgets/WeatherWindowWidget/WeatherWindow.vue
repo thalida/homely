@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, type PropType, watch, ref } from 'vue';
+import { computed, type PropType, watch } from 'vue';
 import type { IWeatherWindowWidgetItem } from '@/types/widget'
 import { useWeatherStore } from '@/stores/weather';
 import { useLocationStore } from '@/stores/location';

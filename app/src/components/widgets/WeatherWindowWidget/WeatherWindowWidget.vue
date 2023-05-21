@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, onBeforeUnmount, watchEffect, ref, watch } from 'vue'
+import { computed, onMounted, onBeforeUnmount, watchEffect, ref } from 'vue'
 import { useWidgetStore } from '@/stores/widget'
 import { useWeatherStore } from '@/stores/weather';
 import { EWeatherWidgetUnits, type IWeatherWindowWidget } from '@/types/widget'

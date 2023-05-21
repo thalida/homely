@@ -16,9 +16,12 @@ const menuItem: IWidgetMenuItem = {
         },
       ],
     },
+    card_style: {
+      backgroundColor: 'transparent',
+    },
     layout: {
       w: 3,
-      h: 4,
+      h: 3,
       isResizable: true,
       preserveAspectRatio: false,
     },

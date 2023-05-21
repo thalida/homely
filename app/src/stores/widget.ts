@@ -185,6 +185,7 @@ export const useWidgetStore = defineStore('widget', () => {
           widget_type: widget.widget_type,
           space: widget.space,
           content: widget.content,
+          card_style: widget.card_style,
           layout: omit(widget.layout, ['i']),
         }, {
           withCredentials: true,
@@ -220,6 +221,7 @@ export const useWidgetStore = defineStore('widget', () => {
       const updateRes = await axios.patch(`http://localhost:8000/api/widgets/${widget.uid}/`, {
         content: widget.content,
         layout: widget.layout,
+        card_style: widget.card_style,
       }, {
         headers: {
           Authorization: `Bearer ${userStore.accessToken}`,

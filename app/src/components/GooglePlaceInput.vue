@@ -57,9 +57,6 @@ onMounted(() => {
         emits('change', location, place)
       });
     })
-    .catch(e => {
-      // do something
-    });
 });
 
 

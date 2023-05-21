@@ -18,6 +18,9 @@ const menuItem: IWidgetMenuItem = {
       showDescription: true,
       metadata: {},
     },
+    card_style: {
+      backgroundColor: 'red',
+    },
     layout: {
       w: 3,
       h: 2,

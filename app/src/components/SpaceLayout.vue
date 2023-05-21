@@ -150,6 +150,7 @@ const handleAddModuleDrag = throttle((_, widgetButton: IWidgetButton) => {
         uid: TMP_WIDGET_ID,
         widget_type: widgetButton.widget_type,
         content: widgetButton.content,
+        card_style: widgetButton.card_style,
         layout: {
           i: TMP_WIDGET_ID,
           x: (widgets.value.length * 2) % 12,

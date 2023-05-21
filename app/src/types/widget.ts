@@ -20,6 +20,7 @@ export interface IWidget {
   state: IWidgetState
   layout: IWidgetLayout,
   space: string,
+  card_style: Record<string, any>
 }
 
 export interface IWidgetState {
@@ -50,6 +51,7 @@ export interface IWidgetButton {
   widget_type: EWidgetType
   content: Record<string, any>
   layout: Pick<IWidgetLayout, 'w' | 'h' | 'isResizable' | 'preserveAspectRatio'>
+  card_style: Record<string, any>
 }
 
 export interface ITextWidget extends IWidget {

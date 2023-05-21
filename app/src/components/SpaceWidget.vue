@@ -51,6 +51,9 @@ watch(() => widget.value?.content, (after, before) => {
     :class="{
       'ring-2 ring-pink-500': isSelected,
     }"
+    :style="{
+      'background-color': widget.card_style?.backgroundColor,
+    }"
   />
 </template>
 
