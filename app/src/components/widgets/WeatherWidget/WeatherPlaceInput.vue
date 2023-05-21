@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import type { IWeatherPlace } from '@/types/widget';
 import { Loader } from '@googlemaps/js-api-loader';
-import { ref, onMounted, type PropType, watchEffect } from 'vue';
+import { ref, onMounted, type PropType } from 'vue';
 
-const props = defineProps({
+defineProps({
   place: {
     type: Object as PropType<IWeatherPlace | null>,
     required: false,

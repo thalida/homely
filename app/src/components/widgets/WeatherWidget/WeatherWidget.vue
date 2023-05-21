@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed, onMounted, onBeforeUnmount, watchEffect, ref } from 'vue'
 import { useWidgetStore } from '@/stores/widget'
-import { useWeatherStore } from '@/components/widgets/WeatherWidget/weatherStore';
-import { EWeatherWidgetStyle, EWeatherWidgetUnits, type IWeather, type IWeatherItem, type IWeatherWidget } from '@/types/widget'
+import { useWeatherStore } from '@/stores/weather';
+import { EWeatherWidgetStyle, EWeatherWidgetUnits, type IWeatherItem, type IWeatherWidget } from '@/types/widget'
 
 import WeatherPlaceInput from './WeatherPlaceInput.vue';
 import WeatherItem from './WeatherItem.vue';

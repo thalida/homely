@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import { EWeatherWidgetStyle } from '@/types/widget'
-import { useWeatherStore } from './weatherStore';
+import { useWeatherStore } from '@/stores/weather';
 import {
   SunIcon,
   MoonIcon,
