@@ -36,9 +36,10 @@ export const useSpaceStore = defineStore('space', () => {
         ...widget,
         state: {
           selected: false,
-          draft: false,
+          dirty: false,
           deleted: false,
           temporary: false,
+          new: false,
         },
       }
       updatedWidget.layout.i = updatedWidget.uid

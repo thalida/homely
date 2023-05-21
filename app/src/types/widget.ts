@@ -20,10 +20,11 @@ export interface IWidget {
 }
 
 export interface IWidgetState {
-  selected: boolean,
   temporary: boolean,
+  selected: boolean,
   deleted: boolean,
-  draft: boolean,
+  dirty: boolean,
+  new: boolean,
 }
 
 export interface IWidgetLayout {

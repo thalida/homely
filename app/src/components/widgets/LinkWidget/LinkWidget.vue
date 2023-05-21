@@ -87,7 +87,7 @@ async function handleUrlChange() {
     const link = await getLink(url.value)
     widgetStore.draftUpdateWidget(props.widgetId, {
       content: {
-        url: url.value,
+        url: link.url,
         metadata: link.metadata,
       },
     })

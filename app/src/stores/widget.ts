@@ -11,6 +11,7 @@ export const useWidgetStore = defineStore('widget', () => {
   const userStore = useUserStore()
   const collection = ref<IWidgets>({})
 
+  const isSaving = ref(false)
   const spaces = ref<string[]>([])
   const getWidgetById = computed(() => (uid: string) => collection.value[uid])
   const allWidgetsBySpace = computed(() => {
@@ -101,12 +102,12 @@ export const useWidgetStore = defineStore('widget', () => {
     collection.value[uid].state.selected = true
   }
 
-  function markWidgetAsDraft(uid: string) {
+  function markWidgetAsDirty(uid: string) {
     if (!collection.value[uid]) {
       return;
     }
 
-    collection.value[uid].state.draft = true
+    collection.value[uid].state.dirty = true
   }
 
   function draftCreateWidget(spaceId: string, widgetInput: Omit<IWidget, 'uid' | 'state' | 'space'>) {
@@ -119,7 +120,8 @@ export const useWidgetStore = defineStore('widget', () => {
         deleted: false,
         selected: true,
         temporary: false,
-        draft: true,
+        dirty: true,
+        new: true,
       },
     }
     newWidget.layout.i = newWidget.uid
@@ -134,7 +136,7 @@ export const useWidgetStore = defineStore('widget', () => {
     }
 
     collection.value[uid] = merge(collection.value[uid], widget);
-    collection.value[uid].state.draft = true
+    collection.value[uid].state.dirty = true
     return collection.value[uid];
   }
 
@@ -143,34 +145,33 @@ export const useWidgetStore = defineStore('widget', () => {
       return;
     }
 
-    const isNew = uid.startsWith('draft-')
-    if (isNew) {
+    if (collection.value[uid].state.new) {
       delete collection.value[uid]
       return;
     }
 
     collection.value[uid].state.deleted = true
-    collection.value[uid].state.draft = true
+    collection.value[uid].state.dirty = true
     collection.value[uid].state.selected = false
   }
 
-  async function saveDraftWidgets(spaceId: string) {
+  async function saveDirtyWidgets(spaceId: string) {
     const spaceWidgets = allWidgetsBySpace.value[spaceId]
 
     if (!spaceWidgets) {
       return;
     }
 
+    isSaving.value = true
+
     for (const widgetId of spaceWidgets) {
       const widget = collection.value[widgetId]
 
-      if (!widget || !widget.state.draft) {
+      if (!widget || !widget.state.dirty) {
         continue
       }
 
-      const isNew = widget.uid.startsWith('draft-')
-
-      if (isNew) {
+      if (widget.state.new) {
         const newWidgetRes = await axios.post('http://localhost:8000/api/widgets/', {
           widget_type: widget.widget_type,
           space: widget.space,
@@ -186,7 +187,7 @@ export const useWidgetStore = defineStore('widget', () => {
         newWidget.layout.i = newWidget.uid
         newWidget.state = {
           selected: false,
-          draft: false,
+          dirty: false,
           deleted: false,
           temporary: false,
         }
@@ -196,8 +197,7 @@ export const useWidgetStore = defineStore('widget', () => {
         continue
       }
 
-      const isDeleted = widget.state.deleted
-      if (isDeleted) {
+      if (widget.state.deleted) {
         await axios.delete(`http://localhost:8000/api/widgets/${widget.uid}/`, {
           headers: {
             Authorization: `Bearer ${userStore.accessToken}`,
@@ -208,7 +208,7 @@ export const useWidgetStore = defineStore('widget', () => {
         continue
       }
 
-      await axios.patch(`http://localhost:8000/api/widgets/${widget.uid}/`, {
+      const updateRes = await axios.patch(`http://localhost:8000/api/widgets/${widget.uid}/`, {
         content: widget.content,
         layout: widget.layout,
       }, {
@@ -217,9 +217,16 @@ export const useWidgetStore = defineStore('widget', () => {
         },
       })
 
-      collection.value[widget.uid].state.draft = false
+      collection.value[widget.uid] = {
+        ...widget,
+        ...updateRes.data,
+      }
+
+      collection.value[widget.uid].state.dirty = false
     }
   }
+
+  isSaving.value = false
 
 
   return {
@@ -234,10 +241,10 @@ export const useWidgetStore = defineStore('widget', () => {
     unselectAllWidgets,
     selectWidgetById,
 
-    markWidgetAsDraft,
+    markWidgetAsDirty,
     draftUpdateWidget,
     draftDeleteWidget,
     draftCreateWidget,
-    saveDraftWidgets,
+    saveDirtyWidgets,
   }
 })

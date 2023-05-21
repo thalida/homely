@@ -36,7 +36,7 @@ watch(() => widget.value?.content, (before, after) => {
     return
   }
 
-  widgetStore.markWidgetAsDraft(props.widgetId)
+  widgetStore.markWidgetAsDirty(props.widgetId)
 }, {
   deep: true
 })

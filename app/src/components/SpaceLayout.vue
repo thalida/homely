@@ -65,7 +65,7 @@ function startEditMode() {
 }
 
 function stopEditMode() {
-  widgetsStore.saveDraftWidgets(props.spaceId)
+  widgetsStore.saveDirtyWidgets(props.spaceId)
   spaceStore.setEditMode(false)
   spaceStore.deleteBackup()
   widgetsStore.unselectAllWidgets(props.spaceId)
@@ -151,7 +151,7 @@ const handleAddModuleDrag = throttle((_, widgetButton: IWidgetButton) => {
         space: props.spaceId,
         state: {
           temporary: true,
-          draft: true,
+          dirty: true,
           selected: false,
           deleted: false,
         },
