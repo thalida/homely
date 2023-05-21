@@ -6,8 +6,6 @@ import { useLocationStore } from '@/stores/location';
 import { useDateTimeStore } from '@/stores/datetime';
 import * as lottieFiles from './weatherLottie'
 
-console.log(lottieFiles)
-
 const props = defineProps({
   widgetId: {
     type: String,
@@ -92,12 +90,11 @@ watch(() => props.weatherItem, () => {
 <template>
   <div class="weather-window">
     <div
-      class="weather-window__sky"
+      class="sky"
       :style="{
         backgroundImage: colorGradientCss
       }"
-    ></div>
-    <div class="weather-window__sky">
+    >
       <Vue3Lottie v-if="currentLottie" :animationData="currentLottie" />
     </div>
     <div class="seams-wrapper">
@@ -127,7 +124,7 @@ watch(() => props.weatherItem, () => {
   position: relative;
   border: var(--weather-window-seam-width) solid var(--weather-window-border);
 
-  &__sky {
+  .sky {
     width: 100%;
     height: 100%;
     position: absolute;
@@ -138,6 +135,9 @@ watch(() => props.weatherItem, () => {
   .seams-wrapper {
     width: 100%;
     height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
   }
 
   .seams {

@@ -12,13 +12,14 @@ import {
   type IWeatherWindowWidgetItem,
 } from '@/types/widget';
 import type { ILocation } from '@/types/location';
+import { useLocalStorage } from '@vueuse/core';
 
 export const useWeatherStore = defineStore('weather', () => {
   const locationStore = useLocationStore()
   const widgetStore = useWidgetStore()
   const interval: Ref<number | null> = ref(null)
   const connectedWidgets: Ref<string[]> = ref([])
-  const weatherByLocation = ref<IWeatherByLocation>({})
+  const weatherByLocation: Ref<IWeatherByLocation> = useLocalStorage('homely/weather/weatherByLocation', {})
   const ONE_HOUR = 60 * 60 * 1000
 
 
