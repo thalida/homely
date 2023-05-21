@@ -3,8 +3,7 @@ import { computed, onMounted, onBeforeUnmount, watchEffect, ref } from 'vue'
 import { useWidgetStore } from '@/stores/widget'
 import { useDateTimeStore } from '@/stores/datetime'
 import type { IDateTime, IDateTimeWidget } from '@/types/widget'
-import { SunIcon } from 'lucide-vue-next';
-import { MoonIcon } from 'lucide-vue-next';
+import DateTimeItem from './DateTimeItem.vue';
 
 const props = defineProps({
   widgetId: {
@@ -85,74 +84,13 @@ function handleRemoveDateTime(e: Event, datetime: IDateTime, index: number) {
   widget.value.content.datetimes.splice(index, 1)
 }
 
-function timezoneDisplay(datetime: IDateTime) {
-  const timezone = datetime.useLocalTime ? dateTimeStore.localTimezone : datetime.timezone
-  if (!timezone) {
-    return
-  }
-
-  const timezoneParts = timezone.split('/')
-  if (timezoneParts.length === 1) {
-    return timezone
-  }
-
-  const [, ...cityParts] = timezoneParts
-  const cityStr = cityParts.join(' - ').replaceAll('_', ' ')
-
-  return cityStr
-}
-
 </script>
 
 <template>
   <div
     v-bind="$attrs"
     class="flex flex-col">
-    <div
-      v-for="(datetime, index) in widget.content.datetimes"
-      :key="index"
-      class="flex flex-row items-center justify-between px-4 py-2 grow"
-      :class="{
-        'bg-blue-950 text-white': datetime.showDayNightBackground && dateTimeStore.isNight(datetime),
-        'bg-yellow-300': datetime.showDayNightBackground && !dateTimeStore.isNight(datetime),
-      }">
-      <div v-if="datetime.showDayNightIcon || datetime.showCity" class="flex flex-row items-center space-x-4 grow">
-        <div v-if="datetime.showDayNightIcon">
-          <MoonIcon v-if="dateTimeStore.isNight(datetime)" />
-          <SunIcon v-else />
-        </div>
-        <div class="flex flex-col" v-if="datetime.showCity">
-          <span class="text-lg">{{ timezoneDisplay(datetime) }}</span>
-          <span v-if="datetime.useLocalTime && datetime.showIsLocalTimeLabel" class="text-xs">Current Location</span>
-        </div>
-      </div>
-      <div
-        v-if="datetime.showLine1 || datetime.showLine2"
-        class="flex flex-col justify-center grow"
-        :class="{
-          'scale-text items-center text-center': !datetime.showDayNightIcon && !datetime.showCity,
-          'items-end text-right': datetime.showDayNightIcon || datetime.showCity,
-        }"
-      >
-        <div
-          v-if="datetime.showLine1"
-          :class="{
-            'text-lg': datetime.showDayNightIcon || datetime.showCity,
-            'font-bold': !datetime.showDayNightIcon && !datetime.showCity,
-          }"
-        >
-          {{ dateTimeStore.format(datetime, datetime.formatLine1) }}
-        </div>
-        <div
-          v-if="datetime.showLine2"
-          :class="{
-            'text-lg': datetime.showDayNightIcon || datetime.showCity,
-            'font-bold': !datetime.showDayNightIcon && !datetime.showCity,
-          }">
-          {{ dateTimeStore.format(datetime, datetime.formatLine2) }}
-        </div>
-      </div>
-    </div>
+    <DateTimeItem v-for="(datetime, index) in widget.content.datetimes" :key="index" :widgetId="widgetId" :datetime="datetime" />
   </div>
   <teleport to="#space__widget-menu">
     <div v-if="widget.state.selected">
