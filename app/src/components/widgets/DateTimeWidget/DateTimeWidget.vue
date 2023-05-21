@@ -21,7 +21,7 @@ const widget = computed(() => {
 })
 const widgetId = ref<string | null>(null)
 const numDateTimeItems = computed(() => {
-  return widget.value ? widget.value.content.datetimes.length : 0
+  return widget.value ? widget.value.content.items.length : 0
 })
 
 watchEffect(() => {
@@ -72,12 +72,12 @@ function handleAddDateTime() {
     showDynamicBackground: true,
   }
 
-  const copyFrom = widget.value.content.datetimes.length > 0 ? widget.value.content.datetimes[widget.value.content.datetimes.length - 1] : defaults
+  const copyFrom = widget.value.content.items.length > 0 ? widget.value.content.items[widget.value.content.items.length - 1] : defaults
   const newDatetime = Object.assign({}, copyFrom)
   newDatetime.timezone = null
   newDatetime.useLocalTime = true
 
-  widget.value.content.datetimes.push(newDatetime)
+  widget.value.content.items.push(newDatetime)
 }
 
 function handleRemoveDateTime(e: Event, datetime: IDateTime, index: number) {
@@ -85,23 +85,23 @@ function handleRemoveDateTime(e: Event, datetime: IDateTime, index: number) {
     return
   }
 
-  widget.value.content.datetimes.splice(index, 1)
+  widget.value.content.items.splice(index, 1)
 }
 
-function handleDateTimeMoveUp(e: Event, datetime: IDateTime, index: number) {
+function handleItemMoveUp(e: Event, datetime: IDateTime, index: number) {
   if (!widget.value) {
     return
   }
 
-  moveItemInArray(widget.value.content.datetimes, index, index - 1)
+  moveItemInArray(widget.value.content.items, index, index - 1)
 }
 
-function handleDateTimeMoveDown(e: Event, datetime: IDateTime, index: number) {
+function handleItemMoveDown(e: Event, datetime: IDateTime, index: number) {
   if (!widget.value) {
     return
   }
 
-  moveItemInArray(widget.value.content.datetimes, index, index + 1)
+  moveItemInArray(widget.value.content.items, index, index + 1)
 }
 
 </script>
@@ -110,11 +110,11 @@ function handleDateTimeMoveDown(e: Event, datetime: IDateTime, index: number) {
   <div
     v-bind="$attrs"
     class="flex flex-col">
-    <DateTimeItem v-for="(datetime, index) in widget.content.datetimes" :key="index" :widgetId="widgetId" :datetime="datetime" />
+    <DateTimeItem v-for="(datetime, index) in widget.content.items" :key="index" :widgetId="widgetId" :datetime="datetime" />
   </div>
   <teleport to="#space__widget-menu">
     <div v-if="widget.state.selected">
-      <div v-for="(datetime, index) in widget.content.datetimes" :key="index" class="flex flex-col">
+      <div v-for="(datetime, index) in widget.content.items" :key="index" class="flex flex-col">
         <label>
           <span>Use Local Time</span>
           <input type="checkbox" v-model="datetime.useLocalTime" @change="onChangeUseLocalTime($event, datetime)" />
@@ -158,8 +158,8 @@ function handleDateTimeMoveDown(e: Event, datetime: IDateTime, index: number) {
           <input type="checkbox" v-model="datetime.showDynamicBackground" />
         </label>
         <div>
-          <button v-if="index > 0" @click="handleDateTimeMoveUp($event, datetime, index)">Move Up</button>
-          <button v-if="index < numDateTimeItems - 1" @click="handleDateTimeMoveDown($event, datetime, index)">Move Down</button>
+          <button v-if="index > 0" @click="handleItemMoveUp($event, datetime, index)">Move Up</button>
+          <button v-if="index < numDateTimeItems - 1" @click="handleItemMoveDown($event, datetime, index)">Move Down</button>
         </div>
         <button @click="handleRemoveDateTime($event, datetime, index)">Remove</button>
       </div>

@@ -66,7 +66,7 @@ export interface ITextWidget extends IWidget {
 
 export interface IDateTimeWidget extends IWidget {
   content: {
-    datetimes: IDateTime[]
+    items: IDateTime[]
   }
 }
 

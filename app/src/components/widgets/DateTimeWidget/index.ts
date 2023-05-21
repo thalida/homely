@@ -8,7 +8,7 @@ const menuItem: IWidgetMenuItem = {
   widget: {
     widget_type,
     content: {
-      datetimes: [
+      items: [
         {
           timezone: null,
           useLocalTime: true,

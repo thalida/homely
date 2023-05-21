@@ -7,6 +7,7 @@ import { EWeatherWidgetStyle, EWeatherWidgetUnits, type IWeatherItem, type IWeat
 import GooglePlaceInput from '@/components/GooglePlaceInput.vue';
 import WeatherItem from './WeatherItem.vue';
 import type { ILocation } from '@/types/location';
+import { moveItemInArray } from '@/utils/array';
 
 const props = defineProps({
   widgetId: {
@@ -24,6 +25,9 @@ const widget = computed(() => {
 })
 const widgetId = ref<string | null>(null)
 
+const numWeatherItems = computed(() => {
+  return widget.value ? widget.value.content.items.length : 0
+})
 const supportedUnits = computed(() => {
   return Object.values(EWeatherWidgetUnits)
 })
@@ -94,6 +98,22 @@ async function handleAddWeatherItem() {
 
   await weatherStore.updateWeatherByWidget(widget.value.uid)
 }
+
+function handleItemMoveUp(e: Event, weatherItem: IWeatherItem, index: number) {
+  if (!widget.value) {
+    return
+  }
+
+  moveItemInArray(widget.value.content.items, index, index - 1)
+}
+
+function handleItemMoveDown(e: Event, weatherItem: IWeatherItem, index: number) {
+  if (!widget.value) {
+    return
+  }
+
+  moveItemInArray(widget.value.content.items, index, index + 1)
+}
 </script>
 
 <template>
@@ -148,6 +168,10 @@ async function handleAddWeatherItem() {
             </option>
           </select>
         </label>
+          <div>
+            <button v-if="index > 0" @click="handleItemMoveUp($event, weatherRow, index)">Move Up</button>
+            <button v-if="index < numWeatherItems - 1" @click="handleItemMoveDown($event, weatherRow, index)">Move Down</button>
+          </div>
         <button @click="handleRemoveWeatherItem($event, weatherRow, index)">Remove</button>
       </div>
       <button @click="handleAddWeatherItem">Add</button>
