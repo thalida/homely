@@ -2,7 +2,7 @@
 import { computed, onMounted, onBeforeUnmount, watchEffect, ref } from 'vue'
 import { useWidgetStore } from '@/stores/widget'
 import { useWeatherStore } from '@/stores/weather';
-import { EWeatherWidgetStyle, EWeatherWidgetUnits, type IWeatherItem, type IWeatherWidget } from '@/types/widget'
+import { EWeatherWidgetStyle, EWeatherWidgetUnits, type IWeatherWidgetItem, type IWeatherWidget } from '@/types/widget'
 
 import GooglePlaceInput from '@/components/GooglePlaceInput.vue';
 import WeatherItem from './WeatherItem.vue';
@@ -64,16 +64,11 @@ onBeforeUnmount(() => {
   weatherStore.disconnect(widgetId.value)
 })
 
-function handleUnitsChange() {
-  weatherStore.updateWeatherByWidget(widget.value.uid)
-}
-
-function handlePlaceChange(weatherRow: IWeatherItem, location: ILocation) {
+function handlePlaceChange(weatherRow: IWeatherWidgetItem, location: ILocation) {
   weatherRow.location = location
-  weatherStore.updateWeatherByWidget(widget.value.uid)
 }
 
-function handleRemoveWeatherItem(e: Event, weatherRow: IWeatherItem, index: number) {
+function handleRemoveWeatherItem(e: Event, weatherRow: IWeatherWidgetItem, index: number) {
   e.preventDefault()
   widget.value.content.items.splice(index, 1)
 }
@@ -82,7 +77,6 @@ async function handleAddWeatherItem() {
   if (!widget.value) {
     return
   }
-
 
   const showLocation = widget.value.content.items.length === 0 ? true : widget.value.content.items[widget.value.content.items.length - 1].showLocation
   const units = widget.value.content.items.length === 0 ? EWeatherWidgetUnits.METRIC : widget.value.content.items[widget.value.content.items.length - 1].units
@@ -98,7 +92,7 @@ async function handleAddWeatherItem() {
   await weatherStore.updateWeatherByWidget(widget.value.uid)
 }
 
-function handleItemMoveUp(e: Event, weatherItem: IWeatherItem, index: number) {
+function handleItemMoveUp(e: Event, weatherItem: IWeatherWidgetItem, index: number) {
   if (!widget.value) {
     return
   }
@@ -106,7 +100,7 @@ function handleItemMoveUp(e: Event, weatherItem: IWeatherItem, index: number) {
   moveItemInArray(widget.value.content.items, index, index - 1)
 }
 
-function handleItemMoveDown(e: Event, weatherItem: IWeatherItem, index: number) {
+function handleItemMoveDown(e: Event, weatherItem: IWeatherWidgetItem, index: number) {
   if (!widget.value) {
     return
   }
@@ -161,16 +155,16 @@ function handleItemMoveDown(e: Event, weatherItem: IWeatherItem, index: number) 
         </label>
         <label>
           <span>Units</span>
-          <select v-model="weatherRow.units" @change="handleUnitsChange">
+          <select v-model="weatherRow.units">
             <option v-for="unit in supportedUnits" :key="unit" :value="unit">
               {{ unit }} (&deg;{{ unitsSymbolMap[unit] }})
             </option>
           </select>
         </label>
-          <div>
-            <button v-if="index > 0" @click="handleItemMoveUp($event, weatherRow, index)">Move Up</button>
-            <button v-if="index < numWeatherItems - 1" @click="handleItemMoveDown($event, weatherRow, index)">Move Down</button>
-          </div>
+        <div>
+          <button v-if="index > 0" @click="handleItemMoveUp($event, weatherRow, index)">Move Up</button>
+          <button v-if="index < numWeatherItems - 1" @click="handleItemMoveDown($event, weatherRow, index)">Move Down</button>
+        </div>
         <button @click="handleRemoveWeatherItem($event, weatherRow, index)">Remove</button>
       </div>
       <button @click="handleAddWeatherItem">Add</button>

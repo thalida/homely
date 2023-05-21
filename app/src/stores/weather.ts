@@ -3,7 +3,14 @@ import { ref, type Ref } from 'vue';
 import axios from 'axios';
 import { useWidgetStore } from '@/stores/widget';
 import { useLocationStore } from './location';
-import { EWeatherWidgetUnits, type IWeatherByLocation, type IWeatherItem, type IWeatherWidget } from '@/types/widget';
+import {
+  EWeatherWidgetUnits,
+  type IWeatherByLocation,
+  type IWeatherWidget,
+  type IWeatherWidgetItem,
+  type IWeatherWindowWidget,
+  type IWeatherWindowWidgetItem,
+} from '@/types/widget';
 import type { ILocation } from '@/types/location';
 
 export const useWeatherStore = defineStore('weather', () => {
@@ -60,7 +67,7 @@ export const useWeatherStore = defineStore('weather', () => {
   }
 
   async function updateWeatherByWidget(widgetId: string) {
-    const widget = widgetStore.getWidgetById(widgetId) as IWeatherWidget;
+    const widget = widgetStore.getWidgetById(widgetId) as IWeatherWidget | IWeatherWindowWidget;
     if (!widget) {
       return weatherByLocation.value;
     }
@@ -73,7 +80,7 @@ export const useWeatherStore = defineStore('weather', () => {
     return weatherByLocation.value
   }
 
-  async function updateWeatherByWigetItem(weatherItem: IWeatherItem) {
+  async function updateWeatherByWigetItem(weatherItem: IWeatherWidgetItem | IWeatherWindowWidgetItem) {
     const location = (weatherItem.useCurrentLocation) ? locationStore.currentLocation : weatherItem.location;
 
     if (!location) {

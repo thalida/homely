@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, type PropType, watch } from 'vue';
-import { EWeatherWidgetStyle, type IWeatherItem } from '@/types/widget'
+import { EWeatherWidgetStyle, type IWeatherWidgetItem } from '@/types/widget'
 import { useWeatherStore } from '@/stores/weather';
 import {
   SunIcon,
@@ -26,7 +26,7 @@ const props = defineProps({
     default: null
   },
   weatherItem: {
-    type: Object as PropType<IWeatherItem>,
+    type: Object as PropType<IWeatherWidgetItem>,
     required: true,
     default: null
   },
@@ -73,7 +73,6 @@ const weatherIconMap = ref({
 } as Record<string, any>)
 
 watch(() => props.weatherItem, () => {
-  console.log('update weather item')
   weatherStore.updateWeatherByWigetItem(props.weatherItem)
 }, { deep: true })
 </script>

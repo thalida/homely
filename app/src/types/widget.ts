@@ -86,11 +86,11 @@ export interface IDateTime {
 
 export interface IWeatherWidget extends IWidget {
   content: {
-    items: IWeatherItem[]
+    items: IWeatherWidgetItem[]
   }
 }
 
-export interface IWeatherItem {
+export interface IWeatherWidgetItem {
   style: EWeatherWidgetStyle,
   units: EWeatherWidgetUnits,
   useCurrentLocation: boolean,
@@ -98,7 +98,6 @@ export interface IWeatherItem {
   showNumForecastDays: number,
   showLocation: boolean,
 }
-
 
 export enum EWeatherWidgetStyle {
   CURRENT = 'current',
@@ -176,4 +175,16 @@ export enum EImageWidgetBackgroundRepeat {
   REPEAT_X = 'repeat-x',
   REPEAT_Y = 'repeat-y',
   NO_REPEAT = 'no-repeat',
+}
+
+export interface IWeatherWindowWidget extends IWidget {
+  content: {
+    items: IWeatherWidgetItem[]
+  }
+}
+
+export interface IWeatherWindowWidgetItem {
+  location: ILocation | null,
+  useCurrentLocation: boolean,
+  units: EWeatherWidgetUnits,
 }
