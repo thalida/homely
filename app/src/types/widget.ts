@@ -95,7 +95,6 @@ export interface IWeatherItem {
   units: EWeatherWidgetUnits,
   useCurrentLocation: boolean,
   location: ILocation | null,
-  fetchedOn: number | null,
   showNumForecastDays: number,
   showLocation: boolean,
 }

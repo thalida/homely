@@ -14,7 +14,6 @@ const menuItem: IWidgetMenuItem = {
           units: EWeatherWidgetUnits.METRIC,
           location: null,
           useCurrentLocation: true,
-          fetchedOn: null,
           showLocation: true,
           showNumForecastDays: 5,
         },

@@ -89,7 +89,6 @@ async function handleAddWeatherItem() {
   widget.value.content.items.push({
     location: null,
     useCurrentLocation: true,
-    fetchedOn: null,
     showNumForecastDays: 5,
     style: EWeatherWidgetStyle.CURRENT,
     units,

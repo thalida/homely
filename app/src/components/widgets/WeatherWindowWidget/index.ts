@@ -12,7 +12,6 @@ const menuItem: IWidgetMenuItem = {
         {
           place: null,
           useCurrentLocation: true,
-          fetchedOn: null,
           showNumForecastDays: 5,
           showCity: true,
         },
