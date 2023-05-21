@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { computed, type PropType, watch, ref } from 'vue';
+import { computed, type PropType } from 'vue';
 import type { IWeatherWidgetItem } from '@/types/widget'
 import { useWeatherStore } from '@/stores/weather';
 import { useLocationStore } from '@/stores/location';
 import { useDateTimeStore } from '@/stores/datetime';
-import * as lottieFiles from './weatherLottie'
+import { weatherLottieMap } from './index'
 
 const props = defineProps({
   widgetId: {
@@ -52,38 +52,17 @@ const colorGradientCss = computed(() => {
   return `linear-gradient(180deg, ${startCss}, ${endCss})`
 })
 
-const weatherLottieMap = ref({
-  "01d": lottieFiles.sunLottie,
-  "01n": lottieFiles.moonLottie,
-  "02d": lottieFiles.cloudSunLottie,
-  "02n": lottieFiles.cloudMoonLottie,
-  "03d": lottieFiles.cloudLottie,
-  "03n": lottieFiles.cloudLottie,
-  "04d": lottieFiles.cloudLottie,
-  "04n": lottieFiles.cloudLottie,
-  "09d": lottieFiles.cloudSunRainLottie,
-  "09n": lottieFiles.cloudMoonRainLottie,
-  "10d": lottieFiles.cloudSunHeavyrainLottie,
-  "10n": lottieFiles.cloudMoonHeavyrainLottie,
-  "11d": lottieFiles.cloudThunderHeavyrainLottie,
-  "11n": lottieFiles.cloudThunderHeavyrainLottie,
-  "13d": lottieFiles.cloudSunSnowLottie,
-  "13n": lottieFiles.cloudMoonSnowLottie,
-  "50d": null,
-  "50n": null,
-} as Record<string, any>)
-
 const currentLottie = computed(() => {
   if (!weatherData.value) {
     return null
   }
 
-  return weatherLottieMap.value[weatherData.value.currently.weather[0].icon]
+  return weatherLottieMap[weatherData.value.currently.weather[0].icon]
 })
 </script>
 
 <template>
-  <div v-if="weatherData && weatherData.currently">
+  <div v-if="weatherData && weatherData.currently" class="flex flex-col items-center justify-center">
     <div class="weather-window">
       <div
         class="sky"
@@ -106,9 +85,9 @@ const currentLottie = computed(() => {
         </div>
       </div>
     </div>
+
     <div>
-
-
+      <span v-if="weatherItem.showLocation">{{ weatherLocation?.name }}</span>
     </div>
   </div>
 </template>

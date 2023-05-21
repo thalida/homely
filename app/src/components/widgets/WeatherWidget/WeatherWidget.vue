@@ -149,7 +149,7 @@ function handleItemMoveDown(e: Event, weatherItem: IWeatherWidgetItem, index: nu
           <GooglePlaceInput :place="weatherRow.location" @change="(location) => handlePlaceChange(weatherRow, location)" />
         </label>
         <label>
-          <span>Show City</span>
+          <span>Show Location</span>
           <input type="checkbox" v-model="weatherRow.showLocation" />
         </label>
         <label>

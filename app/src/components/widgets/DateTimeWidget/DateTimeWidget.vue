@@ -65,7 +65,7 @@ function handleAddDateTime() {
     showIsLocalTimeLabel: true,
     formatLine1: "h:mm A",
     formatLine2: "dddd, MMMM D",
-    showCity: true,
+    showLocation: true,
     showLine1: true,
     showLine2: true,
     showDynamicIcon: true,
@@ -130,8 +130,8 @@ function handleItemMoveDown(e: Event, datetime: IDateTime, index: number) {
           </select>
         </label>
         <label>
-          <span>Show City</span>
-          <input type="checkbox" v-model="datetime.showCity" />
+          <span>Show Location</span>
+          <input type="checkbox" v-model="datetime.showLocation" />
         </label>
         <label>
           <span>Show Line 1</span>

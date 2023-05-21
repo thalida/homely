@@ -15,7 +15,7 @@ const menuItem: IWidgetMenuItem = {
           showIsLocalTimeLabel: true,
           formatLine1: "h:mm A",
           formatLine2: "dddd, MMMM D",
-          showCity: true,
+          showLocation: true,
           showLine1: true,
           showLine2: true,
           showDynamicIcon: true,

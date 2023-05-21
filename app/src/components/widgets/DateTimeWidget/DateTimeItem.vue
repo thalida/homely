@@ -20,7 +20,7 @@ const props = defineProps({
 })
 
 const showOnlyDatetimes = computed(() => {
-  return !props.datetime.showDynamicIcon && !props.datetime.showCity
+  return !props.datetime.showDynamicIcon && !props.datetime.showLocation
 })
 
 const colorGradient = computed(() => {
@@ -106,11 +106,11 @@ const dynamicIcon = computed(() => {
     'color': contrastTextColor,
   }"
 >
-  <div v-if="datetime.showDynamicIcon || datetime.showCity" class="flex flex-row items-center space-x-4 grow">
+  <div v-if="datetime.showDynamicIcon || datetime.showLocation" class="flex flex-row items-center space-x-4 grow">
     <div v-if="datetime.showDynamicIcon && dynamicIcon">
       <component :is="dynamicIcon" />
     </div>
-    <div class="flex flex-col" v-if="datetime.showCity">
+    <div class="flex flex-col" v-if="datetime.showLocation">
       <span class="text-lg">{{ timezoneDisplay }}</span>
       <span v-if="datetime.useLocalTime && datetime.showIsLocalTimeLabel" class="text-xs">Current Location</span>
     </div>

@@ -76,7 +76,7 @@ export interface IDateTime {
   useLocalTime: boolean
   formatLine1: string
   formatLine2: string
-  showCity: boolean
+  showLocation: boolean
   showLine1: boolean
   showLine2: boolean
   showDynamicIcon: boolean
