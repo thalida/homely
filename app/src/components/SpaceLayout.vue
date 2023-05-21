@@ -235,6 +235,15 @@ function handleGridItemMoved(widgetId: string, x: number, y: number) {
     layout: { x, y }
   })
 }
+
+function handleGridItemResized(widgetId: string, w: number, h: number) {
+  const widget = widgetsStore.getWidgetById(widgetId)
+  if (!widget) return
+
+  widgetsStore.draftUpdateWidget(widgetId, {
+    layout: { w, h }
+  })
+}
 </script>
 
 <template>
@@ -274,6 +283,7 @@ function handleGridItemMoved(widgetId: string, x: number, y: number) {
         @click="handleGridItemClick($event, widgetId)"
         @move="handleGridItemMove"
         @moved="handleGridItemMoved"
+        @resized="handleGridItemResized"
       >
         <SpaceWidget :widget-id="widgetId" />
       </GridItem>
