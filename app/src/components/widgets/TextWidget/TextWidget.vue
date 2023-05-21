@@ -171,20 +171,12 @@ watchEffect(() => {
 watchEffect(() => {
   const editable = isEditMode.value || widget.value?.content?.isInteractive
   editor.value?.setEditable(editable)
-
-  // if (editable) {
-  //   editor.value?.on('update', onUpdate)
-  // } else {
-  //   editor.value?.off('update', onUpdate)
-  // }
 })
 
 watch(
   () => editor.value?.getHTML() || '',
   (newValue: string, oldValue: string) => {
     if (typeof oldValue === 'undefined') return
-
-    console.log('updated', widget.value.uid, newValue, oldValue)
 
     if (!editor.value?.isEditable) {
       widgetStore.updateWidget(widget.value.uid, {
