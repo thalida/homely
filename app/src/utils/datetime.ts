@@ -26,12 +26,22 @@ export function now() {
   return dayjs()
 }
 
-export function isNightTime(date: Date | number, timezone?: string | null) {
+export function timeOfDay(date: Date | number, timezone?: string | null) {
   const dayjsNow = getDayJs(date, timezone)
 
   const hour = dayjsNow.hour()
 
-  return hour < 6 || hour > 18
+  if (hour < 5) {
+    return 'night'
+  } else if (hour < 9) {
+    return 'sunrise'
+  } else if (hour < 17) {
+    return 'day'
+  } else if (hour < 20) {
+    return 'sunset'
+  } else {
+    return 'night'
+  }
 }
 
 export function format(date: Date | number, formatString: string, timezone?: string | null) {

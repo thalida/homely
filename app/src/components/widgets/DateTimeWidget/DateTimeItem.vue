@@ -2,7 +2,7 @@
 import { useDateTimeStore } from '@/stores/datetime';
 import type { IDateTime } from '@/types/widget';
 import { computed, type PropType } from 'vue';
-import { SunIcon, MoonIcon } from 'lucide-vue-next';
+import { SunIcon, MoonIcon, SunriseIcon, SunsetIcon } from 'lucide-vue-next';
 import { isLightColor } from '@/utils/color';
 
 const dateTimeStore = useDateTimeStore();
@@ -20,11 +20,7 @@ const props = defineProps({
 })
 
 const showOnlyDatetimes = computed(() => {
-  return !props.datetime.showDayNightIcon && !props.datetime.showCity
-})
-
-const isNight = computed(() => {
-  return dateTimeStore.isNight(props.datetime)
+  return !props.datetime.showDynamicIcon && !props.datetime.showCity
 })
 
 const colorGradient = computed(() => {
@@ -32,7 +28,7 @@ const colorGradient = computed(() => {
 })
 
 const colorGradientCss = computed(() => {
-  if(!props.datetime.showDayNightBackground) {
+  if(!props.datetime.showDynamicBackground) {
     return ""
   }
 
@@ -42,6 +38,10 @@ const colorGradientCss = computed(() => {
 })
 
 const contrastTextColor = computed(() => {
+  if (!props.datetime.showDynamicBackground) {
+    return ""
+  }
+
   return isLightColor(colorGradient.value.end) ? 'black' : 'white'
 })
 
@@ -70,6 +70,32 @@ const datetimeLine2 = computed(() => {
   return dateTimeStore.format(props.datetime, props.datetime.formatLine2)
 })
 
+const dynamicIcon = computed(() => {
+  if (!props.datetime.showDynamicIcon) {
+    return null
+  }
+
+  const timeOfDay = dateTimeStore.getTimeOfDay(props.datetime)
+
+  if (timeOfDay === 'day') {
+    return SunIcon
+  }
+
+  if (timeOfDay === 'night') {
+    return MoonIcon
+  }
+
+  if (timeOfDay === 'sunrise') {
+    return SunriseIcon
+  }
+
+  if (timeOfDay === 'sunset') {
+    return SunsetIcon
+  }
+
+  return null
+})
+
 </script>
 
 <template>
@@ -79,14 +105,10 @@ const datetimeLine2 = computed(() => {
     'background-image': colorGradientCss,
     'color': contrastTextColor,
   }"
-  :class="{
-    // 'bg-blue-950 text-white': datetime.showDayNightBackground && isNight,
-    // 'bg-yellow-300': datetime.showDayNightBackground && !isNight,
-  }">
-  <div v-if="datetime.showDayNightIcon || datetime.showCity" class="flex flex-row items-center space-x-4 grow">
-    <div v-if="datetime.showDayNightIcon">
-      <MoonIcon v-if="dateTimeStore.isNight(datetime)" />
-      <SunIcon v-else />
+>
+  <div v-if="datetime.showDynamicIcon || datetime.showCity" class="flex flex-row items-center space-x-4 grow">
+    <div v-if="datetime.showDynamicIcon && dynamicIcon">
+      <component :is="dynamicIcon" />
     </div>
     <div class="flex flex-col" v-if="datetime.showCity">
       <span class="text-lg">{{ timezoneDisplay }}</span>

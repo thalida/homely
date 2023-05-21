@@ -75,8 +75,8 @@ export interface IDateTime {
   showCity: boolean
   showLine1: boolean
   showLine2: boolean
-  showDayNightIcon: boolean
-  showDayNightBackground: boolean
+  showDynamicIcon: boolean
+  showDynamicBackground: boolean
   showIsLocalTimeLabel: boolean
 }
 

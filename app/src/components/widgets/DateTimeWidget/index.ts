@@ -18,8 +18,8 @@ const menuItem: IWidgetMenuItem = {
           showCity: true,
           showLine1: true,
           showLine2: true,
-          showDayNightIcon: true,
-          showDayNightBackground: true,
+          showDynamicIcon: true,
+          showDynamicBackground: true,
         }
       ],
     },

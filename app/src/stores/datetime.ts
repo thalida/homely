@@ -67,10 +67,6 @@ export const useDateTimeStore = defineStore('datetime', () => {
     return datetimeUtils.format(now.value, formatString, datetime.timezone)
   }
 
-  function isNight(datetime: IDateTime) {
-    return datetimeUtils.isNightTime(now.value, datetime.timezone)
-  }
-
   function getColorBlend(startColor: IColor, endColor: IColor, distance: number) {
     const blendedColor: IColor = {
       r: 0,
@@ -133,6 +129,10 @@ export const useDateTimeStore = defineStore('datetime', () => {
     return gradient;
   }
 
+  function getTimeOfDay(datetime: IDateTime) {
+    return datetimeUtils.timeOfDay(now.value, datetime.timezone)
+  }
+
   return {
     now,
     localTimezone,
@@ -140,7 +140,7 @@ export const useDateTimeStore = defineStore('datetime', () => {
     connect,
     disconnect,
     format,
-    isNight,
     getColorGradient,
+    getTimeOfDay,
   };
 });

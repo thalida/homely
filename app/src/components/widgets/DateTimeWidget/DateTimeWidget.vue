@@ -64,8 +64,8 @@ function handleAddDateTime() {
     showCity: true,
     showLine1: true,
     showLine2: true,
-    showDayNightIcon: true,
-    showDayNightBackground: true,
+    showDynamicIcon: true,
+    showDynamicBackground: true,
   }
 
   const copyFrom = widget.value.content.datetimes.length > 0 ? widget.value.content.datetimes[widget.value.content.datetimes.length - 1] : defaults
@@ -130,12 +130,12 @@ function handleRemoveDateTime(e: Event, datetime: IDateTime, index: number) {
           <input type="text" v-model="datetime.formatLine2" />
         </label>
         <label>
-          <span>Show Day/Night Icon</span>
-          <input type="checkbox" v-model="datetime.showDayNightIcon" />
+          <span>Show Dynamic Icon</span>
+          <input type="checkbox" v-model="datetime.showDynamicIcon" />
         </label>
         <label>
-          <span>Show Day/Night Background</span>
-          <input type="checkbox" v-model="datetime.showDayNightBackground" />
+          <span>Show Dynamic Background</span>
+          <input type="checkbox" v-model="datetime.showDynamicBackground" />
         </label>
         <button @click="handleRemoveDateTime($event, datetime, index)">Remove</button>
       </div>
