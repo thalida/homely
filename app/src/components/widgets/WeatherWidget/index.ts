@@ -18,6 +18,7 @@ const menuItem: IWidgetMenuItem = {
           fetchedOn: null,
           style: EWeatherWidgetStyle.CURRENT,
           showNumForecastDays: 5,
+          showCity: true,
         },
       ],
     },

@@ -88,16 +88,18 @@ async function handleAddWeatherItem() {
   }
 
 
+  const showCity = widget.value.content.items.length === 0 ? true : widget.value.content.items[widget.value.content.items.length - 1].showCity
   const units = widget.value.content.items.length > 0 ? widget.value.content.items[widget.value.content.items.length - 1].units : EWeatherWidgetUnits.METRIC
   widget.value.content.items.push({
     place: null,
     currently: null,
     forecast: null,
     useCurrentLocation: true,
-    units,
     fetchedOn: null,
     showNumForecastDays: 5,
     style: EWeatherWidgetStyle.CURRENT,
+    units,
+    showCity,
   })
 
   await weatherStore.updateWeather(widget.value.uid)
@@ -143,6 +145,10 @@ async function handleAddWeatherItem() {
         <label v-if="!weatherRow.useCurrentLocation">
           <span>Location</span>
           <WeatherPlaceInput :place="weatherRow.place" @change="(place) => handlePlaceChange(weatherRow, place)" />
+        </label>
+        <label>
+          <span>Show City</span>
+          <input type="checkbox" v-model="weatherRow.showCity" />
         </label>
         <label>
           <span>Units</span>

@@ -96,6 +96,7 @@ export interface IWeatherItem {
   fetchedOn: number | null,
   style: EWeatherWidgetStyle,
   showNumForecastDays: number,
+  showCity: boolean,
 }
 
 

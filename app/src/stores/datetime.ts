@@ -23,7 +23,6 @@ export const useDateTimeStore = defineStore('datetime', () => {
     { r: 255, g: 103, b: 116 },
     { r: 20, g: 40, b: 116 },
   ];
-  const SUNSET_COLOR_IDX = 6;
 
   function connect(widgetId: string) {
     connectedWidgets.value.push(widgetId)

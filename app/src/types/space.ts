@@ -1,5 +1,3 @@
-import type { IWidget } from "./widget"
-
 export interface ISpaces {
   [key: string]: ISpace
 }

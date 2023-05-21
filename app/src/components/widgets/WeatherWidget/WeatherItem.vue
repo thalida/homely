@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
-import { EWeatherWidgetStyle } from '@/types/widget'
+import { computed, ref, type PropType } from 'vue';
+import { EWeatherWidgetStyle, type IWeatherItem } from '@/types/widget'
 import { useWeatherStore } from '@/stores/weather';
 import {
   SunIcon,
@@ -25,7 +25,7 @@ const props = defineProps({
     default: null
   },
   weatherItem: {
-    type: Object,
+    type: Object as PropType<IWeatherItem>,
     required: true,
     default: null
   },
@@ -78,17 +78,17 @@ const forecastDays = computed(() => {
       <span class="capitalize">
         {{ weatherData.currently.weather[0].description }}
       </span>
-      <span>{{ weatherLocation.name }}</span>
+      <span v-if="weatherItem.showCity">{{ weatherLocation?.name }}</span>
     </div>
     <div class="flex flex-row justify-between items-center w-full">
       <div class="flex flex-row text-2xl font-bold">
-        {{ weatherData.currently.temp }}&deg;
+        {{ Math.round(weatherData.currently.temp) }}&deg;
       </div>
       <component :is="weatherIconMap[weatherData.currently.weather[0].icon]" class="h-full w-auto max-h-16" />
     </div>
   </template>
   <template v-else-if="weatherItem.style === EWeatherWidgetStyle.FORECAST && weatherData.forecast">
-    <span>{{ weatherLocation.name }}</span>
+    <span v-if="weatherItem.showCity">{{ weatherLocation?.name }}</span>
     <div
       class="grid w-full"
       :class="{
@@ -105,9 +105,8 @@ const forecastDays = computed(() => {
       <div v-for="(day, i) in forecastDays" :key="i" class="flex flex-col items-center justify-between space-y-2">
         <span class="uppercase text-xs font-bold opacity-50">{{ datetimeUtils.format(day.dt * 1000, "ddd") }}</span>
         <component :is="weatherIconMap[day.weather[0].icon]" class="h-auto w-full max-h-6" />
-        <div class="flex flex-col items-center justify-center">
-          <span class="font-bold">{{ day.temp.max }}</span>
-          <span class="opacity-50">{{ day.temp.min }}</span>
+        <div>
+          <span class="font-bold">{{ Math.round(day.temp.max) }}&deg;</span> <span class="opacity-30">/</span> <span class="opacity-50">{{ Math.round(day.temp.min) }}&deg;</span>
         </div>
       </div>
     </div>
