@@ -83,6 +83,42 @@ export const useWidgetStore = defineStore('widget', () => {
     }
   }
 
+  const maxLayoutPositionBySpace = computed(() => {
+    const res: Record<string, { x: number, y: number }> = {}
+    for (const spaceId of spaces.value) {
+      const widgets = activeWidgetsBySpace.value[spaceId]
+      if (!widgets) {
+        res[spaceId] = {x: 0, y: 0}
+        continue
+      }
+
+      let maxX = 0
+      let maxY = 0
+      for (const widgetId of widgets) {
+        if (!collection.value[widgetId]) {
+          continue
+        }
+
+        if (collection.value[widgetId].state.deleted) {
+          continue
+        }
+
+        const widget = collection.value[widgetId]
+        if (widget.layout.x + widget.layout.w > maxX) {
+          maxX = widget.layout.x + widget.layout.w
+        }
+
+        if (widget.layout.y + widget.layout.h > maxY) {
+          maxY = widget.layout.y + widget.layout.h
+        }
+
+        res[spaceId] = { x: maxX, y: maxY }
+      }
+    }
+
+    return res
+  });
+
   function unselectAllWidgets(spaceId: string) {
     const spaceWidgets = allWidgetsBySpace.value[spaceId]
     if (!spaceWidgets) {
@@ -249,8 +285,9 @@ export const useWidgetStore = defineStore('widget', () => {
     allWidgetsBySpace,
     activeWidgetsBySpace,
     layoutsBySpace,
-    setSpaceWidgets,
+    maxLayoutPositionBySpace,
 
+    setSpaceWidgets,
     unselectAllWidgets,
     selectWidgetById,
 

@@ -23,7 +23,6 @@ export interface IWidget {
 }
 
 export interface IWidgetState {
-  temporary: boolean,
   selected: boolean,
   deleted: boolean,
   dirty: boolean,

@@ -20,11 +20,10 @@ const props = defineProps({
 });
 
 const emits = defineEmits<{
-  (e: 'editModeCancel'): void
-  (e: 'editModeStart'): void
-  (e: 'editModeDone'): void
-  (e: 'addModuleDrag', event: DragEvent, widgetButton: IWidgetButton): void
-  (e: 'addModuleDragEnd', event: DragEvent, widgetButton: IWidgetButton): void
+  (e: 'editModeCancel'): void,
+  (e: 'editModeStart'): void,
+  (e: 'editModeDone'): void,
+  (e: 'addModule', event: Event, widgetButton: IWidgetButton): void,
 }>();
 
 const selectedWidgets = computed(() => {
@@ -58,14 +57,10 @@ async function handleDelete() {
   }
 }
 
-function drag(e: DragEvent, widgetButton: IWidgetButton) {
-  widgetsStore.unselectAllWidgets(props.spaceId)
-  emits('addModuleDrag', e, widgetButton);
-}
-
-function dragEnd(e: DragEvent, widgetButton: IWidgetButton) {
-  widgetsStore.unselectAllWidgets(props.spaceId)
-  emits('addModuleDragEnd', e, widgetButton);
+function handleAddModuleClick(e: Event, widgetButton: IWidgetButton) {
+  console.log('handleAddModuleClick 1', widgetButton)
+  emits('addModule', e, widgetButton);
+  console.log('handleAddModuleClick 2', widgetButton)
 }
 </script>
 
@@ -90,10 +85,7 @@ function dragEnd(e: DragEvent, widgetButton: IWidgetButton) {
         v-for="menuItem in widgetMenuItems"
         :key="menuItem.label"
         class="w-12 p-2 bg-blue-400"
-        draggable="true"
-        unselectable="on"
-        @drag="drag($event, menuItem.widget)"
-        @dragend="dragEnd($event, menuItem.widget)">
+        @click="handleAddModuleClick($event, menuItem.widget)">
         {{ menuItem.label }}
       </button>
     </template>

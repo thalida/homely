@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
 import { cloneDeep, throttle } from 'lodash'
 import { GridLayout, GridItem } from 'grid-layout-plus'
 import { useSpaceStore } from '@/stores/space'
@@ -18,9 +18,6 @@ const props = defineProps({
   }
 })
 
-const widgets = computed(() => {
-  return widgetsStore.activeWidgetsBySpace[props.spaceId] || []
-})
 const isReady = ref(false)
 const spaceRef = ref<HTMLElement>()
 const gridLayoutRef = ref<InstanceType<typeof GridLayout>>()
@@ -28,6 +25,7 @@ const gridLayoutSettings = ref({
   rowHeight: 32,
   columns: 12,
   margin: [12, 12],
+  preventCollision: true,
 })
 
 
@@ -40,14 +38,12 @@ onMounted(async () => {
   }
 
   window.addEventListener('resize', throttle(setRowHeight))
-  document.addEventListener('dragover', syncMousePosition)
 
   isReady.value = true
 })
 
 onBeforeUnmount(() => {
   window.removeEventListener('resize', throttle(setRowHeight))
-  document.removeEventListener('dragover', syncMousePosition)
 })
 
 function setRowHeight() {
@@ -102,132 +98,6 @@ function handleGridItemMove(widgetId: string) {
   widgetsStore.selectWidgetById(widgetId)
 }
 
-const mouseAt = { x: -1, y: -1 }
-const TMP_WIDGET_ID = 'tmp-widget'
-const tmpWidget = ref<IWidget | null>(null)
-
-function syncMousePosition(event: MouseEvent) {
-  mouseAt.x = event.clientX
-  mouseAt.y = event.clientY
-}
-
-function isMouseInGrid() {
-  const parentRect = spaceRef.value?.getBoundingClientRect()
-  if (!parentRect) {
-    return false
-  }
-
-  return (
-    mouseAt.x > parentRect.left &&
-    mouseAt.x < parentRect.right &&
-    mouseAt.y > parentRect.top &&
-    mouseAt.y < parentRect.bottom
-  )
-}
-
-function cleanupTmpWidgetStore({ x, y, w, h}: { x: number, y: number, w: number, h: number }) {
-  if (!gridLayoutRef.value) return
-
-  gridLayoutRef.value.dragEvent('dragend', TMP_WIDGET_ID, x, y, h, w)
-  delete widgetsStore.collection[TMP_WIDGET_ID]
-}
-
-function cleanupTmpWidgetSettings() {
-  tmpWidget.value = null
-}
-
-const handleAddModuleDrag = throttle((_, widgetButton: IWidgetButton) => {
-  const parentRect = spaceRef.value?.getBoundingClientRect()
-
-  if (!parentRect || !gridLayoutRef.value) return
-
-  const mouseInGrid = isMouseInGrid()
-
-  if (mouseInGrid) {
-    const hasTmpWidget = widgets.value.indexOf(TMP_WIDGET_ID) !== -1
-    if (!hasTmpWidget) {
-      tmpWidget.value = {
-        uid: TMP_WIDGET_ID,
-        widget_type: widgetButton.widget_type,
-        content: widgetButton.content,
-        card_style: widgetButton.card_style,
-        layout: {
-          i: TMP_WIDGET_ID,
-          x: (widgets.value.length * 2) % 12,
-          y: widgets.value.length + 12,
-          w: widgetButton.layout.w,
-          h: widgetButton.layout.h,
-          isResizable: widgetButton.layout.isResizable,
-          preserveAspectRatio: widgetButton.layout.preserveAspectRatio,
-        },
-        space: props.spaceId,
-        state: {
-          temporary: true,
-          dirty: true,
-          selected: false,
-          deleted: false,
-          new: true,
-        },
-      }
-      widgetsStore.collection[TMP_WIDGET_ID] = tmpWidget.value
-    }
-  }
-
-  if (widgetsStore.collection[TMP_WIDGET_ID] === null || tmpWidget.value === null) return
-
-  const index = widgets.value.indexOf(TMP_WIDGET_ID)
-
-  if (index === -1) return
-
-  const item = gridLayoutRef.value.getItem(TMP_WIDGET_ID)
-
-  if (!item) return
-
-  item.wrapper.style.display = 'none'
-
-  Object.assign(item.state, {
-    top: mouseAt.y - parentRect.top,
-    left: mouseAt.x - parentRect.left
-  })
-
-  const newPos = item.calcXY(mouseAt.y - parentRect.top, mouseAt.x - parentRect.left)
-
-  if (!mouseInGrid) {
-    cleanupTmpWidgetStore({
-      x: newPos.x,
-      y: newPos.y,
-      w: tmpWidget.value.layout.w,
-      h: tmpWidget.value.layout.h
-    })
-    return
-  }
-
-  gridLayoutRef.value.dragEvent('dragstart', TMP_WIDGET_ID, newPos.x, newPos.y,  tmpWidget.value.layout.h,  tmpWidget.value.layout.w)
-  tmpWidget.value.layout.i = TMP_WIDGET_ID
-  tmpWidget.value.layout.x = widgetsStore.collection[TMP_WIDGET_ID].layout.x
-  tmpWidget.value.layout.y = widgetsStore.collection[TMP_WIDGET_ID].layout.y
-})
-
-function handleAddModuleDragEnd(e: Event, widgetButton: IWidgetButton) {
-  if (!gridLayoutRef.value || !isMouseInGrid() || widgetsStore.collection[TMP_WIDGET_ID] === null) return
-
-  const newWidgetInput: IWidget = cloneDeep(widgetButton) as IWidget
-  newWidgetInput.layout.x = widgetsStore.collection[TMP_WIDGET_ID].layout.x
-  newWidgetInput.layout.y = widgetsStore.collection[TMP_WIDGET_ID].layout.y
-
-  cleanupTmpWidgetStore(widgetsStore.collection[TMP_WIDGET_ID].layout)
-  cleanupTmpWidgetSettings()
-
-  const widget = widgetsStore.draftCreateWidget(props.spaceId, newWidgetInput)
-  gridLayoutRef.value.dragEvent('dragend', widget.uid, widget.layout.x, widget.layout.y, widget.layout.h, widget.layout.w)
-
-  const item = gridLayoutRef.value.getItem(widget.uid)
-
-  if (!item) return
-
-  item.wrapper.style.display = ''
-}
-
 function handleGridItemMoved(widgetId: string, x: number, y: number) {
   const widget = widgetsStore.getWidgetById(widgetId)
   if (!widget) return
@@ -243,6 +113,29 @@ function handleGridItemResized(widgetId: string, w: number, h: number) {
 
   widgetsStore.draftUpdateWidget(widgetId, {
     layout: { w, h }
+  })
+}
+
+async function handleAddModule(event: Event, widgetButton: IWidgetButton) {
+  const maxPosition = widgetsStore.maxLayoutPositionBySpace[props.spaceId]
+  const newWidgetInput: IWidget = cloneDeep(widgetButton) as IWidget
+  newWidgetInput.layout.x = maxPosition.x
+  newWidgetInput.layout.y = maxPosition.y
+
+  const widget = widgetsStore.draftCreateWidget(props.spaceId, newWidgetInput)
+
+  await nextTick()
+  await nextTick()
+
+  const widgetElement = document.getElementById(`space-widget-${widget.uid}`)
+  if (!widgetElement) {
+    return
+  }
+
+  widgetElement.scrollIntoView({
+    behavior: 'smooth',
+    block: 'center',
+    inline: 'center',
   })
 }
 </script>
@@ -270,7 +163,7 @@ function handleGridItemResized(widgetId: string, w: number, h: number) {
       :is-bounded="false"
       :vertical-compact="false"
       :restore-on-drag="true"
-      :prevent-collision="true"
+      :prevent-collision="gridLayoutSettings.preventCollision"
     >
       <GridItem
         v-for="widgetId in widgetsStore.activeWidgetsBySpace[props.spaceId]"
@@ -287,18 +180,16 @@ function handleGridItemResized(widgetId: string, w: number, h: number) {
         @moved="handleGridItemMoved"
         @resized="handleGridItemResized"
       >
-        <SpaceWidget :widget-id="widgetId" />
+        <SpaceWidget :id="`space-widget-${widgetId}`" :widget-id="widgetId" />
       </GridItem>
     </GridLayout>
-
     <SpaceMenu
       class="shrink-0"
       :spaceId="props.spaceId"
       @editModeStart="startEditMode"
       @editModeDone="stopEditMode"
       @editModeCancel="cancelEditMode"
-      @addModuleDrag="handleAddModuleDrag"
-      @addModuleDragEnd="handleAddModuleDragEnd"
+      @addModule="handleAddModule"
     />
   </div>
 </template>

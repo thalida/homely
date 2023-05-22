@@ -88,10 +88,7 @@ async function handleAddWeatherItem() {
   }
 
   const lastItem = widget.value.content.items.length > 0 ? widget.value.content.items[widget.value.content.items.length - 1] : {}
-  const newWidget = {
-    ...defaultItem,
-    ...lastItem,
-  }
+  const newWidget = Object.assign({}, defaultItem, lastItem)
 
   widget.value.content.items.push(newWidget)
 
