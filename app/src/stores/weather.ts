@@ -18,7 +18,9 @@ export const useWeatherStore = defineStore('weather', () => {
   const interval: Ref<number | null> = ref(null)
   const connectedWidgets: Ref<string[]> = ref([])
   const weatherByLocation: Ref<IWeatherByLocation> = useLocalStorage('homely/weather/weatherByLocation', {})
-  const ONE_HOUR = 60 * 60 * 1000
+  // const ONE_HOUR = 60 * 60 * 1000
+  const THIRTY_MINUTES = 30 * 60 * 1000
+  const UPDATE_FREQUENCY = THIRTY_MINUTES
 
 
   async function connect(widgetId: string) {
@@ -47,7 +49,7 @@ export const useWeatherStore = defineStore('weather', () => {
       return;
     }
 
-    interval.value = window.setInterval(updateAllWeatherWidgets, ONE_HOUR)
+    interval.value = window.setInterval(updateAllWeatherWidgets, UPDATE_FREQUENCY)
   }
 
   function stopInterval() {
@@ -104,7 +106,7 @@ export const useWeatherStore = defineStore('weather', () => {
 
     const now = Date.now();
     const timeSinceLastFetch = now - lastFetchedOn;
-    if (timeSinceLastFetch >= ONE_HOUR) {
+    if (timeSinceLastFetch >= UPDATE_FREQUENCY) {
       return true;
     }
 
