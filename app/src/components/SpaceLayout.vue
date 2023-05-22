@@ -150,7 +150,7 @@ async function handleAddModule(event: Event, widgetButton: IWidgetButton) {
       ref="gridLayoutRef"
       class="grid-layout grow shrink-0 w-full h-full"
       :class="{
-        'mr-80': spaceStore.isEditMode,
+        'mr-80 mb-32': spaceStore.isEditMode,
       }"
       v-model:layout="widgetsStore.layoutsBySpace[props.spaceId]"
       :col-num="gridLayoutSettings.columns"
