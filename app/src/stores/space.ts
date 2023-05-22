@@ -38,7 +38,6 @@ export const useSpaceStore = defineStore('space', () => {
           selected: false,
           dirty: false,
           deleted: false,
-          temporary: false,
           new: false,
         },
       }

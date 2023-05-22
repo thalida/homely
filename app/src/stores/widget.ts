@@ -155,7 +155,6 @@ export const useWidgetStore = defineStore('widget', () => {
       state: {
         deleted: false,
         selected: true,
-        temporary: false,
         dirty: true,
         new: true,
       },
@@ -235,7 +234,6 @@ export const useWidgetStore = defineStore('widget', () => {
           selected: false,
           dirty: false,
           deleted: false,
-          temporary: false,
         }
 
         delete collection.value[widget.uid]
