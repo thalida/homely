@@ -5,6 +5,7 @@ import { useWeatherStore } from '@/stores/weather';
 import { useLocationStore } from '@/stores/location';
 import { useDateTimeStore } from '@/stores/datetime';
 import { unitsSymbolMap, weatherLottieMap } from './index'
+import { getColorGradient } from '@/utils/datetime';
 
 const props = defineProps({
   widgetId: {
@@ -39,7 +40,7 @@ const colorGradient = computed(() => {
     return null
   }
 
-  return dateTimeStore.getColorGradient(weatherData.value.timezone, true)
+  return getColorGradient(weatherData.value.timezone, true)
 })
 
 const colorGradientCss = computed(() => {

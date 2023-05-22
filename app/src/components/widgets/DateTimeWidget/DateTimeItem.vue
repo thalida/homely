@@ -4,6 +4,7 @@ import type { IDateTime } from '@/types/widget';
 import { computed, type PropType } from 'vue';
 import { SunIcon, MoonIcon, SunriseIcon, SunsetIcon } from 'lucide-vue-next';
 import { isLightColor } from '@/utils/color';
+import { getColorGradient } from '@/utils/datetime';
 
 const dateTimeStore = useDateTimeStore();
 const props = defineProps({
@@ -24,7 +25,7 @@ const showOnlyDatetimes = computed(() => {
 })
 
 const colorGradient = computed(() => {
-  return dateTimeStore.getColorGradient(props.datetime.timezone)
+  return getColorGradient(props.datetime.timezone)
 })
 
 const colorGradientCss = computed(() => {
@@ -34,7 +35,7 @@ const colorGradientCss = computed(() => {
 
   const startCss = `rgb(${colorGradient.value.start.r}, ${colorGradient.value.start.g}, ${colorGradient.value.start.b})`
   const endCss = `rgb(${colorGradient.value.end.r}, ${colorGradient.value.end.g}, ${colorGradient.value.end.b})`
-  return `linear-gradient(135deg, ${startCss}, ${endCss})`
+  return `linear-gradient(225deg, ${startCss}, ${endCss})`
 })
 
 const contrastTextColor = computed(() => {
