@@ -58,9 +58,7 @@ async function handleDelete() {
 }
 
 function handleAddModuleClick(e: Event, widgetButton: IWidgetButton) {
-  console.log('handleAddModuleClick 1', widgetButton)
   emits('addModule', e, widgetButton);
-  console.log('handleAddModuleClick 2', widgetButton)
 }
 </script>
 
