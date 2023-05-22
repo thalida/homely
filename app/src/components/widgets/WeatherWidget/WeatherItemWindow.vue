@@ -72,6 +72,9 @@ const currentLottie = computed(() => {
       >
         <Vue3Lottie :key="currentLottie" v-if="currentLottie" :animationData="currentLottie" />
       </div>
+
+      <div class="glass-pane"></div>
+
       <div class="seams-wrapper">
         <div class="seams seams--horizontal">
           <div class="seam">
@@ -116,6 +119,7 @@ const currentLottie = computed(() => {
   border: var(--weather-window-seam-width) solid var(--weather-window-border);
 
   .sky {
+    z-index: 1;
     width: 100%;
     height: 100%;
     position: absolute;
@@ -123,7 +127,19 @@ const currentLottie = computed(() => {
     left: 0;
   }
 
+  .glass-pane {
+    z-index: 2;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    filter: blur(100cqb);
+    background-image: linear-gradient(180deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.2) 100%);
+  }
+
   .seams-wrapper {
+    z-index: 3;
     width: 100%;
     height: 100%;
     position: absolute;
