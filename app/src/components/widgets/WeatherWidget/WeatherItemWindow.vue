@@ -98,7 +98,13 @@ const showingBothLocationAndDetails = computed(() => {
         <Vue3Lottie :key="currentLottie" v-if="currentLottie" :animationData="currentLottie" />
       </div>
 
-      <div class="glass-pane"></div>
+      <div class="glass-pane">
+        <div class="glass-pane__streaks">
+          <div class="glass-pane__streak"></div>
+          <div class="glass-pane__streak"></div>
+        </div>
+        <div class="glass-pane__texture"></div>
+      </div>
 
       <div class="seams-wrapper">
         <div class="seams seams--horizontal">
@@ -139,7 +145,7 @@ const showingBothLocationAndDetails = computed(() => {
 
 <style scoped>
 .weather-window {
-  --weather-window-seam-width: 0.5cqmin;
+  --weather-window-seam-width: 0.45cqmin;
   --weather-window-border: #000;
 
   width: 100%;
@@ -165,8 +171,42 @@ const showingBothLocationAndDetails = computed(() => {
     position: absolute;
     top: 0;
     left: 0;
-    filter: blur(100cqb);
-    background-image: linear-gradient(180deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.2) 100%);
+
+    .glass-pane__texture {
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      background-image: linear-gradient(45deg, rgb(255 247 153 / 20%) 45%, rgba(255,255,255,0.2) 100%), url("@/components/widgets/WeatherWidget/assets/grain.svg");
+      filter: contrast(145%) brightness(650%);
+      opacity: 0.5;
+    }
+
+    .glass-pane__streaks {
+      display: flex;
+      flex-flow: column nowrap;
+      justify-content: space-evenly;
+      align-items: center;
+      z-index: 2;
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    .glass-pane__streak {
+      width: 50cqmax;
+      height: 10%;
+      background: rgba(255, 255, 255, 0.1);
+      transform: rotate(45deg);
+
+      &:first-child {
+        height: 20%;
+      }
+    }
   }
 
   .seams-wrapper {

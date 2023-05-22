@@ -98,7 +98,7 @@ export function getRealisticColorGradient({ sunsetTime, sunriseTime }: { sunsetT
   }
 
   const now = getDayJs(Date.now(), timezone);
-  let hourAgoIsh = now.subtract(2, 'hour');
+  let hourAgoIsh = now.subtract(1, 'hour');
   if (!isSameDate(hourAgoIsh, now)) {
     hourAgoIsh = hourAgoIsh.startOf('day');
   }
@@ -139,7 +139,7 @@ function getRealisticColor(now: Dayjs, { sunsetTime, sunriseTime }: { sunsetTime
 
     const ifValidStart = isSameDate(phaseStartTime, EOD);
     if (!ifValidStart) {
-      phaseStartTime = phaseStartTime.add(1, 'day');
+      phaseStartTime = phaseStartTime.subtract(1, 'day');
     }
   } else {
     colorPhase = TIME_COLORS.slice(SUNRISE_COLOR_IDX, SUNSET_COLOR_IDX + 1);
