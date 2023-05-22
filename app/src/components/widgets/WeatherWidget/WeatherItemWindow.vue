@@ -122,20 +122,20 @@ const showingBothLocationAndDetails = computed(() => {
 
     <div
       v-if="showInfo"
-      class="w-full flex flex-row flex-wrap items-center"
+      class="w-full flex flex-row items-center"
       :class="{
         'py-2 justify-center': !showingBothLocationAndDetails,
         'p-4 justify-between': showingBothLocationAndDetails,
       }">
       <div v-if="weatherItem.showLocation" class="py-2 px-4 bg-slate-200 rounded-full font-bold text-sm">{{ weatherLocation?.name }}</div>
-      <div class="px-2 grid grid-flow-col divide-x divide-slate-100 bg-slate-200 rounded-full text-sm">
-        <div v-if="weatherItem.showTime" class="p-2">{{ currentTime }}</div>
+      <div class="px-2 grid grid-flow-col divide-x divide-slate-100 bg-slate-200 rounded-full text-sm items-center justify-center">
+        <div v-if="weatherItem.showTime" class="truncate p-2">{{ currentTime }}</div>
         <div v-if="weatherItem.showTemperature" class="p-2">
           <span>{{ Math.round(weatherData.currently.temp) }}</span>
           <span v-if="weatherItem.showUnits" :innerHTML="unitsHTMLCodeMap[weatherItem.units]"></span>
           <span v-else-if="weatherItem.units !== EWeatherWidgetUnits.STANDARD">&deg;</span>
         </div>
-        <div v-if="weatherItem.showDescription" class="p-2 capitalize">
+        <div v-if="weatherItem.showDescription" class="p-2 capitalize text-center truncate">
           {{ weatherData.currently.weather[0].description }}
         </div>
       </div>
@@ -145,7 +145,7 @@ const showingBothLocationAndDetails = computed(() => {
 
 <style scoped>
 .weather-window {
-  --weather-window-seam-width: 0.45cqmin;
+  --weather-window-seam-width: 0.4cqmin;
   --weather-window-border: #000;
 
   width: 100%;
