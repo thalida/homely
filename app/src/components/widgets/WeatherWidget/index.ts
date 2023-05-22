@@ -30,6 +30,9 @@ import {
   cloudMoonSnowLottie,
 } from './weatherLottie';
 
+import { cloudMoonHeavyrainSvg, cloudMoonRainSvg, cloudMoonSnowSvg, cloudMoonSvg, cloudSunHeavyrainSvg, cloudSunRainSvg, cloudSunSnowSvg, cloudSunSvg, cloudSvg, cloudThunderHeavyrainSvg, moonSvg, sunSvg } from "./weather3dSvgs";
+import { ClearNightSvg, DrizzleSvg, FogSvg, MixRainfallSvg, MostlyCloudySvg, MostlySunnySvg, PartlyCloudyNightSvg, PartlyCloudySvg, RainSvg, SmokeSvg, SnowSvg } from "./weatherSvgs";
+
 const widget_type = EWidgetType.WEATHER;
 
 const menuItem: IWidgetMenuItem = {
@@ -104,6 +107,48 @@ export const weatherLottieMap: Record<string, any> = {
   "13n": cloudMoonSnowLottie,
   "50d": null,
   "50n": null,
+}
+
+export const weather3dSvgMap: Record<string, any> = {
+  "01d": sunSvg,
+  "01n": moonSvg,
+  "02d": cloudSunSvg,
+  "02n": cloudMoonSvg,
+  "03d": cloudSvg,
+  "03n": cloudSvg,
+  "04d": cloudSvg,
+  "04n": cloudSvg,
+  "09d": cloudSunRainSvg,
+  "09n": cloudMoonRainSvg,
+  "10d": cloudSunHeavyrainSvg,
+  "10n": cloudMoonHeavyrainSvg,
+  "11d": cloudThunderHeavyrainSvg,
+  "11n": cloudThunderHeavyrainSvg,
+  "13d": cloudSunSnowSvg,
+  "13n": cloudMoonSnowSvg,
+  "50d": null,
+  "50n": null,
+}
+
+export const weatherSvgMap: Record<string, any> = {
+  "01d": MostlySunnySvg,
+  "01n": ClearNightSvg,
+  "02d": PartlyCloudySvg,
+  "02n": PartlyCloudyNightSvg,
+  "03d": MostlyCloudySvg,
+  "03n": MostlyCloudySvg,
+  "04d": SmokeSvg,
+  "04n": SmokeSvg,
+  "09d": DrizzleSvg,
+  "09n": DrizzleSvg,
+  "10d": RainSvg,
+  "10n": RainSvg,
+  "11d": MixRainfallSvg,
+  "11n": MixRainfallSvg,
+  "13d": SnowSvg,
+  "13n": SnowSvg,
+  "50d": FogSvg,
+  "50n": FogSvg,
 }
 
 export const unitsSymbolMap: Record<string, string> = {

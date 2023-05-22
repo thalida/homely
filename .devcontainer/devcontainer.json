@@ -54,7 +54,12 @@
 				"svelte.svelte-vscode",
 				"ms-python.pylint",
 				"Vue.volar",
-				"Vue.vscode-typescript-vue-plugin"
+				"Vue.vscode-typescript-vue-plugin",
+				"bradlc.vscode-tailwindcss",
+				"esbenp.prettier-vscode",
+				"rvest.vs-code-prettier-eslint",
+				"yoavbls.pretty-ts-errors",
+				"ms-python.isort"
 			]
 		}
 	},

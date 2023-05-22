@@ -3,7 +3,6 @@ import { computed, type PropType } from 'vue';
 import type { IWeatherWidgetItem } from '@/types/widget'
 import { useWeatherStore } from '@/stores/weather';
 import { useLocationStore } from '@/stores/location';
-import { useDateTimeStore } from '@/stores/datetime';
 import { unitsSymbolMap, weatherLottieMap } from './index'
 import { getColorGradient } from '@/utils/datetime';
 
@@ -20,7 +19,6 @@ const props = defineProps({
   },
 })
 
-const dateTimeStore = useDateTimeStore()
 const weatherStore = useWeatherStore()
 const locationStore = useLocationStore()
 
@@ -109,7 +107,7 @@ const currentLottie = computed(() => {
 
 <style scoped>
 .weather-window {
-  --weather-window-seam-width: 5px;
+  --weather-window-seam-width: 0.5cqmin;
   --weather-window-border: #000;
 
   width: 100%;
@@ -163,6 +161,10 @@ const currentLottie = computed(() => {
     flex-flow: column nowrap;
     align-items: center;
     justify-content: space-evenly;
+
+    .seam:first-child {
+      margin-top: 10%;
+    }
   }
 
   .seams--vertical {
