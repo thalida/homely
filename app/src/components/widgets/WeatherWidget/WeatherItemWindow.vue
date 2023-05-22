@@ -77,6 +77,13 @@ const currentTime = computed(() => {
 
   return dateTimeStore.format("LT", weatherData.value.timezone)
 })
+
+const showInfo = computed(() => {
+  return props.weatherItem.showLocation || props.weatherItem.showTime || props.weatherItem.showTemperature || props.weatherItem.showDescription
+})
+const showingBothLocationAndDetails = computed(() => {
+  return props.weatherItem.showLocation && (props.weatherItem.showTime || props.weatherItem.showTemperature || props.weatherItem.showDescription)
+})
 </script>
 
 <template>
@@ -107,16 +114,24 @@ const currentTime = computed(() => {
       </div>
     </div>
 
-    <div class="my-4 px-2 grid grid-flow-col divide-x divide-slate-100 bg-slate-200 rounded-full text-sm">
-      <div v-if="weatherItem.showLocation" class="p-2 font-bold">{{ weatherLocation?.name }}</div>
-      <div v-if="weatherItem.showTime" class="p-2">{{ currentTime }}</div>
-      <div v-if="weatherItem.showTemperature" class="p-2">
-        <span>{{ Math.round(weatherData.currently.temp) }}</span>
-        <span v-if="weatherItem.showUnits" :innerHTML="unitsHTMLCodeMap[weatherItem.units]"></span>
-        <span v-else-if="weatherItem.units !== EWeatherWidgetUnits.STANDARD">&deg;</span>
-      </div>
-      <div v-if="weatherItem.showDescription" class="p-2 capitalize">
-        {{ weatherData.currently.weather[0].description }}
+    <div
+      v-if="showInfo"
+      class="w-full flex flex-row flex-wrap items-center"
+      :class="{
+        'py-2 justify-center': !showingBothLocationAndDetails,
+        'p-4 justify-between': showingBothLocationAndDetails,
+      }">
+      <div v-if="weatherItem.showLocation" class="py-2 px-4 bg-slate-200 rounded-full font-bold text-sm">{{ weatherLocation?.name }}</div>
+      <div class="px-2 grid grid-flow-col divide-x divide-slate-100 bg-slate-200 rounded-full text-sm">
+        <div v-if="weatherItem.showTime" class="p-2">{{ currentTime }}</div>
+        <div v-if="weatherItem.showTemperature" class="p-2">
+          <span>{{ Math.round(weatherData.currently.temp) }}</span>
+          <span v-if="weatherItem.showUnits" :innerHTML="unitsHTMLCodeMap[weatherItem.units]"></span>
+          <span v-else-if="weatherItem.units !== EWeatherWidgetUnits.STANDARD">&deg;</span>
+        </div>
+        <div v-if="weatherItem.showDescription" class="p-2 capitalize">
+          {{ weatherData.currently.weather[0].description }}
+        </div>
       </div>
     </div>
   </div>
