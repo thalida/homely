@@ -1,8 +1,9 @@
-import dayjs from 'dayjs'
+import dayjs, { Dayjs } from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import advancedFormat from 'dayjs/plugin/advancedFormat'
 import timezone from 'dayjs/plugin/timezone'
 import type { IColor } from '@/types/color'
+import { get } from 'lodash'
 
 dayjs.extend(utc)
 dayjs.extend(advancedFormat)
@@ -21,6 +22,7 @@ const TIME_COLORS = [
   { r: 255, g: 103, b: 116 },
   { r: 20, g: 40, b: 116 },
 ];
+const SUNRISE_COLOR_IDX = 2;
 const SUNSET_COLOR_IDX = 6;
 
 export function guessTimezone(): string {
@@ -59,6 +61,10 @@ export function timeOfDay(date: Date | number, timezone?: string | null) {
   }
 }
 
+function isSameDate(a: Dayjs, b: Dayjs) {
+  return a.isSame(b, 'day');
+}
+
 export function format(date: Date | number, formatString: string, timezone?: string | null) {
   const dayjsDate = getDayJs(date, timezone)
 
@@ -80,6 +86,79 @@ export function getColorBlend(startColor: IColor, endColor: IColor, distance: nu
   }
 
   return blendedColor;
+}
+
+export function getRealisticColorGradient({ sunsetTime, sunriseTime }: { sunsetTime: Dayjs, sunriseTime: Dayjs }, timezone: string | null = null) {
+  const now = getDayJs(Date.now(), timezone);
+  let hourAgoIsh = now.subtract(1, 'hour');
+  if (!isSameDate(hourAgoIsh, now)) {
+    hourAgoIsh = hourAgoIsh.startOf('day');
+  }
+  const gradientStart = getRealisticColor(hourAgoIsh, { sunsetTime, sunriseTime });
+  const gradientEnd = getRealisticColor(now, { sunsetTime, sunriseTime });
+
+  let gradient;
+
+  if (now >= sunsetTime) {
+    gradient = {
+      start: gradientEnd,
+      end: gradientStart,
+    };
+  } else {
+    gradient = {
+      start: gradientStart,
+      end: gradientEnd,
+    };
+  }
+
+  return gradient;
+}
+
+function getRealisticColor(now: Dayjs, { sunsetTime, sunriseTime }: { sunsetTime: Dayjs, sunriseTime: Dayjs }) {
+  let colorPhase, phaseStartTime, phaseEndTime;
+  if (now < sunriseTime) {
+    const midnight = now.startOf('day');
+    colorPhase = TIME_COLORS.slice(0, SUNRISE_COLOR_IDX + 1);
+    phaseStartTime = midnight;
+    phaseEndTime = sunriseTime;
+  } else if (now >= sunsetTime) {
+    const EOD = now.endOf('day');
+    colorPhase = TIME_COLORS.slice(SUNSET_COLOR_IDX);
+    colorPhase.push(TIME_COLORS[0]);
+    phaseStartTime = sunsetTime;
+    phaseEndTime = EOD;
+
+    const ifValidStart = isSameDate(phaseStartTime, EOD);
+    if (!ifValidStart) {
+      phaseStartTime = phaseStartTime.add(1, 'day');
+    }
+  } else {
+    colorPhase = TIME_COLORS.slice(SUNRISE_COLOR_IDX, SUNSET_COLOR_IDX + 1);
+    phaseStartTime = sunriseTime;
+    phaseEndTime = sunsetTime;
+  }
+
+  const nowMs = now.valueOf();
+  const phaseStartTimeMs = phaseStartTime.valueOf();
+  const phaseEndTimeMs = phaseEndTime.valueOf();
+
+
+  const timeSinceStart = nowMs - phaseStartTimeMs;
+  const timeInPhase = phaseEndTimeMs - phaseStartTimeMs;
+  const distance = timeSinceStart / timeInPhase;
+  const phaseSegments = timeInPhase / (colorPhase.length - 1);
+  const startColorIdx = Math.floor((colorPhase.length - 1) * distance);
+  const endColorIdx = startColorIdx + 1;
+  const startColorTime = phaseStartTimeMs + startColorIdx * phaseSegments;
+  const endColorTime = phaseStartTimeMs + endColorIdx * phaseSegments;
+  const timeInSegment = endColorTime - startColorTime;
+  const timeSinceSegmentStart = nowMs - startColorTime;
+  const distanceInSegment = timeSinceSegmentStart / timeInSegment;
+  const startColor = colorPhase[startColorIdx];
+  const endColor = colorPhase[endColorIdx];
+
+  const color = getColorBlend(startColor, endColor, distanceInSegment);
+  return color;
 }
 
 export function getColorGradient(timezone: string | null = null, flipAtSunset: boolean = false) {

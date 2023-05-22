@@ -3,7 +3,7 @@ import { computed, type PropType } from 'vue';
 import type { IWeatherWidgetItem } from '@/types/widget'
 import { useWeatherStore } from '@/stores/weather';
 import { useLocationStore } from '@/stores/location';
-import { unitsSymbolMap, weatherIconMap, weatherLottieMap } from './index'
+import { unitsSymbolMap, defaultWeatherSvgMap } from './index'
 
 const props = defineProps({
   widgetId: {
@@ -63,9 +63,7 @@ const currentLottie = computed(() => {
           {{ unitsSymbolMap[weatherItem.units] }}
         </span>
       </div>
-      <component
-        v-if="weatherItem.showIcon"
-        :is="weatherIconMap[weatherData.currently.weather[0].icon]" class="h-full w-auto max-h-16" />
+      <img v-if="weatherItem.showIcon" :src="defaultWeatherSvgMap[weatherData.currently.weather[0].icon]" class="h-full w-auto max-h-16" />
     </div>
   </div>
 </template>

@@ -82,7 +82,7 @@ async function handleAddWeatherItem() {
     units: EWeatherWidgetUnits.METRIC,
     showLocation: true,
     showTemperature: true,
-    showUnits: true,
+    showUnits: false,
     showIcon: true,
     showDescription: true,
   }

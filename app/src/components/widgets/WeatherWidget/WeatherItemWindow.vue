@@ -3,8 +3,8 @@ import { computed, type PropType } from 'vue';
 import type { IWeatherWidgetItem } from '@/types/widget'
 import { useWeatherStore } from '@/stores/weather';
 import { useLocationStore } from '@/stores/location';
-import { unitsSymbolMap, weatherLottieMap } from './index'
-import { getColorGradient } from '@/utils/datetime';
+import { unitsSymbolMap, defaultLottieMap } from './index'
+import { getColorGradient, getDayJs, getRealisticColorGradient } from '@/utils/datetime';
 
 const props = defineProps({
   widgetId: {
@@ -38,7 +38,16 @@ const colorGradient = computed(() => {
     return null
   }
 
-  return getColorGradient(weatherData.value.timezone, true)
+  const sunriseTime = getDayJs(weatherData.value.currently.sunrise * 1000, weatherData.value.timezone)
+  const sunsetTime = getDayJs(weatherData.value.currently.sunset * 1000, weatherData.value.timezone)
+
+  return getRealisticColorGradient(
+    {
+      sunriseTime,
+      sunsetTime,
+    },
+    weatherData.value.timezone
+  )
 })
 
 const colorGradientCss = computed(() => {
@@ -56,7 +65,7 @@ const currentLottie = computed(() => {
     return null
   }
 
-  return weatherLottieMap[weatherData.value.currently.weather[0].icon]
+  return defaultLottieMap[weatherData.value.currently.weather[0].icon]
 })
 </script>
 

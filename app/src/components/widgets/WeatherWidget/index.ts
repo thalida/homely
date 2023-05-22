@@ -32,6 +32,7 @@ import {
 
 import { cloudMoonHeavyrainSvg, cloudMoonRainSvg, cloudMoonSnowSvg, cloudMoonSvg, cloudSunHeavyrainSvg, cloudSunRainSvg, cloudSunSnowSvg, cloudSunSvg, cloudSvg, cloudThunderHeavyrainSvg, moonSvg, sunSvg } from "./weather3dSvgs";
 import { ClearNightSvg, DrizzleSvg, FogSvg, MixRainfallSvg, MostlyCloudySvg, MostlySunnySvg, PartlyCloudyNightSvg, PartlyCloudySvg, RainSvg, SmokeSvg, SnowSvg } from "./weatherSvgs";
+import { CloudsSunSunnyWeatherSvg, CloudyWeatherCloudsCloudSvg, FoggyWeatherFogCloudsCloudySvg, MoonWeatherCloudsCloudySvg, RainCloudDrizzelWeatherSvg, RainStormShowerWeatherSvg, StormWeatherNightCloudsSvg, WeatherNightMoonMoonlightSvg, WeatherSunSunnyTemperatureSvg, WinterSnowCloudsWeatherSvg } from "./weatherSvgs2";
 
 const widget_type = EWidgetType.WEATHER;
 
@@ -49,7 +50,7 @@ const menuItem: IWidgetMenuItem = {
           showLocation: true,
           showNumForecastDays: 5,
           showTemperature: true,
-          showUnits: true,
+          showUnits: false,
           showIcon: true,
           showDescription: true,
         },
@@ -67,28 +68,8 @@ const menuItem: IWidgetMenuItem = {
   },
 }
 
-export const weatherIconMap: Record<string, any> = {
-  "01d": SunIcon,
-  "01n": MoonIcon,
-  "02d": CloudSunIcon,
-  "02n": CloudMoonIcon,
-  "03d": CloudIcon,
-  "03n": CloudIcon,
-  "04d": CloudyIcon,
-  "04n": CloudyIcon,
-  "09d": CloudSunRainIcon,
-  "09n": CloudMoonRainIcon,
-  "10d": CloudRainIcon,
-  "10n": CloudRainIcon,
-  "11d": CloudLightningIcon,
-  "11n": CloudLightningIcon,
-  "13d": CloudSnowIcon,
-  "13n": CloudSnowIcon,
-  "50d": CloudFogIcon,
-  "50n": CloudFogIcon,
-}
-
-export const weatherLottieMap: Record<string, any> = {
+// https://ui8.net/msakta/products/weather-animated-icons
+export const weatherUI83dLottieMap: Record<string, any> = {
   "01d": sunLottie,
   "01n": moonLottie,
   "02d": cloudSunLottie,
@@ -109,7 +90,8 @@ export const weatherLottieMap: Record<string, any> = {
   "50n": null,
 }
 
-export const weather3dSvgMap: Record<string, any> = {
+// https://ui8.net/msakta/products/weather-animated-icons
+export const weatherUI83dSvgMap: Record<string, any> = {
   "01d": sunSvg,
   "01n": moonSvg,
   "02d": cloudSunSvg,
@@ -130,7 +112,8 @@ export const weather3dSvgMap: Record<string, any> = {
   "50n": null,
 }
 
-export const weatherSvgMap: Record<string, any> = {
+// https://ui8.net/likeapples/products/weather-icons-set
+export const weatherUI8LikeApplesSvgMap: Record<string, any> = {
   "01d": MostlySunnySvg,
   "01n": ClearNightSvg,
   "02d": PartlyCloudySvg,
@@ -150,6 +133,53 @@ export const weatherSvgMap: Record<string, any> = {
   "50d": FogSvg,
   "50n": FogSvg,
 }
+
+// https://www.iconfinder.com/iconsets/weather-color-2
+export const weatherColor2SvgMap: Record<string, any> = {
+  "01d": WeatherSunSunnyTemperatureSvg,
+  "01n": WeatherNightMoonMoonlightSvg,
+  "02d": CloudsSunSunnyWeatherSvg,
+  "02n": MoonWeatherCloudsCloudySvg,
+  "03d": CloudyWeatherCloudsCloudSvg,
+  "03n": CloudyWeatherCloudsCloudSvg,
+  "04d": CloudyWeatherCloudsCloudSvg,
+  "04n": CloudyWeatherCloudsCloudSvg,
+  "09d": RainCloudDrizzelWeatherSvg,
+  "09n": RainCloudDrizzelWeatherSvg,
+  "10d": RainStormShowerWeatherSvg,
+  "10n": RainStormShowerWeatherSvg,
+  "11d": StormWeatherNightCloudsSvg,
+  "11n": StormWeatherNightCloudsSvg,
+  "13d": WinterSnowCloudsWeatherSvg,
+  "13n": WinterSnowCloudsWeatherSvg,
+  "50d": FoggyWeatherFogCloudsCloudySvg,
+  "50n": FoggyWeatherFogCloudsCloudySvg,
+}
+
+// https://lucide.dev/
+export const weatherLucideIconMap: Record<string, any> = {
+  "01d": SunIcon,
+  "01n": MoonIcon,
+  "02d": CloudSunIcon,
+  "02n": CloudMoonIcon,
+  "03d": CloudIcon,
+  "03n": CloudIcon,
+  "04d": CloudyIcon,
+  "04n": CloudyIcon,
+  "09d": CloudSunRainIcon,
+  "09n": CloudMoonRainIcon,
+  "10d": CloudRainIcon,
+  "10n": CloudRainIcon,
+  "11d": CloudLightningIcon,
+  "11n": CloudLightningIcon,
+  "13d": CloudSnowIcon,
+  "13n": CloudSnowIcon,
+  "50d": CloudFogIcon,
+  "50n": CloudFogIcon,
+}
+
+export const defaultWeatherSvgMap = weatherColor2SvgMap;
+export const defaultLottieMap = weatherUI83dLottieMap;
 
 export const unitsSymbolMap: Record<string, string> = {
   [EWeatherWidgetUnits.STANDARD]: 'K',

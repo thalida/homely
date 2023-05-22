@@ -3,7 +3,7 @@ import { computed, type PropType } from 'vue';
 import type { IWeatherWidgetItem } from '@/types/widget'
 import { useWeatherStore } from '@/stores/weather';
 import { useLocationStore } from '@/stores/location';
-import { unitsSymbolMap, weatherIconMap, weatherSvgMap } from './index'
+import { unitsSymbolMap, defaultWeatherSvgMap } from './index'
 import * as datetimeUtils from '@/utils/datetime'
 
 const props = defineProps({
@@ -56,18 +56,18 @@ const forecastDays = computed(() => {
         'grid-cols-8': weatherItem.showNumForecastDays === 8,
       }"
     >
-      <div v-for="(day, i) in forecastDays" :key="i" class="flex flex-col items-center justify-between space-y-2">
+      <div v-for="(day, i) in forecastDays" :key="i" class="flex flex-col items-center justify-between">
         <span class="uppercase text-xs font-bold opacity-50">{{ datetimeUtils.format(day.dt * 1000, "ddd") }}</span>
-        <img v-if="weatherItem.showIcon" :src="weatherSvgMap[day.weather[0].icon]" class="h-auto w-full max-h-8" />
-        <component v-if="weatherItem.showIcon" :is="weatherIconMap[day.weather[0].icon]" class="h-auto w-full max-h-6" />
-        <div v-if="weatherItem.showTemperature" class="text-center flex flex-col items-center justify-center">
+        <img v-if="weatherItem.showIcon" :src="defaultWeatherSvgMap[day.weather[0].icon]" class="h-12" />
+        <div v-if="weatherItem.showTemperature" class="text-center flex flex-row items-center justify-center text-sm">
           <span class="font-bold">
             {{ Math.round(day.temp.max) }}&deg;
             <span v-if="weatherItem.showUnits">
               {{ unitsSymbolMap[weatherItem.units] }}
             </span>
           </span>
-          <span class="opacity-50">
+          <span class="opacity-50 mx-0.5">/</span>
+          <span class="opacity-70">
             {{ Math.round(day.temp.min) }}&deg;
             <span v-if="weatherItem.showUnits">
               {{ unitsSymbolMap[weatherItem.units] }}
