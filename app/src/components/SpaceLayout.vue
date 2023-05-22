@@ -25,7 +25,6 @@ const gridLayoutSettings = ref({
   rowHeight: 32,
   columns: 12,
   margin: [12, 12],
-  preventCollision: true,
 })
 
 
@@ -157,13 +156,13 @@ async function handleAddModule(event: Event, widgetButton: IWidgetButton) {
       :col-num="gridLayoutSettings.columns"
       :row-height="gridLayoutSettings.rowHeight"
       :margin="gridLayoutSettings.margin"
-      :responsive="false"
       :is-draggable="spaceStore.isEditMode"
+      :responsive="false"
       :is-resizable="false"
       :is-bounded="false"
       :vertical-compact="false"
-      :restore-on-drag="true"
-      :prevent-collision="gridLayoutSettings.preventCollision"
+      :restore-on-drag="false"
+      :prevent-collision="true"
     >
       <GridItem
         v-for="widgetId in widgetsStore.activeWidgetsBySpace[props.spaceId]"
