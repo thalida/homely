@@ -5,6 +5,7 @@ import { useWeatherStore } from '@/stores/weather';
 import { useLocationStore } from '@/stores/location';
 import { unitsHTMLCodeMap, defaultLottieMap } from './index'
 import { getDayJs, getRealisticColorGradient } from '@/utils/datetime';
+import { useDateTimeStore } from '@/stores/datetime';
 
 const props = defineProps({
   widgetId: {
@@ -19,6 +20,7 @@ const props = defineProps({
   },
 })
 
+const dateTimeStore = useDateTimeStore()
 const weatherStore = useWeatherStore()
 const locationStore = useLocationStore()
 
@@ -67,6 +69,14 @@ const currentLottie = computed(() => {
 
   return defaultLottieMap[weatherData.value.currently.weather[0].icon]
 })
+
+const currentTime = computed(() => {
+  if (!weatherData.value) {
+    return null
+  }
+
+  return dateTimeStore.format("LT", weatherData.value.timezone)
+})
 </script>
 
 <template>
@@ -99,12 +109,13 @@ const currentLottie = computed(() => {
 
     <div class="my-4 px-2 grid grid-flow-col divide-x divide-slate-100 bg-slate-200 rounded-full text-sm">
       <div v-if="weatherItem.showLocation" class="p-2 font-bold">{{ weatherLocation?.name }}</div>
-      <div v-if="weatherItem.showTemperature" class="p-2 font-bold">
+      <div class="p-2">{{ currentTime }}</div>
+      <div v-if="weatherItem.showTemperature" class="p-2">
         <span>{{ Math.round(weatherData.currently.temp) }}</span>
         <span v-if="weatherItem.showUnits" :innerHTML="unitsHTMLCodeMap[weatherItem.units]"></span>
         <span v-else-if="weatherItem.units !== EWeatherWidgetUnits.STANDARD">&deg;</span>
       </div>
-      <div v-if="weatherItem.showDescription" class="p-2 font-bold capitalize">
+      <div v-if="weatherItem.showDescription" class="p-2 capitalize">
         {{ weatherData.currently.weather[0].description }}
       </div>
     </div>

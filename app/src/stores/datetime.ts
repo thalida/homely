@@ -48,12 +48,12 @@ export const useDateTimeStore = defineStore('datetime', () => {
     interval.value = null
   }
 
-  function format(datetime: IDateTime, formatString: string) {
-    return datetimeUtils.format(now.value, formatString, datetime.timezone)
+  function format(formatString: string, timezone: string | null = null) {
+    return datetimeUtils.format(now.value, formatString, timezone)
   }
 
-  function getTimeOfDay(datetime: IDateTime) {
-    return datetimeUtils.timeOfDay(now.value, datetime.timezone)
+  function getTimeOfDay(timezone: string | null = null) {
+    return datetimeUtils.timeOfDay(now.value, timezone)
   }
 
   return {

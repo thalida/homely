@@ -1,13 +1,14 @@
 import dayjs, { Dayjs } from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import advancedFormat from 'dayjs/plugin/advancedFormat'
+import localizedFormat from 'dayjs/plugin/localizedFormat'
 import timezone from 'dayjs/plugin/timezone'
 import type { IColor } from '@/types/color'
-import { get } from 'lodash'
 
 dayjs.extend(utc)
 dayjs.extend(advancedFormat)
 dayjs.extend(timezone)
+dayjs.extend(localizedFormat)
 
 
 const HOURS_IN_DAY = 24;
@@ -89,11 +90,19 @@ export function getColorBlend(startColor: IColor, endColor: IColor, distance: nu
 }
 
 export function getRealisticColorGradient({ sunsetTime, sunriseTime }: { sunsetTime: Dayjs, sunriseTime: Dayjs }, timezone: string | null = null) {
+  if (!sunsetTime.isValid() || !sunriseTime.isValid()) {
+    return {
+      start: TIME_COLORS[SUNRISE_COLOR_IDX],
+      end: TIME_COLORS[SUNRISE_COLOR_IDX],
+    };
+  }
+
   const now = getDayJs(Date.now(), timezone);
   let hourAgoIsh = now.subtract(2, 'hour');
   if (!isSameDate(hourAgoIsh, now)) {
     hourAgoIsh = hourAgoIsh.startOf('day');
   }
+
   const gradientStart = getRealisticColor(hourAgoIsh, { sunsetTime, sunriseTime });
   const gradientEnd = getRealisticColor(now, { sunsetTime, sunriseTime });
 

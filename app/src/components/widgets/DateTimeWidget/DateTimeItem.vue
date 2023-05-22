@@ -64,11 +64,11 @@ const timezoneDisplay = computed(() => {
 })
 
 const datetimeLine1 = computed(() => {
-  return dateTimeStore.format(props.datetime, props.datetime.formatLine1)
+  return dateTimeStore.format(props.datetime.formatLine1, props.datetime.timezone)
 })
 
 const datetimeLine2 = computed(() => {
-  return dateTimeStore.format(props.datetime, props.datetime.formatLine2)
+  return dateTimeStore.format(props.datetime.formatLine2, props.datetime.timezone)
 })
 
 const dynamicIcon = computed(() => {
@@ -76,7 +76,7 @@ const dynamicIcon = computed(() => {
     return null
   }
 
-  const timeOfDay = dateTimeStore.getTimeOfDay(props.datetime)
+  const timeOfDay = dateTimeStore.getTimeOfDay(props.datetime.timezone)
 
   if (timeOfDay === 'day') {
     return SunIcon
