@@ -90,7 +90,7 @@ export function getColorBlend(startColor: IColor, endColor: IColor, distance: nu
 
 export function getRealisticColorGradient({ sunsetTime, sunriseTime }: { sunsetTime: Dayjs, sunriseTime: Dayjs }, timezone: string | null = null) {
   const now = getDayJs(Date.now(), timezone);
-  let hourAgoIsh = now.subtract(1, 'hour');
+  let hourAgoIsh = now.subtract(2, 'hour');
   if (!isSameDate(hourAgoIsh, now)) {
     hourAgoIsh = hourAgoIsh.startOf('day');
   }
