@@ -167,7 +167,7 @@ function handleItemMoveDown(e: Event, weatherItem: IWeatherWidgetItem, index: nu
           <span>Units</span>
           <select v-model="weatherRow.units">
             <option v-for="unit in supportedUnits" :key="unit" :value="unit">
-              {{ unit }} (&deg;{{ unitsSymbolMap[unit] }})
+              {{ unit }} ({{ unitsSymbolMap[unit] }})
             </option>
           </select>
         </label>

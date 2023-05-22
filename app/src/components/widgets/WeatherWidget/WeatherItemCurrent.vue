@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { computed, type PropType } from 'vue';
-import type { IWeatherWidgetItem } from '@/types/widget'
+import { EWeatherWidgetUnits, type IWeatherWidgetItem } from '@/types/widget'
 import { useWeatherStore } from '@/stores/weather';
 import { useLocationStore } from '@/stores/location';
-import { unitsSymbolMap, defaultWeatherSvgMap } from './index'
+import { unitsHTMLCodeMap, defaultWeatherSvgMap } from './index'
 
 const props = defineProps({
   widgetId: {
@@ -58,10 +58,9 @@ const currentLottie = computed(() => {
         'justify-between': weatherItem.showTemperature && weatherItem.showUnits,
       }">
       <div v-if="weatherItem.showTemperature" class="flex flex-row text-2xl font-bold">
-        {{ Math.round(weatherData.currently.temp) }}&deg;
-        <span v-if="weatherItem.showUnits">
-          {{ unitsSymbolMap[weatherItem.units] }}
-        </span>
+        <span> {{ Math.round(weatherData.currently.temp) }}</span>
+        <span v-if="weatherItem.showUnits" :innerHTML="unitsHTMLCodeMap[weatherItem.units]"></span>
+        <span v-else-if="weatherItem.units !== EWeatherWidgetUnits.STANDARD">&deg;</span>
       </div>
       <img v-if="weatherItem.showIcon" :src="defaultWeatherSvgMap[weatherData.currently.weather[0].icon]" class="h-full w-auto max-h-16" />
     </div>

@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { computed, type PropType } from 'vue';
-import type { IWeatherWidgetItem } from '@/types/widget'
+import { EWeatherWidgetUnits, type IWeatherWidgetItem } from '@/types/widget'
 import { useWeatherStore } from '@/stores/weather';
 import { useLocationStore } from '@/stores/location';
-import { unitsSymbolMap, defaultWeatherSvgMap } from './index'
+import { unitsHTMLCodeMap, defaultWeatherSvgMap } from './index'
 import * as datetimeUtils from '@/utils/datetime'
 
 const props = defineProps({
@@ -61,17 +61,15 @@ const forecastDays = computed(() => {
         <img v-if="weatherItem.showIcon" :src="defaultWeatherSvgMap[day.weather[0].icon]" class="h-12" />
         <div v-if="weatherItem.showTemperature" class="text-center flex flex-row items-center justify-center text-sm">
           <span class="font-bold">
-            {{ Math.round(day.temp.max) }}&deg;
-            <span v-if="weatherItem.showUnits">
-              {{ unitsSymbolMap[weatherItem.units] }}
-            </span>
+            <span>{{ Math.round(day.temp.max) }}</span>
+            <span v-if="weatherItem.showUnits" :innerHTML="unitsHTMLCodeMap[weatherItem.units]"></span>
+            <span v-else-if="weatherItem.units !== EWeatherWidgetUnits.STANDARD">&deg;</span>
           </span>
           <span class="opacity-50 mx-0.5">/</span>
           <span class="opacity-70">
-            {{ Math.round(day.temp.min) }}&deg;
-            <span v-if="weatherItem.showUnits">
-              {{ unitsSymbolMap[weatherItem.units] }}
-            </span>
+            <span>{{ Math.round(day.temp.min) }}</span>
+            <span v-if="weatherItem.showUnits" :innerHTML="unitsHTMLCodeMap[weatherItem.units]"></span>
+            <span v-else-if="weatherItem.units !== EWeatherWidgetUnits.STANDARD">&deg;</span>
           </span>
         </div>
       </div>

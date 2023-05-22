@@ -181,10 +181,15 @@ export const weatherLucideIconMap: Record<string, any> = {
 export const defaultWeatherSvgMap = weatherColor2SvgMap;
 export const defaultLottieMap = weatherUI83dLottieMap;
 
+export const unitsHTMLCodeMap: Record<string, string> = {
+  [EWeatherWidgetUnits.STANDARD]: '&#8490;', // K
+  [EWeatherWidgetUnits.METRIC]: '&#8451;', // C
+  [EWeatherWidgetUnits.IMPERIAL]: '&#8457;', // F
+}
 export const unitsSymbolMap: Record<string, string> = {
-  [EWeatherWidgetUnits.STANDARD]: 'K',
-  [EWeatherWidgetUnits.METRIC]: 'C',
-  [EWeatherWidgetUnits.IMPERIAL]: 'F',
+  [EWeatherWidgetUnits.STANDARD]: 'K', // K
+  [EWeatherWidgetUnits.METRIC]: 'C', // C
+  [EWeatherWidgetUnits.IMPERIAL]: 'F', // F
 }
 
 export default {

@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { computed, type PropType } from 'vue';
-import type { IWeatherWidgetItem } from '@/types/widget'
+import { EWeatherWidgetUnits, type IWeatherWidgetItem } from '@/types/widget'
 import { useWeatherStore } from '@/stores/weather';
 import { useLocationStore } from '@/stores/location';
-import { unitsSymbolMap, defaultLottieMap } from './index'
-import { getColorGradient, getDayJs, getRealisticColorGradient } from '@/utils/datetime';
+import { unitsHTMLCodeMap, defaultLottieMap } from './index'
+import { getDayJs, getRealisticColorGradient } from '@/utils/datetime';
 
 const props = defineProps({
   widgetId: {
@@ -100,10 +100,9 @@ const currentLottie = computed(() => {
     <div class="my-4 px-2 grid grid-flow-col divide-x divide-slate-100 bg-slate-200 rounded-full text-sm">
       <div v-if="weatherItem.showLocation" class="p-2 font-bold">{{ weatherLocation?.name }}</div>
       <div v-if="weatherItem.showTemperature" class="p-2 font-bold">
-        {{ Math.round(weatherData.currently.temp) }}&deg;
-        <span v-if="weatherItem.showUnits">
-          {{ unitsSymbolMap[weatherItem.units] }}
-        </span>
+        <span>{{ Math.round(weatherData.currently.temp) }}</span>
+        <span v-if="weatherItem.showUnits" :innerHTML="unitsHTMLCodeMap[weatherItem.units]"></span>
+        <span v-else-if="weatherItem.units !== EWeatherWidgetUnits.STANDARD">&deg;</span>
       </div>
       <div v-if="weatherItem.showDescription" class="p-2 font-bold capitalize">
         {{ weatherData.currently.weather[0].description }}
