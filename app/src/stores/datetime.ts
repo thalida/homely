@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia';
 import { ref, type Ref } from 'vue';
-import type { IDateTime } from '@/types/widget';
 import * as datetimeUtils from '@/utils/datetime';
 
 export const useDateTimeStore = defineStore('datetime', () => {

@@ -101,6 +101,7 @@ export interface IWeatherWidgetItem {
   showUnits: boolean,
   showIcon: boolean,
   showDescription: boolean,
+  showTime: boolean,
 }
 
 export enum EWeatherWidgetStyle {

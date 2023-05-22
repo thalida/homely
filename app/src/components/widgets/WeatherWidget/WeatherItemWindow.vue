@@ -109,7 +109,7 @@ const currentTime = computed(() => {
 
     <div class="my-4 px-2 grid grid-flow-col divide-x divide-slate-100 bg-slate-200 rounded-full text-sm">
       <div v-if="weatherItem.showLocation" class="p-2 font-bold">{{ weatherLocation?.name }}</div>
-      <div class="p-2">{{ currentTime }}</div>
+      <div v-if="weatherItem.showTime" class="p-2">{{ currentTime }}</div>
       <div v-if="weatherItem.showTemperature" class="p-2">
         <span>{{ Math.round(weatherData.currently.temp) }}</span>
         <span v-if="weatherItem.showUnits" :innerHTML="unitsHTMLCodeMap[weatherItem.units]"></span>

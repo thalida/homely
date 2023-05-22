@@ -53,6 +53,7 @@ const menuItem: IWidgetMenuItem = {
           showUnits: false,
           showIcon: true,
           showDescription: true,
+          showTime: true,
         },
       ],
     },

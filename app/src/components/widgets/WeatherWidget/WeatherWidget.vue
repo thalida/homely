@@ -85,6 +85,7 @@ async function handleAddWeatherItem() {
     showUnits: false,
     showIcon: true,
     showDescription: true,
+    showTime: true
   }
 
   const lastItem = widget.value.content.items.length > 0 ? widget.value.content.items[widget.value.content.items.length - 1] : {}
@@ -178,6 +179,10 @@ function handleItemMoveDown(e: Event, weatherItem: IWeatherWidgetItem, index: nu
         <label v-if="weatherRow.style !== EWeatherWidgetStyle.FORECAST">
           <span>Show Description</span>
           <input type="checkbox" v-model="weatherRow.showDescription" />
+        </label>
+        <label v-if="weatherRow.style === EWeatherWidgetStyle.WINDOW">
+          <span>Show Time</span>
+          <input type="checkbox" v-model="weatherRow.showTime" />
         </label>
         <div>
           <button v-if="index > 0" @click="handleItemMoveUp($event, weatherRow, index)">Move Up</button>
