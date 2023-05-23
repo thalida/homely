@@ -15,7 +15,7 @@ start = "api.main:start"
 python = "^3.11"
 fastapi = "^0.95.1"
 uvicorn = {extras = ["standard"], version = "^0.22.0"}
-requests = "^2.30.0"
+requests = "^2.31.0"
 beautifulsoup4 = "^4.12.2"
 
 
