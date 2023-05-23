@@ -20,7 +20,7 @@ export interface IWidget {
   layout: IWidgetLayout,
   space: string,
   card_style: Record<string, any>
-  link: string | null,
+  link?: string | null,
 }
 
 export interface IWidgetState {
@@ -36,7 +36,6 @@ export interface IWidgetLayout {
   y: number
   w: number
   h: number
-  static?: boolean
   preserveAspectRatio?: boolean
   isResizable?: boolean
 }
@@ -46,11 +45,8 @@ export interface IWidgetMenuItem {
   widget: IWidgetButton
 }
 
-export interface IWidgetButton {
-  widget_type: EWidgetType
-  content: Record<string, any>
-  layout: Pick<IWidgetLayout, 'w' | 'h' | 'isResizable' | 'preserveAspectRatio'>
-  card_style: Record<string, any>
+export interface IWidgetButton extends Omit<IWidget, 'uid' | 'space' | 'state' | 'layout'> {
+  layout: Omit<IWidgetLayout, 'i' | 'x' | 'y'>
 }
 
 export interface ITextWidget extends IWidget {
