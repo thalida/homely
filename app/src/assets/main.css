@@ -16,3 +16,51 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+
+@layer utilities {
+  .widget-bg-red {
+    background-color: theme(colors.red.300);
+  }
+
+  .widget-bg-orange {
+    background-color: theme(colors.orange.300);
+  }
+
+  .widget-bg-yellow {
+    background-color: theme(colors.yellow.300);
+  }
+
+  .widget-bg-green {
+    background-color: theme(colors.green.300);
+  }
+
+  .widget-bg-blue {
+    background-color: theme(colors.teal.300);
+  }
+
+  .widget-bg-purple {
+    background-color: theme(colors.indigo.300);
+  }
+
+  .widget-bg-pink {
+    background-color: theme(colors.pink.300);
+  }
+
+  .widget-bg-white {
+    background-color: theme(colors.slate.100);
+  }
+
+  .widget-bg-gray {
+    background-color: theme(colors.slate.300);
+  }
+
+  .widget-bg-black {
+    background-color: theme(colors.slate.900);
+    color: theme(colors.slate.100);
+  }
+
+  .widget-bg-transparent {
+    background-color: transparent;
+  }
+}

@@ -1,4 +1,4 @@
-import { ELinkWidgetStyle, EWidgetType, type IWidgetMenuItem } from "@/types/widget";
+import { DEFAULT_WIDGET_COLOR, ELinkWidgetStyle, EWidgetType, type IWidgetMenuItem } from "@/types/widget";
 import component from "./LinkWidget.vue";
 
 const widget_type = EWidgetType.LINK;
@@ -18,7 +18,7 @@ const menuItem: IWidgetMenuItem = {
       metadata: {},
     },
     card_style: {
-      backgroundColor: null,
+      background_color: DEFAULT_WIDGET_COLOR,
     },
     layout: {
       w: 3,

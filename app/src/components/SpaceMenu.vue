@@ -87,6 +87,7 @@ function handleAddModuleClick(e: Event, widgetButton: IWidgetButton) {
         {{ menuItem.label }}
       </button>
     </template>
+    <div id="space__shared-widget-menu"></div>
     <div id="space__widget-menu"></div>
   </div>
 </template>

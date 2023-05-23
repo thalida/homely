@@ -1,4 +1,4 @@
-import { EWidgetType, type IWidgetMenuItem } from "@/types/widget";
+import { DEFAULT_WIDGET_COLOR, EWidgetType, type IWidgetMenuItem } from "@/types/widget";
 import component from "./DateTimeWidget.vue";
 
 const widget_type = EWidgetType.DATETIME;
@@ -24,7 +24,7 @@ const menuItem: IWidgetMenuItem = {
       ],
     },
     card_style: {
-      backgroundColor: null,
+      background_color: DEFAULT_WIDGET_COLOR,
     },
     layout: {
       w: 3,

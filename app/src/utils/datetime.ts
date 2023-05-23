@@ -102,9 +102,9 @@ export function getRealisticColorGradient({ sunsetTime, sunriseTime }: { sunsetT
   }
 
   const now = getDayJs(Date.now(), timezone);
-  const hourAgoIsh = now.subtract(1, 'hour');
+  const pastTime = now.subtract(2, 'hour');
 
-  const gradientStart = getRealisticColor(hourAgoIsh, { sunsetTime, sunriseTime });
+  const gradientStart = getRealisticColor(pastTime, { sunsetTime, sunriseTime });
   const gradientEnd = getRealisticColor(now, { sunsetTime, sunriseTime });
 
   let gradient;

@@ -1,4 +1,4 @@
-import { EWeatherWidgetStyle, EWeatherWidgetUnits, EWidgetType, type IWidgetMenuItem } from "@/types/widget";
+import { DEFAULT_WIDGET_COLOR, EWeatherWidgetStyle, EWeatherWidgetUnits, EWidgetType, type IWidgetMenuItem } from "@/types/widget";
 import component from "./WeatherWidget.vue";
 import {
   SunIcon,
@@ -59,7 +59,7 @@ const menuItem: IWidgetMenuItem = {
       ],
     },
     card_style: {
-      backgroundColor: null,
+      background_color: DEFAULT_WIDGET_COLOR,
     },
     layout: {
       w: 3,

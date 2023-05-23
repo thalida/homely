@@ -1,4 +1,4 @@
-import { EImageWidgetBackgroundPosition, EImageWidgetBackgroundRepeat, EImageWidgetBackgroundSize, EWidgetType, type IWidgetMenuItem } from "@/types/widget";
+import { DEFAULT_WIDGET_COLOR, EImageWidgetBackgroundPosition, EImageWidgetBackgroundRepeat, EImageWidgetBackgroundSize, EWidgetType, type IWidgetMenuItem } from "@/types/widget";
 import component from "./ImageWidget.vue";
 
 const widget_type = EWidgetType.IMAGE;
@@ -14,7 +14,7 @@ const menuItem: IWidgetMenuItem = {
       backgroundRepeat: EImageWidgetBackgroundRepeat.NO_REPEAT,
     },
     card_style: {
-      backgroundColor: null,
+      background_color: DEFAULT_WIDGET_COLOR,
     },
     layout: {
       w: 2,

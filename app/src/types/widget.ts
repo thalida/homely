@@ -8,6 +8,23 @@ export enum EWidgetType {
   WEATHER = 40,
 }
 
+export enum EWidgetColorNames {
+  RED = 'red',
+  ORANGE = 'orange',
+  YELLOW = 'yellow',
+  GREEN = 'green',
+  BLUE = 'blue',
+  PURPLE = 'purple',
+  PINK = 'pink',
+  WHITE = 'white',
+  GRAY = 'gray',
+  BLACK = 'black',
+  DYNAMIC = 'dynamic',
+  TRANSPARENT = 'transparent',
+}
+
+export const DEFAULT_WIDGET_COLOR = EWidgetColorNames.DYNAMIC
+
 export interface IWidgets {
   [key: string]: IWidget
 }
@@ -19,7 +36,9 @@ export interface IWidget {
   state: IWidgetState
   layout: IWidgetLayout,
   space: string,
-  card_style: Record<string, any>
+  card_style: {
+    background_color: EWidgetColorNames,
+  },
   link?: string | null,
 }
 

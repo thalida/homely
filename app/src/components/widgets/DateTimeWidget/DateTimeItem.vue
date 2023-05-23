@@ -98,6 +98,14 @@ const contrastTextColor: Ref<string> = ref("")
 // })
 
 watchEffect(async () => {
+  if (!props.datetime.showDynamicBackground) {
+    colorGradient.value = null
+    colorGradientCss.value = ""
+    contrastTextColor.value = ""
+
+    return
+  }
+
   if (props.datetime.useRealisticGradient) {
     colorGradient.value = await dateTimeStore.getRealisticColorGradient(props.datetime)
   } else {

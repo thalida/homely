@@ -1,4 +1,4 @@
-import { EWidgetType, type IWidgetMenuItem } from "@/types/widget";
+import { DEFAULT_WIDGET_COLOR, EWidgetType, type IWidgetMenuItem } from "@/types/widget";
 import component from "./TextWidget.vue";
 
 const widget_type = EWidgetType.TEXT;
@@ -16,7 +16,7 @@ const menuItem: IWidgetMenuItem = {
       lineHeight: 1.5,
     },
     card_style: {
-      backgroundColor: null,
+      background_color: DEFAULT_WIDGET_COLOR,
     },
     layout: {
       w: 3,
