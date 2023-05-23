@@ -28,6 +28,7 @@ import {
   cloudThunderHeavyrainLottie,
   cloudSunSnowLottie,
   cloudMoonSnowLottie,
+  windLottie,
 } from './weatherLottie';
 
 import { cloudMoonHeavyrainSvg, cloudMoonRainSvg, cloudMoonSnowSvg, cloudMoonSvg, cloudSunHeavyrainSvg, cloudSunRainSvg, cloudSunSnowSvg, cloudSunSvg, cloudSvg, cloudThunderHeavyrainSvg, moonSvg, sunSvg } from "./weather3dSvgs";
@@ -87,8 +88,8 @@ export const weatherUI83dLottieMap: Record<string, any> = {
   "11n": cloudThunderHeavyrainLottie,
   "13d": cloudSunSnowLottie,
   "13n": cloudMoonSnowLottie,
-  "50d": null,
-  "50n": null,
+  "50d": windLottie,
+  "50n": windLottie,
 }
 
 // https://ui8.net/msakta/products/weather-animated-icons

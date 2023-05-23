@@ -14,17 +14,22 @@ dayjs.extend(localizedFormat)
 const HOURS_IN_DAY = 24;
 const MINUTES_IN_HOUR = 60;
 const TIME_COLORS: IColor[] = [
-  { r: 4, g: 10, b: 30 },
-  { r: 139, g: 152, b: 206 },
-  { r: 86, g: 216, b: 255 },
-  { r: 255, g: 216, b: 116 },
-  { r: 255, g: 183, b: 116 },
-  { r: 255, g: 153, b: 116 },
-  { r: 255, g: 103, b: 116 },
-  { r: 20, g: 40, b: 116 },
+  { r: 0, g: 32, b: 55 },
+  { r: 0, g: 53, b: 94 },
+  { r: 7, g: 77, b: 129 },
+  { r: 24, g: 106, b: 167 },
+  { r: 39, g: 134, b: 203 },
+  { r: 64, g: 183, b: 234 },
+  { r: 100, g: 207, b: 253 },
+  { r: 100, g: 225, b: 253 },
+  { r: 255, g: 223, b: 111 },
+  { r: 255, g: 171, b: 111 },
+  { r: 255, g: 106, b: 106 },
+  { r: 39, g: 75, b: 203 },
 ];
-const SUNRISE_COLOR_IDX = 2;
-const SUNSET_COLOR_IDX = 6;
+
+const SUNRISE_COLOR_IDX = 3;
+const SUNSET_COLOR_IDX = 8;
 
 export function guessTimezone(): string {
   return dayjs.tz.guess()
