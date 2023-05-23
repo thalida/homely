@@ -17,50 +17,221 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+@layer components {
+  .widget-pill {
+    @apply py-2 px-4 rounded-full font-bold text-sm;
+  }
+
+  .widget-pill-group {
+    @apply px-2 grid grid-flow-col divide-x rounded-full text-sm items-center justify-center
+  }
+}
 
 @layer utilities {
-  .widget-bg-red {
-    background-color: theme(colors.red.300);
+  .widget-theme-red {
+    &.widget-theme-bg,
+    .widget-theme-bg {
+      background-color: theme(colors.red.300);
+    }
+
+    .widget-pill,
+    .widget-pill-group {
+      background-color: theme(colors.red.300);
+      color: theme(colors.red.800);
+    }
+
+    .widget-pill-group {
+      @apply divide-red-200;
+    }
   }
 
-  .widget-bg-orange {
-    background-color: theme(colors.orange.300);
+  .widget-theme-orange {
+    &.widget-theme-bg,
+    .widget-theme-bg {
+      background-color: theme(colors.orange.300);
+    }
+
+    .widget-pill,
+    .widget-pill-group {
+      background-color: theme(colors.orange.300);
+      color: theme(colors.orange.900);
+    }
+
+    .widget-pill-group {
+      @apply divide-orange-200;
+    }
   }
 
-  .widget-bg-yellow {
-    background-color: theme(colors.yellow.300);
+  .widget-theme-yellow {
+    &.widget-theme-bg,
+    .widget-theme-bg {
+      background-color: theme(colors.yellow.300);
+    }
+
+    .widget-pill,
+    .widget-pill-group {
+      background-color: theme(colors.yellow.300);
+      color: theme(colors.yellow.900);
+    }
+
+    .widget-pill-group {
+      @apply divide-yellow-200;
+    }
   }
 
-  .widget-bg-green {
-    background-color: theme(colors.green.300);
+  .widget-theme-green {
+    &.widget-theme-bg,
+    .widget-theme-bg {
+      background-color: theme(colors.green.300);
+    }
+
+    .widget-pill,
+    .widget-pill-group {
+      background-color: theme(colors.green.300);
+      color: theme(colors.green.900);
+    }
+
+    .widget-pill-group {
+      @apply divide-green-200;
+    }
   }
 
-  .widget-bg-blue {
-    background-color: theme(colors.teal.300);
+  .widget-theme-blue {
+    &.widget-theme-bg,
+    .widget-theme-bg {
+      background-color: theme(colors.teal.300);
+    }
+
+    .widget-pill,
+    .widget-pill-group {
+      background-color: theme(colors.teal.300);
+      color: theme(colors.teal.900);
+    }
+
+    .widget-pill-group {
+      @apply divide-teal-200;
+    }
   }
 
-  .widget-bg-purple {
-    background-color: theme(colors.indigo.300);
+  .widget-theme-purple {
+    &.widget-theme-bg,
+    .widget-theme-bg {
+      background-color: theme(colors.indigo.300);
+    }
+
+    .widget-pill,
+    .widget-pill-group {
+      background-color: theme(colors.indigo.300);
+      color: theme(colors.indigo.900);
+    }
+
+    .widget-pill-group {
+      @apply divide-indigo-200;
+    }
   }
 
-  .widget-bg-pink {
-    background-color: theme(colors.pink.300);
+  .widget-theme-pink {
+    &.widget-theme-bg,
+    .widget-theme-bg {
+      background-color: theme(colors.pink.300);
+    }
+
+    .widget-pill,
+    .widget-pill-group {
+      background-color: theme(colors.pink.300);
+      color: theme(colors.pink.900);
+    }
+
+    .widget-pill-group {
+      @apply divide-pink-200;
+    }
   }
 
-  .widget-bg-white {
-    background-color: theme(colors.slate.100);
+  .widget-theme-gray {
+    &.widget-theme-bg,
+    .widget-theme-bg {
+      background-color: theme(colors.slate.300);
+    }
+
+    .widget-pill,
+    .widget-pill-group {
+      background-color: theme(colors.slate.300);
+      color: theme(colors.slate.900);
+    }
+
+    .widget-pill-group {
+      @apply divide-slate-200;
+    }
   }
 
-  .widget-bg-gray {
-    background-color: theme(colors.slate.300);
+  .widget-theme-black,
+  .widget-theme-dynamic,
+  .light .widget-theme-dynamic {
+    &.widget-theme-bg,
+    .widget-theme-bg {
+      background-color: theme(colors.slate.900);
+    }
+
+    &.widget-theme-text,
+    .widget-theme-text {
+      color: theme(colors.slate.100);
+    }
+
+    .widget-pill,
+    .widget-pill-group {
+      background-color: theme(colors.slate.900);
+      color: theme(colors.slate.100);
+    }
+
+    .widget-pill-group {
+      @apply divide-slate-950;
+    }
   }
 
-  .widget-bg-black {
-    background-color: theme(colors.slate.900);
-    color: theme(colors.slate.100);
+  .widget-theme-white,
+  .dark .widget-theme-dynamic {
+    &.widget-theme-bg,
+    .widget-theme-bg {
+      background-color: theme(colors.slate.100);
+    }
+
+    &.widget-theme-text,
+    .widget-theme-text {
+      color: theme(colors.slate.900);
+    }
+
+    .widget-pill,
+    .widget-pill-group {
+      background-color: theme(colors.slate.100);
+      color: theme(colors.slate.900);
+    }
+
+    .widget-pill-group {
+      @apply divide-slate-200;
+    }
   }
 
-  .widget-bg-transparent {
-    background-color: transparent;
+  .widget-theme-transparent {
+    &.widget-theme-bg,
+    .widget-theme-bg {
+      background-color: transparent;
+    }
+
+    .widget-pill,
+    .widget-pill-group {
+      background-color: transparent;
+      color: theme(colors.slate.900);
+    }
+
+    .widget-pill-group {
+      @apply divide-transparent;
+    }
+  }
+
+  .dark .widget-theme-transparent {
+    .widget-pill,
+    .widget-pill-group {
+      color: theme(colors.slate.100);
+    }
   }
 }

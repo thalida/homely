@@ -35,7 +35,7 @@ const weatherData = computed(() => {
 
 
 <template>
-  <div v-if="weatherData && weatherData.currently" class="flex flex-col w-full py-2 px-4 grow justify-center items-center space-y-2">
+  <div v-if="weatherData && weatherData.currently" class="widget-theme-bg widget-theme-text flex flex-col w-full py-2 px-4 grow justify-center items-center space-y-2">
     <div class="flex flex-row justify-between items-center w-full text-sm">
       <span v-if="weatherItem.showLocation">{{ weatherLocation?.name }}</span>
       <span v-if="weatherItem.showDescription" class="capitalize">

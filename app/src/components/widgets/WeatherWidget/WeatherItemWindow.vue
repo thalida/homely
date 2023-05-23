@@ -130,8 +130,8 @@ const showingBothLocationAndDetails = computed(() => {
         'py-2 justify-center': !showingBothLocationAndDetails,
         'p-4 justify-between': showingBothLocationAndDetails,
       }">
-      <div v-if="weatherItem.showLocation" class="py-2 px-4 bg-slate-200 bg-opacity-50 rounded-full font-bold text-sm">{{ weatherLocation?.name }}</div>
-      <div class="px-2 grid grid-flow-col divide-x divide-slate-100 bg-slate-200 bg-opacity-50 rounded-full text-sm items-center justify-center">
+      <div v-if="weatherItem.showLocation" class="widget-pill">{{ weatherLocation?.name }}</div>
+      <div class="widget-pill-group">
         <div v-if="weatherItem.showTime" class="truncate p-2">{{ currentTime }}</div>
         <div v-if="weatherItem.showTemperature" class="p-2">
           <span>{{ Math.round(weatherData.currently.temp) }}</span>

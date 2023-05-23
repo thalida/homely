@@ -103,7 +103,7 @@ function handleResetMetadata() {
     :is="isEditing ? 'div' : 'a'"
     ref="linkEl"
     v-bind="$attrs"
-    class="flex cursor-pointer"
+    class="widget-theme-bg widget-theme-text flex cursor-pointer"
     :class="{
       'justify-center items-center p-8': widget.content.style === ELinkWidgetStyle.ICON,
       'relative flex flex-row items-center justify-end': widget.content.style === ELinkWidgetStyle.FLAG,

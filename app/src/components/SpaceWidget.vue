@@ -62,19 +62,19 @@ watch(() => widget.value?.card_style, (after, before) => {
     :widgetId="props.widgetId"
     class="rounded-2xl w-full h-full overflow-auto"
     :class="{
-        'ring-2 ring-yellow-500 drop-shadow-xl': isSelected,
-        'widget-bg-red': widget.card_style.background_color === EWidgetColorNames.RED,
-        'widget-bg-orange': widget.card_style.background_color === EWidgetColorNames.ORANGE,
-        'widget-bg-yellow': widget.card_style.background_color === EWidgetColorNames.YELLOW,
-        'widget-bg-green': widget.card_style.background_color === EWidgetColorNames.GREEN,
-        'widget-bg-blue': widget.card_style.background_color === EWidgetColorNames.BLUE,
-        'widget-bg-purple': widget.card_style.background_color === EWidgetColorNames.PURPLE,
-        'widget-bg-pink': widget.card_style.background_color === EWidgetColorNames.PINK,
-        'widget-bg-white': widget.card_style.background_color === EWidgetColorNames.WHITE,
-        'widget-bg-gray': widget.card_style.background_color === EWidgetColorNames.GRAY,
-        'widget-bg-black': widget.card_style.background_color === EWidgetColorNames.BLACK,
-        'widget-bg-transparent': widget.card_style.background_color === EWidgetColorNames.TRANSPARENT,
-        'widget-bg-white dark:widget-bg-black': widget.card_style.background_color === EWidgetColorNames.DYNAMIC,
+        'ring-2 ring-yellow-500': isSelected,
+        'widget-theme-red': widget.card_style.background_color === EWidgetColorNames.RED,
+        'widget-theme-orange': widget.card_style.background_color === EWidgetColorNames.ORANGE,
+        'widget-theme-yellow': widget.card_style.background_color === EWidgetColorNames.YELLOW,
+        'widget-theme-green': widget.card_style.background_color === EWidgetColorNames.GREEN,
+        'widget-theme-blue': widget.card_style.background_color === EWidgetColorNames.BLUE,
+        'widget-theme-purple': widget.card_style.background_color === EWidgetColorNames.PURPLE,
+        'widget-theme-pink': widget.card_style.background_color === EWidgetColorNames.PINK,
+        'widget-theme-white': widget.card_style.background_color === EWidgetColorNames.WHITE,
+        'widget-theme-gray': widget.card_style.background_color === EWidgetColorNames.GRAY,
+        'widget-theme-black': widget.card_style.background_color === EWidgetColorNames.BLACK,
+        'widget-theme-transparent': widget.card_style.background_color === EWidgetColorNames.TRANSPARENT,
+        'widget-theme-white dark:widget-theme-black': widget.card_style.background_color === EWidgetColorNames.DYNAMIC,
       }"
   />
   <teleport to="#space__shared-widget-menu">

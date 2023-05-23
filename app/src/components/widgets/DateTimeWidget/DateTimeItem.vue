@@ -126,7 +126,7 @@ watchEffect(async () => {
 
 <template>
 <div
-  class="flex flex-row items-center justify-between px-4 py-2 grow"
+  class="widget-theme-bg widget-theme-text flex flex-row items-center justify-between px-4 py-2 grow"
   :style="{
     'background-image': colorGradientCss,
     'color': contrastTextColor,
