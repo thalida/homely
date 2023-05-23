@@ -36,7 +36,6 @@ const weatherData = computed(() => {
 const forecastDays = computed(() => {
   return weatherData.value ? weatherData.value.forecast.slice(0, props.weatherItem.showNumForecastDays) : []
 })
-
 </script>
 
 

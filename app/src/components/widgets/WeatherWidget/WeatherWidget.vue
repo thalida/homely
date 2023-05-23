@@ -184,6 +184,10 @@ function handleItemMoveDown(e: Event, weatherItem: IWeatherWidgetItem, index: nu
           <span>Show Time</span>
           <input type="checkbox" v-model="weatherRow.showTime" />
         </label>
+        <label v-if="weatherRow.style === EWeatherWidgetStyle.WINDOW">
+          <span>Use Realistic Gradient</span>
+          <input type="checkbox" v-model="weatherRow.useRealisticGradient" />
+        </label>
         <div>
           <button v-if="index > 0" @click="handleItemMoveUp($event, weatherRow, index)">Move Up</button>
           <button v-if="index < numWeatherItems - 1" @click="handleItemMoveDown($event, weatherRow, index)">Move Down</button>

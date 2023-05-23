@@ -1,13 +1,18 @@
 <script setup lang="ts">
 import { useDateTimeStore } from '@/stores/datetime';
 import type { IDateTime } from '@/types/widget';
-import { computed, type PropType } from 'vue';
+import { computed, ref, watchEffect, type PropType, type Ref } from 'vue';
 import { SunIcon, MoonIcon, SunriseIcon, SunsetIcon } from 'lucide-vue-next';
 import { isLightColor } from '@/utils/color';
 import { useLocationStore } from '@/stores/location';
+import { useWeatherStore } from '@/stores/weather';
+import { getDayJs, getRealisticColorGradient } from '@/utils/datetime';
+import type { IColor } from '@/types/color';
 
 const dateTimeStore = useDateTimeStore();
 const locationStore = useLocationStore();
+const weatherStore = useWeatherStore();
+
 const props = defineProps({
   widgetId: {
     type: String,
@@ -28,28 +33,6 @@ const location = computed(() => {
 
 const showOnlyDatetimes = computed(() => {
   return !props.datetime.showDynamicIcon && !props.datetime.showLocation
-})
-
-const colorGradient = computed(() => {
-  return dateTimeStore.getColorGradient(props.datetime)
-})
-
-const colorGradientCss = computed(() => {
-  if(!props.datetime.showDynamicBackground) {
-    return ""
-  }
-
-  const startCss = `rgb(${colorGradient.value.start.r}, ${colorGradient.value.start.g}, ${colorGradient.value.start.b})`
-  const endCss = `rgb(${colorGradient.value.end.r}, ${colorGradient.value.end.g}, ${colorGradient.value.end.b})`
-  return `linear-gradient(225deg, ${startCss}, ${endCss})`
-})
-
-const contrastTextColor = computed(() => {
-  if (!props.datetime.showDynamicBackground) {
-    return ""
-  }
-
-  return isLightColor(colorGradient.value.end) ? 'black' : 'white'
 })
 
 const formattedDateTimes = computed(() => {
@@ -80,6 +63,55 @@ const dynamicIcon = computed(() => {
   }
 
   return null
+})
+
+
+
+const colorGradient: Ref<{start: IColor, end: IColor} | null> = ref(null)
+const colorGradientCss: Ref<string> = ref("")
+const contrastTextColor: Ref<string> = ref("")
+
+// const colorGradient = computed(() => {
+//   if (props.datetime.useRealisticGradient) {
+//     return await dateTimeStore.getRealisticColorGradient(props.datetime)
+//   }
+
+//   return dateTimeStore.getColorGradient(props.datetime)
+// })
+
+// const colorGradientCss = computed(() => {
+//   if(!props.datetime.showDynamicBackground || colorGradient.value === null) {
+//     return ""
+//   }
+
+//   const startCss = `rgb(${colorGradient.value.start.r}, ${colorGradient.value.start.g}, ${colorGradient.value.start.b})`
+//   const endCss = `rgb(${colorGradient.value.end.r}, ${colorGradient.value.end.g}, ${colorGradient.value.end.b})`
+//   return `linear-gradient(225deg, ${startCss}, ${endCss})`
+// })
+
+// const contrastTextColor = computed(() => {
+//   if (!props.datetime.showDynamicBackground) {
+//     return ""
+//   }
+
+//   return isLightColor(colorGradient.value.end) ? 'black' : 'white'
+// })
+
+watchEffect(async () => {
+  if (props.datetime.useRealisticGradient) {
+    colorGradient.value = await dateTimeStore.getRealisticColorGradient(props.datetime)
+  } else {
+    colorGradient.value = dateTimeStore.getColorGradient(props.datetime)
+  }
+
+  if (colorGradient.value === null) {
+    return
+  }
+
+  const startCss = `rgb(${colorGradient.value.start.r}, ${colorGradient.value.start.g}, ${colorGradient.value.start.b})`
+  const endCss = `rgb(${colorGradient.value.end.r}, ${colorGradient.value.end.g}, ${colorGradient.value.end.b})`
+  colorGradientCss.value = `linear-gradient(225deg, ${startCss}, ${endCss})`
+  contrastTextColor.value = isLightColor(colorGradient.value.end) ? 'black' : 'white'
 })
 
 </script>

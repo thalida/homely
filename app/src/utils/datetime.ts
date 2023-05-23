@@ -13,7 +13,7 @@ dayjs.extend(localizedFormat)
 
 const HOURS_IN_DAY = 24;
 const MINUTES_IN_HOUR = 60;
-const TIME_COLORS = [
+const TIME_COLORS: IColor[] = [
   { r: 4, g: 10, b: 30 },
   { r: 139, g: 152, b: 206 },
   { r: 86, g: 216, b: 255 },
@@ -62,10 +62,6 @@ export function timeOfDay(date: Date | number, timezone?: string | null) {
   }
 }
 
-function isSameDate(a: Dayjs, b: Dayjs) {
-  return a.isSame(b, 'day');
-}
-
 export function format(date: Date | number, formatString: string, timezone?: string | null) {
   const dayjsDate = getDayJs(date, timezone)
 
@@ -89,7 +85,10 @@ export function getColorBlend(startColor: IColor, endColor: IColor, distance: nu
   return blendedColor;
 }
 
-export function getRealisticColorGradient({ sunsetTime, sunriseTime }: { sunsetTime: Dayjs, sunriseTime: Dayjs }, timezone: string | null = null) {
+export function getRealisticColorGradient({ sunsetTime, sunriseTime }: { sunsetTime: Dayjs, sunriseTime: Dayjs }, timezone: string | null = null): {
+  start: IColor,
+  end: IColor,
+} {
   if (!sunsetTime.isValid() || !sunriseTime.isValid()) {
     return {
       start: TIME_COLORS[SUNRISE_COLOR_IDX],

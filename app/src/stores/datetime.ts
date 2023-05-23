@@ -5,6 +5,7 @@ import { useWeatherStore } from './weather';
 import { useLocationStore } from './location';
 import type { ILocation } from '@/types/location';
 import type { IDateTime } from '@/types/widget';
+import { getDayJs } from '@/utils/datetime';
 
 export const useDateTimeStore = defineStore('datetime', () => {
   const locationStore = useLocationStore()
@@ -78,6 +79,20 @@ export const useDateTimeStore = defineStore('datetime', () => {
     return datetimeUtils.getColorGradient(timezone)
   }
 
+  async function getRealisticColorGradient(dateTime: IDateTime) {
+    if (!dateTime.location) {
+      return null;
+    }
+
+    const weatherData = await weatherStore.fetchWeather(dateTime.location)
+    const sunriseTime = getDayJs(weatherData.currently.sunrise * 1000, weatherData.timezone)
+    const sunsetTime = getDayJs(weatherData.currently.sunset * 1000, weatherData.timezone)
+    return datetimeUtils.getRealisticColorGradient({
+      sunriseTime,
+      sunsetTime,
+    }, weatherData.timezone)
+  }
+
   async function getTimezone(location: ILocation) {
     if (!location) {
       return null;
@@ -107,5 +122,6 @@ export const useDateTimeStore = defineStore('datetime', () => {
     format,
     getTimeOfDay,
     getColorGradient,
+    getRealisticColorGradient,
   };
 });

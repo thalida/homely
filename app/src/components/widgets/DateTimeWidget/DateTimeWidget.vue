@@ -64,6 +64,7 @@ function handleAddDateTime() {
     showLine2: true,
     showDynamicIcon: true,
     showDynamicBackground: true,
+    useRealisticGradient: false,
   }
 
   const copyFrom = widget.value.content.items.length > 0 ? widget.value.content.items[widget.value.content.items.length - 1] : defaults
@@ -126,7 +127,7 @@ async function handlePlaceChange(datetime: IDateTime, location: ILocation) {
         </label>
         <label v-if="!datetime.useCurrentLocation">
           <span>Location</span>
-          <GooglePlaceInput :place="datetime.location" @change="(location) => handlePlaceChange(datetime, location)" />
+          <GooglePlaceInput :place="datetime.location" @change="(location: ILocation) => handlePlaceChange(datetime, location)" />
         </label>
         <label>
           <span>Show Location</span>
@@ -155,6 +156,10 @@ async function handlePlaceChange(datetime: IDateTime, location: ILocation) {
         <label>
           <span>Show Dynamic Background</span>
           <input type="checkbox" v-model="datetime.showDynamicBackground" />
+        </label>
+        <label v-if="datetime.showDynamicBackground">
+          <span>Use Realstic Gradient</span>
+          <input type="checkbox" v-model="datetime.useRealisticGradient" />
         </label>
         <div>
           <button v-if="index > 0" @click="handleItemMoveUp($event, datetime, index)">Move Up</button>

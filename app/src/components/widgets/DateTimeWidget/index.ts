@@ -19,6 +19,7 @@ const menuItem: IWidgetMenuItem = {
           showLine2: true,
           showDynamicIcon: true,
           showDynamicBackground: true,
+          useRealisticGradient: false,
         }
       ],
     },

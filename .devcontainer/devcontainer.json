@@ -47,8 +47,6 @@
 			"extensions": [
 				"ms-python.python",
 				"ms-python.vscode-pylance",
-				"GitHub.copilot",
-				"GitHub.copilot-labs",
 				"sleistner.vscode-fileutils",
 				"ms-python.black-formatter",
 				"svelte.svelte-vscode",
@@ -59,7 +57,9 @@
 				"esbenp.prettier-vscode",
 				"rvest.vs-code-prettier-eslint",
 				"yoavbls.pretty-ts-errors",
-				"ms-python.isort"
+				"ms-python.isort",
+				"GitHub.copilot-nightly",
+				"GitHub.copilot-labs"
 			]
 		}
 	},
