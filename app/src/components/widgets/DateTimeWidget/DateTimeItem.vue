@@ -4,9 +4,10 @@ import type { IDateTime } from '@/types/widget';
 import { computed, type PropType } from 'vue';
 import { SunIcon, MoonIcon, SunriseIcon, SunsetIcon } from 'lucide-vue-next';
 import { isLightColor } from '@/utils/color';
-import { getColorGradient } from '@/utils/datetime';
+import { useLocationStore } from '@/stores/location';
 
 const dateTimeStore = useDateTimeStore();
+const locationStore = useLocationStore();
 const props = defineProps({
   widgetId: {
     type: String,
@@ -20,12 +21,17 @@ const props = defineProps({
   },
 })
 
+
+const location = computed(() => {
+  return props.datetime.useCurrentLocation ? locationStore.currentLocation : props.datetime.location
+})
+
 const showOnlyDatetimes = computed(() => {
   return !props.datetime.showDynamicIcon && !props.datetime.showLocation
 })
 
 const colorGradient = computed(() => {
-  return getColorGradient(props.datetime.timezone)
+  return dateTimeStore.getColorGradient(props.datetime)
 })
 
 const colorGradientCss = computed(() => {
@@ -46,29 +52,8 @@ const contrastTextColor = computed(() => {
   return isLightColor(colorGradient.value.end) ? 'black' : 'white'
 })
 
-const timezoneDisplay = computed(() => {
-  const timezone = props.datetime.useLocalTime ? dateTimeStore.localTimezone : props.datetime.timezone
-  if (!timezone) {
-    return
-  }
-
-  const timezoneParts = timezone.split('/')
-  if (timezoneParts.length === 1) {
-    return timezone
-  }
-
-  const [, ...cityParts] = timezoneParts
-  const cityStr = cityParts.join(' - ').replaceAll('_', ' ')
-
-  return cityStr
-})
-
-const datetimeLine1 = computed(() => {
-  return dateTimeStore.format(props.datetime.formatLine1, props.datetime.timezone)
-})
-
-const datetimeLine2 = computed(() => {
-  return dateTimeStore.format(props.datetime.formatLine2, props.datetime.timezone)
+const formattedDateTimes = computed(() => {
+  return dateTimeStore.formatByDateTime(props.datetime)
 })
 
 const dynamicIcon = computed(() => {
@@ -76,7 +61,7 @@ const dynamicIcon = computed(() => {
     return null
   }
 
-  const timeOfDay = dateTimeStore.getTimeOfDay(props.datetime.timezone)
+  const timeOfDay = dateTimeStore.getTimeOfDay(props.datetime)
 
   if (timeOfDay === 'day') {
     return SunIcon
@@ -111,10 +96,9 @@ const dynamicIcon = computed(() => {
     <div v-if="datetime.showDynamicIcon && dynamicIcon">
       <component :is="dynamicIcon" />
     </div>
-    <div class="flex flex-col truncate" v-if="datetime.showLocation">
-      <span class="text-lg truncate">{{ timezoneDisplay }}</span>
-      <span v-if="datetime.useLocalTime && datetime.showIsLocalTimeLabel" class="text-xs truncate">Current Location</span>
-    </div>
+    <span class="text-lg truncate" v-if="datetime.showLocation">
+      {{ location?.name }}
+    </span>
   </div>
   <div
     v-if="datetime.showLine1 || datetime.showLine2"
@@ -132,7 +116,7 @@ const dynamicIcon = computed(() => {
         'text-lg': !showOnlyDatetimes,
       }"
     >
-      {{ datetimeLine1 }}
+      {{ formattedDateTimes.line1 }}
     </div>
     <div
       v-if="datetime.showLine2"
@@ -141,7 +125,7 @@ const dynamicIcon = computed(() => {
         'font-bold': showOnlyDatetimes,
         'text-sm': !showOnlyDatetimes,
       }">
-      {{ datetimeLine2 }}
+      {{ formattedDateTimes.line2 }}
     </div>
   </div>
 </div>

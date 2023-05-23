@@ -150,5 +150,6 @@ export const useWeatherStore = defineStore('weather', () => {
     weatherByLocation,
     updateWeatherByWidget,
     updateWeatherByWigetItem,
+    fetchWeather,
   };
 });

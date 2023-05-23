@@ -31,16 +31,6 @@ const weatherData = computed(() => {
   }
   return weatherStore.weatherByLocation[weatherLocation.value.formatted_address]
 })
-
-
-
-const currentLottie = computed(() => {
-  if (!weatherData.value) {
-    return null
-  }
-
-  return weatherLottieMap[weatherData.value.currently.weather[0].icon]
-})
 </script>
 
 

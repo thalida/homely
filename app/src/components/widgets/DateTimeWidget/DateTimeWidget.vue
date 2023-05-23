@@ -5,6 +5,8 @@ import { useDateTimeStore } from '@/stores/datetime'
 import type { IDateTime, IDateTimeWidget } from '@/types/widget'
 import DateTimeItem from './DateTimeItem.vue';
 import { moveItemInArray } from '@/utils/array';
+import type { ILocation } from '@/types/location';
+import GooglePlaceInput from '@/components/GooglePlaceInput.vue';
 
 const props = defineProps({
   widgetId: {
@@ -46,23 +48,15 @@ onBeforeUnmount(() => {
   dateTimeStore.disconnect(widgetId.value)
 })
 
-function onChangeUseLocalTime(e: Event, datetime: IDateTime) {
-  if (datetime.useLocalTime) {
-    datetime.timezone = null
-  } else {
-    datetime.timezone = dateTimeStore.localTimezone
-  }
-}
-
 function handleAddDateTime() {
   if (!widget.value) {
     return
   }
 
   const defaults = {
+    location: null,
     timezone: null,
-    useLocalTime: true,
-    showIsLocalTimeLabel: true,
+    useCurrentLocation: true,
     formatLine1: "h:mm A",
     formatLine2: "dddd, MMMM D",
     showLocation: true,
@@ -74,8 +68,9 @@ function handleAddDateTime() {
 
   const copyFrom = widget.value.content.items.length > 0 ? widget.value.content.items[widget.value.content.items.length - 1] : defaults
   const newDatetime = Object.assign({}, copyFrom)
+  newDatetime.location = null
   newDatetime.timezone = null
-  newDatetime.useLocalTime = true
+  newDatetime.useCurrentLocation = true
 
   widget.value.content.items.push(newDatetime)
 }
@@ -104,6 +99,16 @@ function handleItemMoveDown(e: Event, datetime: IDateTime, index: number) {
   moveItemInArray(widget.value.content.items, index, index + 1)
 }
 
+async function handlePlaceChange(datetime: IDateTime, location: ILocation) {
+  const timezone = await dateTimeStore.getTimezone(location)
+
+  if (!timezone) {
+    return
+  }
+
+  datetime.location = location
+  datetime.timezone = timezone
+}
 </script>
 
 <template>
@@ -117,17 +122,11 @@ function handleItemMoveDown(e: Event, datetime: IDateTime, index: number) {
       <div v-for="(datetime, index) in widget.content.items" :key="index" class="flex flex-col">
         <label>
           <span>Use Local Time</span>
-          <input type="checkbox" v-model="datetime.useLocalTime" @change="onChangeUseLocalTime($event, datetime)" />
+          <input type="checkbox" v-model="datetime.useCurrentLocation" />
         </label>
-        <label v-if="datetime.useLocalTime">
-          <span>Show Is Local Time Label</span>
-          <input type="checkbox" v-model="datetime.showIsLocalTimeLabel" />
-        </label>
-        <label v-if="!datetime.useLocalTime">
-          <span>Timezone</span>
-          <select v-model="datetime.timezone">
-            <option v-for="timezone in dateTimeStore.supportedTimezones" :key="timezone" :value="timezone">{{ timezone }}</option>
-          </select>
+        <label v-if="!datetime.useCurrentLocation">
+          <span>Location</span>
+          <GooglePlaceInput :place="datetime.location" @change="(location) => handlePlaceChange(datetime, location)" />
         </label>
         <label>
           <span>Show Location</span>

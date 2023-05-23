@@ -71,8 +71,9 @@ export interface IDateTimeWidget extends IWidget {
 }
 
 export interface IDateTime {
+  useCurrentLocation: boolean
+  location: ILocation | null
   timezone: string | null
-  useLocalTime: boolean
   formatLine1: string
   formatLine2: string
   showLocation: boolean
@@ -80,7 +81,6 @@ export interface IDateTime {
   showLine2: boolean
   showDynamicIcon: boolean
   showDynamicBackground: boolean
-  showIsLocalTimeLabel: boolean
 }
 
 

@@ -98,10 +98,7 @@ export function getRealisticColorGradient({ sunsetTime, sunriseTime }: { sunsetT
   }
 
   const now = getDayJs(Date.now(), timezone);
-  let hourAgoIsh = now.subtract(1, 'hour');
-  if (!isSameDate(hourAgoIsh, now)) {
-    hourAgoIsh = hourAgoIsh.startOf('day');
-  }
+  const hourAgoIsh = now.subtract(1, 'hour');
 
   const gradientStart = getRealisticColor(hourAgoIsh, { sunsetTime, sunriseTime });
   const gradientEnd = getRealisticColor(now, { sunsetTime, sunriseTime });
@@ -126,21 +123,14 @@ export function getRealisticColorGradient({ sunsetTime, sunriseTime }: { sunsetT
 function getRealisticColor(now: Dayjs, { sunsetTime, sunriseTime }: { sunsetTime: Dayjs, sunriseTime: Dayjs }) {
   let colorPhase, phaseStartTime, phaseEndTime;
   if (now < sunriseTime) {
-    const midnight = now.startOf('day');
     colorPhase = TIME_COLORS.slice(0, SUNRISE_COLOR_IDX + 1);
-    phaseStartTime = midnight;
+    phaseStartTime = sunriseTime.startOf('day');
     phaseEndTime = sunriseTime;
   } else if (now >= sunsetTime) {
-    const EOD = now.endOf('day');
     colorPhase = TIME_COLORS.slice(SUNSET_COLOR_IDX);
     colorPhase.push(TIME_COLORS[0]);
     phaseStartTime = sunsetTime;
-    phaseEndTime = EOD;
-
-    const ifValidStart = isSameDate(phaseStartTime, EOD);
-    if (!ifValidStart) {
-      phaseStartTime = phaseStartTime.subtract(1, 'day');
-    }
+    phaseEndTime = sunsetTime.endOf('day');
   } else {
     colorPhase = TIME_COLORS.slice(SUNRISE_COLOR_IDX, SUNSET_COLOR_IDX + 1);
     phaseStartTime = sunriseTime;
@@ -151,8 +141,7 @@ function getRealisticColor(now: Dayjs, { sunsetTime, sunriseTime }: { sunsetTime
   const phaseStartTimeMs = phaseStartTime.valueOf();
   const phaseEndTimeMs = phaseEndTime.valueOf();
 
-
-  const timeSinceStart = nowMs - phaseStartTimeMs;
+  const timeSinceStart = Math.abs(nowMs - phaseStartTimeMs);
   const timeInPhase = phaseEndTimeMs - phaseStartTimeMs;
   const distance = timeSinceStart / timeInPhase;
   const phaseSegments = timeInPhase / (colorPhase.length - 1);

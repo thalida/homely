@@ -11,8 +11,7 @@ const menuItem: IWidgetMenuItem = {
       items: [
         {
           timezone: null,
-          useLocalTime: true,
-          showIsLocalTimeLabel: true,
+          useCurrentLocation: true,
           formatLine1: "h:mm A",
           formatLine2: "dddd, MMMM D",
           showLocation: true,
