@@ -10,8 +10,7 @@ const menuItem: IWidgetMenuItem = {
     content: {
       url: null,
       style: ELinkWidgetStyle.FLAG,
-      useCustomIcon: false,
-      icon: 'link',
+      showIcon: true,
       showImage: true,
       showUrl: true,
       showTitle: true,

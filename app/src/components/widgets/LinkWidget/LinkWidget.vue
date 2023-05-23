@@ -4,8 +4,8 @@ import { computed, ref, watchEffect } from 'vue'
 import { useWidgetStore } from '@/stores/widget'
 import { ELinkWidgetStyle, type ILinkWidget } from '@/types/widget'
 import { useSpaceStore } from '@/stores/space'
-import iconTags from 'lucide-static/tags.json'
 import { useUserStore } from '@/stores/user'
+import { clone, cloneDeep } from 'lodash'
 
 const props = defineProps({
   widgetId: {
@@ -33,24 +33,18 @@ const styleOptions = computed(() => {
   return Object.values(ELinkWidgetStyle)
 })
 
-const supportedIcons = computed(() => {
-  return Object.keys(iconTags)
-})
-
-const selectedIconUrl = computed(() => {
-  const metadataIcon = widget.value.content.metadata?.icon
-  const fallbackIcon = 'link'
-  const customIcon = widget.value.content.icon || fallbackIcon
-
-  if (widget.value.content.useCustomIcon) {
-    return `https://unpkg.com/lucide-static@latest/icons/${customIcon}.svg`
+const metadata = computed(() => {
+  if (!widget.value) {
+    return {}
   }
 
-  if (metadataIcon) {
-    return metadataIcon
+  const originalMetadata = widget.value.original_link?.metadata || {}
+
+  if (widget.value.content.showCustomMetadata) {
+    return Object.assign({}, originalMetadata, widget.value.content.metadata)
   }
 
-  return `https://unpkg.com/lucide-static@latest/icons/${fallbackIcon}.svg`
+  return originalMetadata
 })
 
 const url = ref('')
@@ -83,17 +77,24 @@ async function getLink(url: string) {
 }
 
 async function handleUrlChange() {
+  const widget = widgetStore.getWidgetById(props.widgetId) as ILinkWidget
   try {
     const link = await getLink(url.value)
-    widgetStore.draftUpdateWidget(props.widgetId, {
-      content: {
-        url: link.url,
-        metadata: link.metadata,
-      },
-    })
+    widget.content.url = url.value
+    widget.content.metadata = link.metadata
+    widget.link = link.uid
+    widget.original_link = link
   } catch (e) {
-    console.error(e)
+    widget.content.url = url.value
+    widget.content.metadata = {}
+    widget.link = null
+    widget.original_link = null
   }
+}
+
+function handleResetMetadata() {
+  const widget = widgetStore.getWidgetById(props.widgetId) as ILinkWidget
+  widget.content.metadata = cloneDeep(widget.original_link?.metadata || {})
 }
 </script>
 
@@ -115,7 +116,7 @@ async function handleUrlChange() {
       v-if="widget.content.style == ELinkWidgetStyle.ICON"
       class="bg-contain bg-no-repeat bg-center w-full h-full"
       :style="{
-        backgroundImage:`url(${selectedIconUrl})`,
+        backgroundImage:`url(${metadata.icon})`,
       }"
     ></div>
     <template v-else>
@@ -130,29 +131,30 @@ async function handleUrlChange() {
           'w-full h-full rounded-2xl': !widget.content.showDescription && !widget.content.showTitle && !widget.content.showUrl,
         }"
         :style="{
-          backgroundImage: widget.content.metadata?.image ? `url(${widget.content.metadata?.image})` : 'linear-gradient(to bottom right, var(--tw-gradient-stops))',
+          backgroundImage: metadata.image ? `url(${metadata.image})` : 'linear-gradient(to bottom right, var(--tw-gradient-stops))',
         }"
-        :title="widget.content.metadata['image:alt'] || widget.content.url"
+        :title="metadata['image:alt'] || widget.content.url"
       ></div>
       <div
-        v-if="widget.content.showDescription || widget.content.showTitle || widget.content.showUrl"
+        v-if="widget.content.showDescription || widget.content.showTitle || widget.content.showUrl || widget.content.showIcon"
         class="flex flex-col p-4 my-auto space-y-2"
         :class="{
           'w-2/3': widget.content.style === ELinkWidgetStyle.FLAG && widget.content.showImage,
           'w-full': widget.content.style === ELinkWidgetStyle.CARD || (widget.content.style === ELinkWidgetStyle.FLAG && !widget.content.showImage),
         }"
       >
-        <div v-if="widget.content.showTitle" class="flex flex-row space-x-2 items-center">
+        <div v-if="widget.content.showTitle || widget.content.showIcon" class="flex flex-row space-x-2 items-center">
           <div
+            v-if="metadata.icon && widget.content.showIcon"
             class="bg-cover bg-no-repeat bg-center w-6 h-6 shrink-0"
             :style="{
-              backgroundImage: `url(${selectedIconUrl})`,
+              backgroundImage: `url(${metadata.icon})`,
             }"
           ></div>
-          <span class="font-bold text-lg">{{  widget.content.metadata?.title || widget.content.url || "Sample Link" }}</span>
+          <span v-if="widget.content.showTitle" class="font-bold text-lg truncate">{{  metadata.title || widget.content.url || "Sample Link" }}</span>
         </div>
-        <p v-if="widget.content.showDescription" class="text-sm">{{ widget.content.metadata?.description || "Enter a url on the sidebar menu to create a link" }}</p>
-        <p v-if="widget.content.showUrl" class="text-xs">{{ widget.content.url || "https://link.example.com" }}</p>
+        <p v-if="widget.content.showDescription" class="text-sm">{{ metadata.description || "Enter a url on the sidebar menu to create a link" }}</p>
+        <p v-if="widget.content.showUrl" class="text-xs truncate">{{ widget.content.url || "https://link.example.com" }}</p>
       </div>
     </template>
   </component>
@@ -168,19 +170,30 @@ async function handleUrlChange() {
           <option v-for="style in styleOptions" :key="style" :value="style">{{ style }}</option>
         </select>
       </label>
-      <div v-if="widget.content.style === ELinkWidgetStyle.ICON">
+      <label>
+        <span>Custom Metadata</span>
+        <input type="checkbox" v-model="widget.content.showCustomMetadata" />
+      </label>
+      <div v-if="widget.content.showCustomMetadata" class="flex flex-col">
         <label>
-          <span>Use Custom Icon?</span>
-          <input type="checkbox" v-model="widget.content.useCustomIcon" />
-        </label>
-        <label v-if="widget.content.useCustomIcon">
           <span>Icon</span>
-          <select v-model="widget.content.icon" class="border border-gray-200">
-            <option v-for="icon in supportedIcons" :key="icon" :value="icon">{{ icon }}</option>
-          </select>
+          <input type="url" class="border border-gray-200" v-model="widget.content.metadata.icon" />
         </label>
+        <label>
+          <span>Title</span><br />
+          <input type="text" class="border border-gray-200" v-model="widget.content.metadata.title" />
+        </label>
+        <label>
+          <span>Description</span><br />
+          <textarea class="border border-gray-200" v-model="widget.content.metadata.description"></textarea>
+        </label>
+        <button @click="handleResetMetadata">Reset</button>
       </div>
-      <div v-if="widget.content.style !== ELinkWidgetStyle.ICON">
+      <div v-if="widget.content.style !== ELinkWidgetStyle.ICON" class="flex flex-col">
+        <label>
+          <span>Show Icon</span>
+          <input type="checkbox" v-model="widget.content.showIcon" />
+        </label>
         <label>
           <span>Show image</span>
           <input type="checkbox" v-model="widget.content.showImage" />

@@ -20,6 +20,7 @@ export interface IWidget {
   layout: IWidgetLayout,
   space: string,
   card_style: Record<string, any>
+  link: string | null,
 }
 
 export interface IWidgetState {
@@ -135,13 +136,21 @@ export interface ILinkWidget extends IWidget {
     url: string | null,
     metadata: Record<string, any>,
     style: ELinkWidgetStyle,
-    useCustomIcon: boolean,
-    icon: string | null,
+    showIcon: boolean,
     showImage: boolean,
     showUrl: boolean,
     showTitle: boolean,
     showDescription: boolean,
-  }
+    showCustomMetadata: boolean,
+  },
+  link: string | null,
+  original_link: ILink | null,
+}
+
+export interface ILink {
+  uid: string,
+  url: string,
+  metadata: Record<string, any>,
 }
 
 export enum ELinkWidgetStyle {

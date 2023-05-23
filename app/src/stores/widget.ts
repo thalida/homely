@@ -216,11 +216,13 @@ export const useWidgetStore = defineStore('widget', () => {
       }
 
       if (widget.state.new) {
+        console.log('creating new widget', widget.link)
         const newWidgetRes = await axios.post('http://localhost:8000/api/widgets/', {
           widget_type: widget.widget_type,
           space: widget.space,
           content: widget.content,
           card_style: widget.card_style,
+          link: widget.link,
           layout: omit(widget.layout, ['i']),
         }, {
           withCredentials: true,
@@ -256,6 +258,7 @@ export const useWidgetStore = defineStore('widget', () => {
         content: widget.content,
         layout: widget.layout,
         card_style: widget.card_style,
+        link: widget.link,
       }, {
         headers: {
           Authorization: `Bearer ${userStore.accessToken}`,

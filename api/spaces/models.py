@@ -35,6 +35,14 @@ class Widget(models.Model):
     layout = models.JSONField()
     content = models.JSONField()
     card_style = models.JSONField(default=dict)
+    link = models.ForeignKey(
+        "links.Link",
+        on_delete=models.DO_NOTHING,
+        blank=True,
+        null=True,
+        related_name="widgets",
+    )
+
 
 
 @receiver(post_save, sender=User)
