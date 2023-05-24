@@ -97,7 +97,6 @@ export interface IDateTime {
   showLine2: boolean
   showDynamicIcon: boolean
   showDynamicBackground: boolean
-  useRealisticGradient: boolean
 }
 
 
@@ -119,7 +118,6 @@ export interface IWeatherWidgetItem {
   showIcon: boolean,
   showDescription: boolean,
   showTime: boolean,
-  useRealisticGradient: boolean,
 }
 
 export enum EWeatherWidgetStyle {

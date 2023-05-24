@@ -24,8 +24,8 @@ const TIME_COLORS: IColor[] = [
   { r: 100, g: 225, b: 253 },
   { r: 255, g: 223, b: 111 },
   { r: 255, g: 171, b: 111 },
-  { r: 255, g: 106, b: 106 },
   { r: 39, g: 75, b: 203 },
+  { r: 14, g: 48, b: 171 },
 ];
 
 const SUNRISE_COLOR_IDX = 3;

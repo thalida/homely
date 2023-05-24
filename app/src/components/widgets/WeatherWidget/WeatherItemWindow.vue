@@ -40,18 +40,6 @@ const colorGradient = computed(() => {
     return null
   }
 
-  if (props.weatherItem.useRealisticGradient) {
-    const sunriseTime = getDayJs(weatherData.value.currently.sunrise * 1000, weatherData.value.timezone)
-    const sunsetTime = getDayJs(weatherData.value.currently.sunset * 1000, weatherData.value.timezone)
-    return getRealisticColorGradient(
-      {
-        sunriseTime,
-        sunsetTime,
-      },
-      weatherData.value.timezone
-    )
-  }
-
   return getColorGradient(weatherData.value.timezone, true)
 })
 
