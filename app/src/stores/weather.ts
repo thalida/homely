@@ -1,12 +1,12 @@
 import { defineStore } from 'pinia';
 import { ref, type Ref } from 'vue';
-import axios from 'axios';
 import { useLocalStorage } from '@vueuse/core';
 import { useWidgetStore } from '@/stores/widget';
 import { useLocationStore } from '@/stores/location';
 import type { ILocation } from '@/types/location';
 import type { IWeatherByLocation, IWeatherWidgetItem, TWeatherWidget } from '@/widgets/WeatherWidget/types';
 import { EWeatherWidgetUnits } from '@/widgets/WeatherWidget/enums';
+import { getWeather } from '@/api/weather';
 
 export const useWeatherStore = defineStore('weather', () => {
   const locationStore = useLocationStore()
@@ -114,22 +114,12 @@ export const useWeatherStore = defineStore('weather', () => {
       return weatherByLocation.value[location.formatted_address];
     }
 
-
-    const apiUrl = "https://api.openweathermap.org/data/3.0/onecall";
-    const res = await axios.get(apiUrl, {
-      params: {
-        lat: location.lat,
-        lon: location.lng,
-        appid: import.meta.env.VITE_OPEN_WEATHER_API_KEY,
-        units,
-        exclude: 'minutely,hourly,alerts',
-      }
-    });
+    const res = await getWeather({ lat: location.lat, lng: location.lng }, units);
 
     weatherByLocation.value[location.formatted_address] = {
-      timezone: res.data.timezone,
-      currently: res.data.current,
-      forecast: res.data.daily,
+      timezone: res.timezone,
+      currently: res.current,
+      forecast: res.daily,
       fetchedOn: Date.now(),
       fetchedWith: {
         units,
