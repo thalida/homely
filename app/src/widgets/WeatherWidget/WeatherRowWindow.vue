@@ -171,7 +171,7 @@ const showingBothLocationAndDetails = computed(() => {
       position: absolute;
       top: 0;
       left: 0;
-      background-image: linear-gradient(45deg, rgb(255 247 153 / 20%) 45%, rgba(255,255,255,0.2) 100%), url("@/components/widgets/WeatherWidget/assets/grain.svg");
+      background-image: linear-gradient(45deg, rgb(255 247 153 / 20%) 45%, rgba(255,255,255,0.2) 100%), url("@/widgets/WeatherWidget/assets/grain.svg");
       filter: contrast(145%) brightness(650%);
       opacity: 0.5;
     }

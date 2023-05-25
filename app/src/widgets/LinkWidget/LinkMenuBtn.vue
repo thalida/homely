@@ -1,42 +1,48 @@
 <script setup lang="ts">
+import { DEFAULT_WIDGET_COLOR, EWidgetType } from '@/enums/widget';
+import { ELinkWidgetStyle } from './enums';
+import type { IBaseLinkWidget } from './types';
 
-// const menuItem: IWidgetMenuItem = {
-//   label: 'Link',
-//   widget: {
-//     widget_type,
-//     content: {
-//       url: null,
-//       style: ELinkWidgetStyle.FLAG,
-//       showIcon: true,
-//       showImage: true,
-//       showUrl: true,
-//       showTitle: true,
-//       showDescription: true,
-//       metadata: {},
-//     },
-//     card_style: {
-//       background_color: DEFAULT_WIDGET_COLOR,
-//     },
-//     layout: {
-//       w: 3,
-//       h: 2,
-//       isResizable: true,
-//       preserveAspectRatio: false,
-//     },
-//   }
-// }
-function handleAddWidget() {
-  console.log('handleAddWidget')
+const emits = defineEmits<{
+  (e: 'widgetMenuBtnClicked', defaultWidget: IBaseLinkWidget): void,
+}>();
+
+const widgetType = EWidgetType.LINK;
+const defaultWidget: IBaseLinkWidget = {
+  widget_type: widgetType,
+  content: {
+    url: null,
+    style: ELinkWidgetStyle.FLAG,
+    showIcon: true,
+    showImage: true,
+    showUrl: true,
+    showTitle: true,
+    showDescription: true,
+    metadata: {},
+    showCustomMetadata: false,
+  },
+  card_style: {
+    background_color: DEFAULT_WIDGET_COLOR,
+  },
+  layout: {
+    w: 3,
+    h: 2,
+    isResizable: true,
+    preserveAspectRatio: false,
+  },
+  link: null,
+  original_link: null,
+};
+
+function handleBtnClick() {
+  emits('widgetMenuBtnClicked', defaultWidget);
 }
-
 </script>
 
 <template>
-  <button @click="handleAddWidget">
-
+  <button @click="handleBtnClick">
+    Link
   </button>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>
