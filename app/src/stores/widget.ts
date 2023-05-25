@@ -1,14 +1,12 @@
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
 import { v4 as uuidv4 } from 'uuid'
-import axios from 'axios'
 import type { PartialDeep } from 'type-fest'
 import { debounce, merge, omit } from 'lodash'
 import type { IWidgets, IWidgetLayout, IWidget } from '@/types/widget';
-import { useUserStore } from './user';
+import { createWidget, deleteWidget } from '@/api/widget';
 
 export const useWidgetStore = defineStore('widget', () => {
-  const userStore = useUserStore()
   const collection = ref<IWidgets>({})
 
   const isSaving = ref(false)
@@ -216,22 +214,13 @@ export const useWidgetStore = defineStore('widget', () => {
       }
 
       if (widget.state.new) {
-        const newWidgetRes = await axios.post('http://localhost:8000/api/widgets/', {
-          widget_type: widget.widget_type,
-          space: widget.space,
-          content: widget.content,
-          card_style: widget.card_style,
-          link: widget.link,
+        const newWidget = await createWidget({
+          ...omit(widget, ['state', 'uid']),
           layout: omit(widget.layout, ['i']),
-        }, {
-          withCredentials: true,
-          headers: {
-            Authorization: `Bearer ${userStore.accessToken}`,
-          },
         })
-        const newWidget = newWidgetRes.data
         newWidget.layout.i = newWidget.uid
         newWidget.state = {
+          new: false,
           selected: false,
           dirty: false,
           deleted: false,
@@ -243,30 +232,19 @@ export const useWidgetStore = defineStore('widget', () => {
       }
 
       if (widget.state.deleted) {
-        await axios.delete(`http://localhost:8000/api/widgets/${widget.uid}/`, {
-          headers: {
-            Authorization: `Bearer ${userStore.accessToken}`,
-          },
-        })
-
+        await deleteWidget(widget.uid)
         delete collection.value[widget.uid]
         continue
       }
 
-      const updateRes = await axios.patch(`http://localhost:8000/api/widgets/${widget.uid}/`, {
-        content: widget.content,
-        layout: widget.layout,
-        card_style: widget.card_style,
-        link: widget.link,
-      }, {
-        headers: {
-          Authorization: `Bearer ${userStore.accessToken}`,
-        },
-      })
+
+      const updatedWidget = await updateWidget(widget.uid, {
+        ...omit(widget, ['state']),
+      });
 
       collection.value[widget.uid] = {
         ...widget,
-        ...updateRes.data,
+        ...updatedWidget
       }
 
       collection.value[widget.uid].state.dirty = false

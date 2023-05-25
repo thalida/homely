@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import axios from 'axios'
 import { cloneDeep } from 'lodash'
 import { computed, ref, watchEffect } from 'vue'
 import { useWidgetStore } from '@/stores/widget'
-import { useUserStore } from '@/stores/user'
 import type { TLinkWidget } from './types'
 import { ELinkWidgetStyle } from './enums'
+import { getLinkByUrl } from '@/api/links'
 
 const props = defineProps({
   widgetId: {
@@ -15,7 +14,6 @@ const props = defineProps({
   }
 })
 
-const userStore = useUserStore()
 const widgetStore = useWidgetStore()
 
 const widget = computed(() => {
@@ -36,23 +34,12 @@ watchEffect(() => {
 
 async function getLink(url: string) {
   if (!url) {
-    return null
+    throw new Error('URL is required')
   }
 
-  const apiUrl = `http://localhost:8000/api/links/`
-  const res = await axios.post(
-    apiUrl,
-    {
-      url,
-    },
-    {
-      headers: {
-        Authorization: `Bearer ${userStore.accessToken}`,
-      },
-    }
-  )
+  const link = await getLinkByUrl(url)
 
-  return res.data
+  return link
 }
 
 async function handleUrlChange() {
