@@ -1,3 +1,5 @@
+import type { IWidget } from "./widget"
+
 export interface ISpaces {
   [key: string]: ISpace
 }
@@ -8,4 +10,8 @@ export interface ISpace {
   updated_at: string
   owner: string
   name: string
+}
+
+export interface ISpaceResponse extends ISpace {
+  widgets: IWidget[]
 }

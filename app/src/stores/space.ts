@@ -1,37 +1,30 @@
 import { ref, type Ref } from 'vue'
 import { defineStore } from 'pinia'
 import { useLocalStorage } from '@vueuse/core'
-import { useWidgetStore } from './widget'
-import { useUserStore } from './user'
-import type { IWidgets } from '@/types/widget'
 import { cloneDeep } from 'lodash'
-import axios from 'axios'
+import { useWidgetStore } from '@/stores/widget'
+import type { IWidgets } from '@/types/widget'
 import type { ISpaces } from '@/types/space'
+import { getSpace } from '@/api/space'
 
 export const useSpaceStore = defineStore('space', () => {
-  const userStore = useUserStore()
   const widgetStore = useWidgetStore()
   const collection: Ref<ISpaces> = ref({})
   const backupWidgets: Ref<IWidgets> = ref({})
   const isEditMode: Ref<boolean> = useLocalStorage('homely/space/isEditMode', false)
 
   async function fetchSpace(spaceId: string) {
-    const spaceRes = await axios.get(`http://localhost:8000/api/spaces/${spaceId}/`, {
-      withCredentials: true,
-      headers: {
-        Authorization: `Bearer ${userStore.accessToken}`,
-      },
-    })
+    const spaceRes = await getSpace(spaceId)
 
     collection.value[spaceId] = {
-      uid: spaceRes.data.uid,
-      name: spaceRes.data.name,
-      owner: spaceRes.data.owner,
-      created_at: spaceRes.data.created_at,
-      updated_at: spaceRes.data.updated_at,
+      uid: spaceRes.uid,
+      name: spaceRes.name,
+      owner: spaceRes.owner,
+      created_at: spaceRes.created_at,
+      updated_at: spaceRes.updated_at,
     }
 
-    const widgets = spaceRes.data.widgets.map((widget: any) => {
+    const widgets = spaceRes.widgets.map((widget: any) => {
       const updatedWidget = {
         ...widget,
         state: {

@@ -1,11 +1,10 @@
-
 import { useUserStore } from '@/stores/user'
-import type { IRequestHeaders } from '@/types/api'
 
-const userStore = useUserStore()
+export const API_URL = import.meta.env.VITE_API_URL
 
 export function getConfig() {
-  const headers: IRequestHeaders = {}
+  const userStore = useUserStore()
+  const headers: { [key:string]: any } = {}
   const config = {
     withCredentials: true,
     headers,
