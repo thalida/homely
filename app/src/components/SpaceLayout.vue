@@ -117,7 +117,7 @@ function handleGridItemResized(widgetId: string, w: number, h: number) {
 <template>
   <div
     ref="spaceRef"
-    class="space-layout flex"
+    class="space-layout flex bg-white dark:bg-slate-900"
     @click="handleSpaceClick"
   >
     <GridLayout

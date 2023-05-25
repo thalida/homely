@@ -5,12 +5,15 @@ import { SettingsIcon } from 'lucide-vue-next';
 import { useUserStore } from '@/stores/user';
 import { useSpaceStore } from '@/stores/space';
 import { useWidgetStore } from '@/stores/widget';
+import { useThemeStore } from '@/stores/theme';
 import type { IWidget } from '@/types/widget';
 import { widgetMenuBtnComponents } from '@/widgets'
+import { EAppTheme } from '@/enums/themes';
 
 const userStore = useUserStore();
 const spaceStore = useSpaceStore();
 const widgetsStore = useWidgetStore();
+const themeStore = useThemeStore();
 
 const props = defineProps({
   spaceId: {
@@ -35,6 +38,10 @@ const selectedWidgets = computed(() => {
 
 const numSelectedWidgets = computed(() => {
   return selectedWidgets.value.length;
+});
+
+const supportedAppThemes = computed(() => {
+  return Object.values(EAppTheme);
 });
 
 function handleEditModeCancel() {
@@ -90,13 +97,18 @@ function scrollToWidget(widget: IWidget) {
     'h-auto w-auto p-0 m-4': !spaceStore.isEditMode,
     'h-full w-80 p-4 m-0': spaceStore.isEditMode,
   }">
-    <button v-if="spaceStore.isEditMode" @click="handleEditModeCancel" class="p-2 bg-slate-400">Cancel</button>
-    <button v-if="spaceStore.isEditMode" @click="handleEditModeToggle" class="p-2 bg-green-300">
-      Save
-    </button>
-    <button v-else @click="handleEditModeToggle" class="p-2 bg-green-300">
-      <SettingsIcon />
-    </button>
+    <div>
+      <button v-if="spaceStore.isEditMode" @click="handleEditModeCancel" class="p-2 bg-slate-400">Cancel</button>
+      <button v-if="spaceStore.isEditMode" @click="handleEditModeToggle" class="p-2 bg-green-300">
+        Save
+      </button>
+      <button v-else @click="handleEditModeToggle" class="p-2 bg-green-300">
+        <SettingsIcon />
+      </button>
+      <select v-model="themeStore.appTheme">
+        <option v-for="theme in supportedAppThemes" :key="theme" :value="theme">{{ theme }}</option>
+      </select>
+    </div>
     <template v-if="spaceStore.isEditMode">
       <button @click="userStore.logout()">Logout</button>
       {{ numSelectedWidgets }} selected:

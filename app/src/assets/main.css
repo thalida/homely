@@ -8,10 +8,13 @@
   box-sizing: border-box;
   margin: 0;
   position: relative;
-  font-weight: normal;
 }
 
 body {
+  padding: 0;
+  height: 100vh;
+  width: 100vw;
+  background: #ffd844;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

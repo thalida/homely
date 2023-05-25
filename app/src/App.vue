@@ -3,7 +3,10 @@ import { computed, ref } from 'vue';
 import type { CallbackTypes } from "vue3-google-login";
 import { useFontStore } from './stores/fonts';
 import { useUserStore } from './stores/user';
+import { useThemeStore } from './stores/theme';
 import SpaceLayout from './components/SpaceLayout.vue'
+
+useThemeStore()
 
 const fontStore = useFontStore()
 const userStore = useUserStore()

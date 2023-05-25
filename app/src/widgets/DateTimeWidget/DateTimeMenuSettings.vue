@@ -15,8 +15,8 @@ const props = defineProps({
   }
 })
 
-const widgetStore = useWidgetStore()
 const dateTimeStore = useDateTimeStore()
+const widgetStore = useWidgetStore()
 const widget = computed(() => {
   return widgetStore.getWidgetById(props.widgetId) as TDateTimeWidget
 })

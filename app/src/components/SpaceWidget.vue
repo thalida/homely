@@ -75,7 +75,7 @@ watch(() => widget.value?.card_style, (after, before) => {
         'widget-theme-gray': widget.card_style.background_color === EWidgetColorNames.GRAY,
         'widget-theme-black': widget.card_style.background_color === EWidgetColorNames.BLACK,
         'widget-theme-transparent': widget.card_style.background_color === EWidgetColorNames.TRANSPARENT,
-        'widget-theme-white dark:widget-theme-black': widget.card_style.background_color === EWidgetColorNames.DYNAMIC,
+        'widget-theme-dynamic': widget.card_style.background_color === EWidgetColorNames.DYNAMIC,
       }"
   />
   <teleport to="#space__shared-widget-menu">

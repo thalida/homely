@@ -65,7 +65,6 @@ function handleResetMetadata() {
 </script>
 
 <template>
-
     <div v-if="widget.state.selected">
       <label>
         <span>URL</span>
