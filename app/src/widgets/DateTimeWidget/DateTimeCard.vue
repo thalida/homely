@@ -4,6 +4,7 @@ import { useWidgetStore } from '@/stores/widget'
 import { useDateTimeStore } from '@/stores/datetime'
 import DateTimeCardRow from './DateTimeCardRow.vue';
 import type { TDateTimeWidget } from './types';
+import DateTimeMenuSettings from './DateTimeMenuSettings.vue';
 
 const props = defineProps({
   widgetId: {
