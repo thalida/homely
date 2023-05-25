@@ -29,29 +29,20 @@ const gridLayoutSettings = ref({
 
 onMounted(async () => {
   await spaceStore.fetchSpace(props.spaceId)
-  setRowHeight()
+  setGridRowHeight()
 
   if (spaceStore.isEditMode) {
     startEditMode()
   }
 
-  window.addEventListener('resize', throttle(setRowHeight))
+  window.addEventListener('resize', throttle(setGridRowHeight))
 
   isReady.value = true
 })
 
 onBeforeUnmount(() => {
-  window.removeEventListener('resize', throttle(setRowHeight))
+  window.removeEventListener('resize', throttle(setGridRowHeight))
 })
-
-function setRowHeight() {
-  if (!spaceRef.value) {
-    return
-  }
-
-  const parentRect = spaceRef.value.getBoundingClientRect()
-  gridLayoutSettings.value.rowHeight = (parentRect.width / gridLayoutSettings.value.columns) - gridLayoutSettings.value.margin[0]
-}
 
 function startEditMode() {
   spaceStore.setEditMode(true)
@@ -78,6 +69,15 @@ function handleSpaceClick(e: Event) {
   if (isGridElement || isWrapper) {
     widgetsStore.unselectAllWidgets(props.spaceId)
   }
+}
+
+function setGridRowHeight() {
+  if (!spaceRef.value) {
+    return
+  }
+
+  const parentRect = spaceRef.value.getBoundingClientRect()
+  gridLayoutSettings.value.rowHeight = (parentRect.width / gridLayoutSettings.value.columns) - gridLayoutSettings.value.margin[0]
 }
 
 function handleGridItemClick(e:KeyboardEvent, widgetId: string) {

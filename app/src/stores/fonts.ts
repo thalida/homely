@@ -1,8 +1,8 @@
 import { defineStore } from 'pinia'
-import axios from 'axios'
 import { ref, computed, type Ref } from 'vue';
 import type { IFont } from '@/types/font';
 import { useWidgetStore } from './widget';
+import { getFonts } from '@/api/fonts';
 
 export const useFontStore = defineStore('font', () => {
   const widgetStore = useWidgetStore()
@@ -15,7 +15,7 @@ export const useFontStore = defineStore('font', () => {
   })
 
   const hasFonts = computed(() => fonts.value.length > 0)
-  const fetchPromise: Ref<Promise<any> | null> = ref(null)
+  const fetchPromise: Ref<Promise<IFont[]> | null> = ref(null)
   const connectedWidgets: Ref<string[]> = ref([])
   const selectedFontFamilies = computed(() => {
     const fontFamilies = connectedWidgets.value.map((widgetId) => {
@@ -58,16 +58,11 @@ export const useFontStore = defineStore('font', () => {
       return Promise.resolve(fonts.value);
     }
 
-    fetchPromise.value = axios.get('https://www.googleapis.com/webfonts/v1/webfonts', {
-      params: {
-        key: import.meta.env.VITE_GOOGLE_FONTS_API_KEY,
-        sort: 'alpha',
-      },
-    });
+    fetchPromise.value = getFonts()
 
-    const res = await fetchPromise.value;
+    const fontsRes = await fetchPromise.value;
 
-    fonts.value = res.data.items;
+    fonts.value = fontsRes;
     return fonts.value;
   }
 

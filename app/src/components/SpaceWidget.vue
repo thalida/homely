@@ -43,6 +43,7 @@ watch(() => widget.value?.content, (after, before) => {
 }, {
   deep: true
 })
+
 watch(() => widget.value?.card_style, (after, before) => {
   if (typeof before === 'undefined' || typeof after === 'undefined') {
     return
