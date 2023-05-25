@@ -1,8 +1,14 @@
 import { ref, type Ref } from 'vue';
 import { useLocalStorage } from '@vueuse/core';
-import axios from 'axios';
 import { defineStore } from 'pinia';
 import type { IUser } from '@/types/user';
+import {
+  getUser as getUserReq,
+  verifyAccessToken as verifyAccessTokenReq,
+  verifyRefreshToken as verifyRefreshTokenReq,
+  loginWithGoogle as loginWithGoogleReq,
+  logout as logoutReq,
+} from '@/api/user';
 
 export const useUserStore = defineStore('user', () => {
   const accessToken: Ref<string | null> = useLocalStorage('homely/user/accessToken', null)
@@ -15,13 +21,9 @@ export const useUserStore = defineStore('user', () => {
       return;
     }
 
-    const res = await axios.get('http://localhost:8000/api/auth/user/', {
-      headers: {
-        Authorization: `Bearer ${accessToken.value}`,
-      },
-    });
+    const userRes = await getUserReq()
 
-    user.value = res.data
+    user.value = userRes
   }
 
   async function verifyAccessToken(): Promise<boolean> {
@@ -29,19 +31,7 @@ export const useUserStore = defineStore('user', () => {
       return false;
     }
 
-    try {
-      const accessRes = await axios.post('http://localhost:8000/api/auth/token/verify/', {
-        token: accessToken.value,
-      });
-
-      if (accessRes.data.code === 'token_not_valid') {
-        return false;
-      }
-
-      return true;
-    } catch (err) {
-      return false;
-    }
+    return await verifyAccessTokenReq(accessToken.value)
   }
 
   async function verifyRefreshToken() {
@@ -49,20 +39,14 @@ export const useUserStore = defineStore('user', () => {
       return false;
     }
 
-    try {
-      const refreshRes = await axios.post('http://localhost:8000/api/auth/token/refresh/', {
-        refresh: refreshToken.value,
-      })
+    const res = await verifyRefreshTokenReq(refreshToken.value)
 
-      if (refreshRes.data.code === 'token_not_valid') {
-        return false;
-      }
-
-      accessToken.value = refreshRes.data.access
-      return true
-    } catch (err) {
+    if (!res) {
       return false;
     }
+
+    accessToken.value = res
+    return true;
   }
 
   async function autoLogin() {
@@ -89,22 +73,16 @@ export const useUserStore = defineStore('user', () => {
   }
 
   async function loginWithGoogle(googleToken: string) {
-    const res = await axios.post('http://localhost:8000/api/auth/google/', {
-      access_token: googleToken,
-    })
+    const res = await loginWithGoogleReq(googleToken)
 
-    accessToken.value = res.data.access
-    refreshToken.value = res.data.refresh
-    user.value = res.data.user
+    accessToken.value = res.access
+    refreshToken.value = res.refresh
+    user.value = res.user
     isAuthenticated.value = true
   }
 
   async function logout() {
-    await axios.post('http://localhost:8000/api/auth/logout/', {}, {
-      headers: {
-        Authorization: `Bearer ${accessToken.value}`,
-      },
-    })
+    await logoutReq()
 
     isAuthenticated.value = false
     accessToken.value = null

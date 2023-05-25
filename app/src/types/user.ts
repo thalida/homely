@@ -6,3 +6,10 @@ export interface IUser {
   last_name: string,
   spaces: string[],
 }
+
+
+export interface IGoogleResponse {
+  access: string,
+  refresh: string,
+  user: IUser,
+}
