@@ -66,6 +66,12 @@ async function handleWidgetMenuBtnClicked(defaultWidget: unknown) {
 
   await nextTick()
 
+  setTimeout(() => {
+    scrollToWidget(widget)
+  }, 0);
+}
+
+function scrollToWidget(widget: IWidget) {
   const widgetElement = document.getElementById(`space-widget-${widget.uid}`)
   if (!widgetElement) {
     return
