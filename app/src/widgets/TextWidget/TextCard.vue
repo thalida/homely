@@ -169,7 +169,7 @@ onBeforeUnmount(() => {
     }"
     :editor="editor"/>
   <teleport to="#space__widget-menu">
-    <TextMenuSettings :widgetId="widgetId" :editor="editor" />
+    <TextMenuSettings v-if="editor" :widgetId="widgetId" :editor="editor" />
   </teleport>
 </template>
 

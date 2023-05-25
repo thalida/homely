@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
-import { cloneDeep, throttle } from 'lodash'
+import { onBeforeUnmount, onMounted, ref } from 'vue'
+import { throttle } from 'lodash'
 import { GridLayout, GridItem } from 'grid-layout-plus'
 import { useSpaceStore } from '@/stores/space'
 import { useWidgetStore } from '@/stores/widget'
-import type { IWidget, IWidgetButton } from '@/types/widget'
 import SpaceWidget from './SpaceWidget.vue'
 import SpaceMenu from './SpaceMenu.vue'
 
@@ -71,7 +70,6 @@ function cancelEditMode() {
   stopEditMode()
 }
 
-
 function handleSpaceClick(e: Event) {
   const target = e.target as HTMLElement
   const isGridElement = target.classList.contains('grid-layout')
@@ -112,29 +110,6 @@ function handleGridItemResized(widgetId: string, w: number, h: number) {
 
   widgetsStore.draftUpdateWidget(widgetId, {
     layout: { w, h }
-  })
-}
-
-async function handleAddModule(event: Event, widgetButton: IWidgetButton) {
-  const maxPosition = widgetsStore.maxLayoutPositionBySpace[props.spaceId]
-  const newWidgetInput: IWidget = cloneDeep(widgetButton) as IWidget
-  newWidgetInput.layout.x = maxPosition.x
-  newWidgetInput.layout.y = maxPosition.y
-
-  const widget = widgetsStore.draftCreateWidget(props.spaceId, newWidgetInput)
-
-  await nextTick()
-  await nextTick()
-
-  const widgetElement = document.getElementById(`space-widget-${widget.uid}`)
-  if (!widgetElement) {
-    return
-  }
-
-  widgetElement.scrollIntoView({
-    behavior: 'smooth',
-    block: 'center',
-    inline: 'center',
   })
 }
 </script>
@@ -188,7 +163,6 @@ async function handleAddModule(event: Event, widgetButton: IWidgetButton) {
       @editModeStart="startEditMode"
       @editModeDone="stopEditMode"
       @editModeCancel="cancelEditMode"
-      @addModule="handleAddModule"
     />
   </div>
 </template>

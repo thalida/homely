@@ -1,12 +1,11 @@
 <script setup lang="ts">
+import { computed } from 'vue';
 import { filter } from 'lodash';
+import { SettingsIcon } from 'lucide-vue-next';
 import { useUserStore } from '@/stores/user';
 import { useSpaceStore } from '@/stores/space';
 import { useWidgetStore } from '@/stores/widget';
-import { computed } from 'vue';
-import type { IWidgetButton } from '@/types/widget';
-import { widgetMenuItems } from '../widgets';
-import { SettingsIcon } from 'lucide-vue-next';
+import { widgetMenuBtnComponents } from '@/widgets'
 
 const userStore = useUserStore();
 const spaceStore = useSpaceStore();
@@ -23,7 +22,6 @@ const emits = defineEmits<{
   (e: 'editModeCancel'): void,
   (e: 'editModeStart'): void,
   (e: 'editModeDone'): void,
-  (e: 'addModule', event: Event, widgetButton: IWidgetButton): void,
 }>();
 
 const selectedWidgets = computed(() => {
@@ -57,9 +55,28 @@ async function handleDelete() {
   }
 }
 
-function handleAddModuleClick(e: Event, widgetButton: IWidgetButton) {
-  emits('addModule', e, widgetButton);
-}
+// async function handleAddModule(event: Event, widgetButton: IWidgetButton) {
+//   const maxPosition = widgetsStore.maxLayoutPositionBySpace[props.spaceId]
+//   const newWidgetInput: IWidget = cloneDeep(widgetButton) as IWidget
+//   newWidgetInput.layout.x = maxPosition.x
+//   newWidgetInput.layout.y = maxPosition.y
+
+//   const widget = widgetsStore.draftCreateWidget(props.spaceId, newWidgetInput)
+
+//   await nextTick()
+//   await nextTick()
+
+//   const widgetElement = document.getElementById(`space-widget-${widget.uid}`)
+//   if (!widgetElement) {
+//     return
+//   }
+
+//   widgetElement.scrollIntoView({
+//     behavior: 'smooth',
+//     block: 'center',
+//     inline: 'center',
+//   })
+// }
 </script>
 
 <template>
@@ -79,13 +96,18 @@ function handleAddModuleClick(e: Event, widgetButton: IWidgetButton) {
       <button @click="userStore.logout()">Logout</button>
       {{ numSelectedWidgets }} selected:
       <button @click="handleDelete" class="p-2 bg-red-400 disabled:opacity-50" :disabled="numSelectedWidgets === 0">Delete</button>
-      <button
+      <component
+        v-for="component in widgetMenuBtnComponents"
+        :key="component.name"
+        :is="component"
+      />
+      <!-- <button
         v-for="menuItem in widgetMenuItems"
         :key="menuItem.label"
         class="w-12 p-2 bg-blue-400"
         @click="handleAddModuleClick($event, menuItem.widget)">
         {{ menuItem.label }}
-      </button>
+      </button> -->
     </template>
     <div id="space__shared-widget-menu"></div>
     <div id="space__widget-menu"></div>

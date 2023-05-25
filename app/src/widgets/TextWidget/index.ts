@@ -1,4 +1,5 @@
-import { EWidgetType, type IWidgetDefinition } from "@/types/widget";
+import { EWidgetType } from "@/enums/widget";
+import type { IWidgetDefinition } from "@/types/widget";
 import TextCard from "./TextCard.vue";
 import TextMenuBtn from "./TextMenuBtn.vue";
 import TextMenuSettings from "./TextMenuSettings.vue";

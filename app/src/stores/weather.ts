@@ -1,16 +1,12 @@
 import { defineStore } from 'pinia';
 import { ref, type Ref } from 'vue';
 import axios from 'axios';
-import { useWidgetStore } from '@/stores/widget';
-import { useLocationStore } from './location';
-import {
-  EWeatherWidgetUnits,
-  type IWeatherByLocation,
-  type IWeatherWidget,
-  type IWeatherWidgetItem,
-} from '@/types/widget';
-import type { ILocation } from '@/types/location';
 import { useLocalStorage } from '@vueuse/core';
+import { useWidgetStore } from '@/stores/widget';
+import { useLocationStore } from '@/stores/location';
+import type { ILocation } from '@/types/location';
+import type { IWeatherByLocation, IWeatherWidgetItem, TWeatherWidget } from '@/widgets/WeatherWidget/types';
+import { EWeatherWidgetUnits } from '@/widgets/WeatherWidget/enums';
 
 export const useWeatherStore = defineStore('weather', () => {
   const locationStore = useLocationStore()
@@ -68,7 +64,7 @@ export const useWeatherStore = defineStore('weather', () => {
   }
 
   async function updateWeatherByWidget(widgetId: string) {
-    const widget = widgetStore.getWidgetById(widgetId) as IWeatherWidget;
+    const widget = widgetStore.getWidgetById(widgetId) as TWeatherWidget;
     if (!widget) {
       return weatherByLocation.value;
     }

@@ -1,4 +1,5 @@
-import { EWidgetType, type IWidgetDefinition } from "@/types/widget";
+import { EWidgetType } from "@/enums/widget";
+import type { IWidgetDefinition } from "@/types/widget";
 import DateTimeCard from "./DateTimeCard.vue";
 import DateTimeMenuBtn from "./DateTimeMenuBtn.vue";
 import DateTimeMenuSettings from "./DateTimeMenuSettings.vue";

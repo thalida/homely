@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { useWidgetStore } from '@/stores/widget'
-import { widgetComponents } from '@/widgets'
-import { EWidgetColorNames } from '@/types/widget';
+import { EWidgetColorNames } from '@/enums/widget';
+import { cardComponentsByType } from '@/widgets'
 
 const widgetStore = useWidgetStore()
 
@@ -29,7 +29,7 @@ const component = computed(() => {
   if (!widget.value) {
     return null
   }
-  return widgetComponents[widget.value.widget_type]
+  return cardComponentsByType[widget.value.widget_type]
 })
 
 const supportedColors = ref(Object.values(EWidgetColorNames))

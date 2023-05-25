@@ -1,4 +1,5 @@
-import { EWidgetType, type IWidgetDefinition } from "@/types/widget";
+import { EWidgetType } from "@/enums/widget";
+import type { IWidgetDefinition } from "@/types/widget";
 import WeatherCard from "./WeatherCard.vue";
 import WeatherMenuBtn from "./WeatherMenuBtn.vue";
 import WeatherMenuSettings from "./WeatherMenuSettings.vue";
