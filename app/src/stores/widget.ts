@@ -216,7 +216,6 @@ export const useWidgetStore = defineStore('widget', () => {
       }
 
       if (widget.state.new) {
-        console.log('creating new widget', widget.link)
         const newWidgetRes = await axios.post('http://localhost:8000/api/widgets/', {
           widget_type: widget.widget_type,
           space: widget.space,

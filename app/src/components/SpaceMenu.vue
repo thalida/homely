@@ -65,10 +65,9 @@ async function handleWidgetMenuBtnClicked(defaultWidget: unknown) {
   const widget = widgetsStore.draftCreateWidget(props.spaceId, newWidgetInput)
 
   await nextTick()
+  await nextTick()
 
-  setTimeout(() => {
-    scrollToWidget(widget)
-  }, 0);
+  scrollToWidget(widget)
 }
 
 function scrollToWidget(widget: IWidget) {
