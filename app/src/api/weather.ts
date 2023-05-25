@@ -1,6 +1,7 @@
+import { EWeatherWidgetUnits } from "@/widgets/WeatherWidget/enums";
 import axios from "axios";
 
-export async function getWeather (latlng: { lat: number, lng: number }, units: string) {
+export async function getWeather (latlng: { lat: number, lng: number }) {
   const url = "https://api.openweathermap.org/data/3.0/onecall";
   const res = await axios.get(url, {
     params: {
@@ -8,7 +9,7 @@ export async function getWeather (latlng: { lat: number, lng: number }, units: s
       exclude: 'minutely,hourly,alerts',
       lat: latlng.lat,
       lon: latlng.lng,
-      units,
+      units: EWeatherWidgetUnits.METRIC,
     }
   });
 

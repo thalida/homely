@@ -3,10 +3,11 @@ import { computed, type PropType } from 'vue';
 import { useWeatherStore } from '@/stores/weather';
 import { useLocationStore } from '@/stores/location';
 import { useDateTimeStore } from '@/stores/datetime';
-import { unitsHTMLCodeMap, EWeatherWidgetUnits } from './enums';
+import { unitsHTMLCodeMap } from './enums';
 import { getColorGradient } from '@/utils/datetime';
 import { defaultLottieMap } from './assets';
 import type { IWeatherWidgetItem } from './types';
+import { formatTemp } from '@/utils/weather';
 
 const props = defineProps({
   widgetId: {
@@ -123,9 +124,9 @@ const showingBothLocationAndDetails = computed(() => {
       <div class="widget-pill-group">
         <div v-if="weatherItem.showTime" class="truncate p-2">{{ currentTime }}</div>
         <div v-if="weatherItem.showTemperature" class="p-2">
-          <span>{{ Math.round(weatherData.currently.temp) }}</span>
+          <span>{{ formatTemp(weatherData.currently.temp, weatherItem.units) }}</span>
           <span v-if="weatherItem.showUnits" :innerHTML="unitsHTMLCodeMap[weatherItem.units]"></span>
-          <span v-else-if="weatherItem.units !== EWeatherWidgetUnits.STANDARD">&deg;</span>
+          <span v-else>&deg;</span>
         </div>
         <div v-if="weatherItem.showDescription" class="p-2 capitalize text-center truncate">
           {{ weatherData.currently.weather[0].description }}

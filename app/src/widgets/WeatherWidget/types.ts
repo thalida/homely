@@ -34,7 +34,6 @@ export interface IWeather {
   forecast: Record<string, any>[]
   fetchedOn: number
   fetchedWith: {
-    units: EWeatherWidgetUnits,
     location: ILocation,
   }
 }

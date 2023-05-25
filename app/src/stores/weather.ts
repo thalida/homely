@@ -5,7 +5,6 @@ import { useWidgetStore } from '@/stores/widget';
 import { useLocationStore } from '@/stores/location';
 import type { ILocation } from '@/types/location';
 import type { IWeatherByLocation, IWeatherWidgetItem, TWeatherWidget } from '@/widgets/WeatherWidget/types';
-import { EWeatherWidgetUnits } from '@/widgets/WeatherWidget/enums';
 import { getWeather } from '@/api/weather';
 
 export const useWeatherStore = defineStore('weather', () => {
@@ -14,6 +13,7 @@ export const useWeatherStore = defineStore('weather', () => {
   const interval: Ref<number | null> = ref(null)
   const connectedWidgets: Ref<string[]> = ref([])
   const weatherByLocation: Ref<IWeatherByLocation> = useLocalStorage('homely/weather/weatherByLocation', {})
+  // const weatherByLocation: Ref<IWeatherByLocation> = ref({})
   // const ONE_HOUR = 60 * 60 * 1000
   const THIRTY_MINUTES = 30 * 60 * 1000
   const UPDATE_FREQUENCY = THIRTY_MINUTES
@@ -84,19 +84,14 @@ export const useWeatherStore = defineStore('weather', () => {
       return
     }
 
-    const units = weatherItem.units || EWeatherWidgetUnits.METRIC;
-    await fetchWeather(location, units)
+    await fetchWeather(location)
   }
 
-  function shouldFetch(location: ILocation, units: EWeatherWidgetUnits) {
+  function shouldFetch(location: ILocation) {
     const existingWeather = weatherByLocation.value[location.formatted_address];
     const lastFetchedOn = existingWeather?.fetchedOn || null;
 
     if (lastFetchedOn === null) {
-      return true;
-    }
-
-    if (existingWeather.fetchedWith.units !== units) {
       return true;
     }
 
@@ -109,12 +104,12 @@ export const useWeatherStore = defineStore('weather', () => {
     return false;
   }
 
-  async function fetchWeather(location: ILocation , units = EWeatherWidgetUnits.METRIC) {
-    if (!shouldFetch(location, units)) {
+  async function fetchWeather(location: ILocation ) {
+    if (!shouldFetch(location)) {
       return weatherByLocation.value[location.formatted_address];
     }
 
-    const res = await getWeather({ lat: location.lat, lng: location.lng }, units);
+    const res = await getWeather({ lat: location.lat, lng: location.lng });
 
     weatherByLocation.value[location.formatted_address] = {
       timezone: res.timezone,
@@ -122,7 +117,6 @@ export const useWeatherStore = defineStore('weather', () => {
       forecast: res.daily,
       fetchedOn: Date.now(),
       fetchedWith: {
-        units,
         location,
       }
     }

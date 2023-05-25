@@ -5,7 +5,8 @@ import { useLocationStore } from '@/stores/location';
 import * as datetimeUtils from '@/utils/datetime'
 import type { IWeatherWidgetItem } from './types';
 import { defaultWeatherSvgMap } from './assets';
-import { unitsHTMLCodeMap, EWeatherWidgetUnits } from './enums';
+import { unitsHTMLCodeMap } from './enums';
+import { formatTemp } from '@/utils/weather';
 
 const props = defineProps({
   widgetId: {
@@ -61,15 +62,15 @@ const forecastDays = computed(() => {
         <img v-if="weatherItem.showIcon" :src="defaultWeatherSvgMap[day.weather[0].icon]" class="h-12" />
         <div v-if="weatherItem.showTemperature" class="text-center flex flex-row items-center justify-center text-sm">
           <span class="font-bold">
-            <span>{{ Math.round(day.temp.max) }}</span>
+            <span>{{ formatTemp(day.temp.max, weatherItem.units) }}</span>
             <span v-if="weatherItem.showUnits" :innerHTML="unitsHTMLCodeMap[weatherItem.units]"></span>
-            <span v-else-if="weatherItem.units !== EWeatherWidgetUnits.STANDARD">&deg;</span>
+            <span v-else>&deg;</span>
           </span>
           <span class="opacity-50 mx-0.5">/</span>
           <span class="opacity-70">
-            <span>{{ Math.round(day.temp.min) }}</span>
+            <span>{{ formatTemp(day.temp.min, weatherItem.units) }}</span>
             <span v-if="weatherItem.showUnits" :innerHTML="unitsHTMLCodeMap[weatherItem.units]"></span>
-            <span v-else-if="weatherItem.units !== EWeatherWidgetUnits.STANDARD">&deg;</span>
+            <span v-else>&deg;</span>
           </span>
         </div>
       </div>
