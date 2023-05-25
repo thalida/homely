@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { computed, type PropType } from 'vue';
-import { EWeatherWidgetUnits, type IWeatherWidgetItem } from '@/types/widget'
 import { useWeatherStore } from '@/stores/weather';
 import { useLocationStore } from '@/stores/location';
-import { unitsHTMLCodeMap, defaultWeatherSvgMap } from './index'
 import * as datetimeUtils from '@/utils/datetime'
+import type { IWeatherWidgetItem } from './types';
+import { defaultWeatherSvgMap } from './assets';
+import { unitsHTMLCodeMap, EWeatherWidgetUnits } from './enums';
 
 const props = defineProps({
   widgetId: {

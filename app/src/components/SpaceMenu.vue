@@ -5,7 +5,7 @@ import { useSpaceStore } from '@/stores/space';
 import { useWidgetStore } from '@/stores/widget';
 import { computed } from 'vue';
 import type { IWidgetButton } from '@/types/widget';
-import { widgetMenuItems } from './widgets';
+import { widgetMenuItems } from '../widgets';
 import { SettingsIcon } from 'lucide-vue-next';
 
 const userStore = useUserStore();

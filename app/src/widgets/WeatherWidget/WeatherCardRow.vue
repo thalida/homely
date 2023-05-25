@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { type PropType, watch } from 'vue';
-import { EWeatherWidgetStyle, type IWeatherWidgetItem } from '@/types/widget'
+import type { IWeatherWidgetItem } from './types';
+import { EWeatherWidgetStyle } from './enums';
 import { useWeatherStore } from '@/stores/weather';
-import WeatherItemWindow from './WeatherItemWindow.vue';
-import WeatherItemCurrent from './WeatherItemCurrent.vue';
-import WeatherItemForecast from './WeatherItemForecast.vue';
+import WeatherRowWindow from './WeatherRowWindow.vue';
+import WeatherRowCurrent from './WeatherRowCurrent.vue';
+import WeatherRowForecast from './WeatherRowForecast.vue';
 
 const props = defineProps({
   widgetId: {
@@ -27,16 +28,16 @@ watch(() => props.weatherItem, () => {
 </script>
 
 <template>
-  <WeatherItemWindow
+  <WeatherRowWindow
     v-if="weatherItem.style === EWeatherWidgetStyle.WINDOW"
     class="grow"
     :weatherItem="weatherItem"
     :widgetId="widgetId" />
-  <WeatherItemCurrent
+  <WeatherRowCurrent
     v-else-if="weatherItem.style === EWeatherWidgetStyle.CURRENT"
     :weatherItem="weatherItem"
     :widgetId="widgetId" />
-  <WeatherItemForecast
+  <WeatherRowForecast
     v-else-if="weatherItem.style === EWeatherWidgetStyle.FORECAST"
     :weatherItem="weatherItem"
     :widgetId="widgetId" />

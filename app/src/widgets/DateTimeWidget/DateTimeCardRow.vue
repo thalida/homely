@@ -1,17 +1,14 @@
 <script setup lang="ts">
 import { useDateTimeStore } from '@/stores/datetime';
-import type { IDateTime } from '@/types/widget';
 import { computed, ref, watchEffect, type PropType, type Ref } from 'vue';
 import { SunIcon, MoonIcon, SunriseIcon, SunsetIcon } from 'lucide-vue-next';
 import { isLightColor } from '@/utils/color';
 import { useLocationStore } from '@/stores/location';
-import { useWeatherStore } from '@/stores/weather';
-import { getDayJs, getRealisticColorGradient } from '@/utils/datetime';
 import type { IColor } from '@/types/color';
+import type { IDateTime } from './types';
 
 const dateTimeStore = useDateTimeStore();
 const locationStore = useLocationStore();
-const weatherStore = useWeatherStore();
 
 const props = defineProps({
   widgetId: {
@@ -64,7 +61,6 @@ const dynamicIcon = computed(() => {
 
   return null
 })
-
 
 
 const colorGradient: Ref<{start: IColor, end: IColor} | null> = ref(null)

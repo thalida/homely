@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { useWidgetStore } from '@/stores/widget'
-import { widgetComponents } from '@/components/widgets'
+import { widgetComponents } from '@/widgets'
 import { EWidgetColorNames } from '@/types/widget';
 
 const widgetStore = useWidgetStore()

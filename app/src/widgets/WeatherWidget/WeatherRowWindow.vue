@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { computed, type PropType } from 'vue';
-import { EWeatherWidgetUnits, type IWeatherWidgetItem } from '@/types/widget'
 import { useWeatherStore } from '@/stores/weather';
 import { useLocationStore } from '@/stores/location';
-import { unitsHTMLCodeMap, defaultLottieMap } from './index'
-import { getColorGradient, getDayJs, getRealisticColorGradient } from '@/utils/datetime';
 import { useDateTimeStore } from '@/stores/datetime';
+import { unitsHTMLCodeMap, EWeatherWidgetUnits } from './enums';
+import { getColorGradient } from '@/utils/datetime';
+import { defaultLottieMap } from './assets';
+import type { IWeatherWidgetItem } from './types';
 
 const props = defineProps({
   widgetId: {

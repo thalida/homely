@@ -14,9 +14,9 @@ const supportedWidgets = [
   WeatherWidget,
 ]
 
-export const widgetComponents: Record<EWidgetType, Component | null> = supportedWidgets.reduce((acc, widget) => {
-  acc[widget.widget_type] = widget.component
+export const cardComponentsByType: Record<EWidgetType, Component> = supportedWidgets.reduce((acc, widget) => {
+  acc[widget.widgetType] = widget.cardComponent
   return acc
 }, {} as Record<EWidgetType, Component>)
 
-export const widgetMenuItems = supportedWidgets.map((widget) => widget.menuItem)
+export const widgetMenuBtnComponents = supportedWidgets.map((widget) => widget.menuBtnComponent)

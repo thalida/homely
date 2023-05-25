@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import axios from 'axios'
 import { computed, ref, watchEffect } from 'vue'
 import { useWidgetStore } from '@/stores/widget'
-import { ELinkWidgetStyle, type ILinkWidget } from '@/types/widget'
 import { useSpaceStore } from '@/stores/space'
-import { useUserStore } from '@/stores/user'
-import { clone, cloneDeep } from 'lodash'
+import LinkMenuSettings from './LinkMenuSettings.vue'
+import { ELinkWidgetStyle } from './enums'
+import type { TLinkWidget } from './types'
 
 const props = defineProps({
   widgetId: {
@@ -15,22 +14,17 @@ const props = defineProps({
   }
 })
 
-const userStore = useUserStore()
 const spaceStore = useSpaceStore()
 const widgetStore = useWidgetStore()
 
 const linkEl = ref(null)
 
 const widget = computed(() => {
-  return widgetStore.getWidgetById(props.widgetId) as ILinkWidget;
+  return widgetStore.getWidgetById(props.widgetId) as TLinkWidget;
 })
 
 const isEditing = computed(() => {
   return spaceStore.isEditMode
-})
-
-const styleOptions = computed(() => {
-  return Object.values(ELinkWidgetStyle)
 })
 
 const metadata = computed(() => {
@@ -54,48 +48,6 @@ watchEffect(() => {
     url.value = widget.value.content.url || ''
   }
 })
-
-async function getLink(url: string) {
-  if (!url) {
-    return null
-  }
-
-  const apiUrl = `http://localhost:8000/api/links/`
-  const res = await axios.post(
-    apiUrl,
-    {
-      url,
-    },
-    {
-      headers: {
-        Authorization: `Bearer ${userStore.accessToken}`,
-      },
-    }
-  )
-
-  return res.data
-}
-
-async function handleUrlChange() {
-  const widget = widgetStore.getWidgetById(props.widgetId) as ILinkWidget
-  try {
-    const link = await getLink(url.value)
-    widget.content.url = url.value
-    widget.content.metadata = link.metadata
-    widget.link = link.uid
-    widget.original_link = link
-  } catch (e) {
-    widget.content.url = url.value
-    widget.content.metadata = {}
-    widget.link = null
-    widget.original_link = null
-  }
-}
-
-function handleResetMetadata() {
-  const widget = widgetStore.getWidgetById(props.widgetId) as ILinkWidget
-  widget.content.metadata = cloneDeep(widget.original_link?.metadata || {})
-}
 </script>
 
 <template>
@@ -159,59 +111,7 @@ function handleResetMetadata() {
     </template>
   </component>
   <teleport to="#space__widget-menu">
-    <div v-if="widget.state.selected">
-      <label>
-        <span>URL</span>
-        <input type="url" class="border border-gray-200" v-model="url" @blur="handleUrlChange" />
-      </label>
-      <label>
-        <span>Style</span>
-        <select v-model="widget.content.style" class="border border-gray-200">
-          <option v-for="style in styleOptions" :key="style" :value="style">{{ style }}</option>
-        </select>
-      </label>
-      <label>
-        <span>Custom Metadata</span>
-        <input type="checkbox" v-model="widget.content.showCustomMetadata" />
-      </label>
-      <div v-if="widget.content.showCustomMetadata" class="flex flex-col">
-        <label>
-          <span>Icon</span>
-          <input type="url" class="border border-gray-200" v-model="widget.content.metadata.icon" />
-        </label>
-        <label>
-          <span>Title</span><br />
-          <input type="text" class="border border-gray-200" v-model="widget.content.metadata.title" />
-        </label>
-        <label>
-          <span>Description</span><br />
-          <textarea class="border border-gray-200" v-model="widget.content.metadata.description"></textarea>
-        </label>
-        <button @click="handleResetMetadata">Reset</button>
-      </div>
-      <div v-if="widget.content.style !== ELinkWidgetStyle.ICON" class="flex flex-col">
-        <label>
-          <span>Show Icon</span>
-          <input type="checkbox" v-model="widget.content.showIcon" />
-        </label>
-        <label>
-          <span>Show image</span>
-          <input type="checkbox" v-model="widget.content.showImage" />
-        </label>
-        <label>
-          <span>Show title</span>
-          <input type="checkbox" v-model="widget.content.showTitle" />
-        </label>
-        <label>
-          <span>Show description</span>
-          <input type="checkbox" v-model="widget.content.showDescription" />
-        </label>
-        <label>
-          <span>Show URL</span>
-          <input type="checkbox" v-model="widget.content.showUrl" />
-        </label>
-      </div>
-    </div>
+    <LinkMenuSettings v-if="widgetId" :widgetId="props.widgetId" />
   </teleport>
 </template>
 

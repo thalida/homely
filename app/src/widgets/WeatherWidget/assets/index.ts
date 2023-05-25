@@ -1,5 +1,3 @@
-import { DEFAULT_WIDGET_COLOR, EWeatherWidgetStyle, EWeatherWidgetUnits, EWidgetType, type IWidgetMenuItem } from "@/types/widget";
-import component from "./WeatherWidget.vue";
 import {
   SunIcon,
   MoonIcon,
@@ -34,41 +32,6 @@ import {
 import { cloudMoonHeavyrainSvg, cloudMoonRainSvg, cloudMoonSnowSvg, cloudMoonSvg, cloudSunHeavyrainSvg, cloudSunRainSvg, cloudSunSnowSvg, cloudSunSvg, cloudSvg, cloudThunderHeavyrainSvg, moonSvg, sunSvg } from "./weather3dSvgs";
 import { ClearNightSvg, DrizzleSvg, FogSvg, MixRainfallSvg, MostlyCloudySvg, MostlySunnySvg, PartlyCloudyNightSvg, PartlyCloudySvg, RainSvg, SmokeSvg, SnowSvg } from "./weatherSvgs";
 import { CloudsSunSunnyWeatherSvg, CloudyWeatherCloudsCloudSvg, FoggyWeatherFogCloudsCloudySvg, MoonWeatherCloudsCloudySvg, RainCloudDrizzelWeatherSvg, RainStormShowerWeatherSvg, StormWeatherNightCloudsSvg, WeatherNightMoonMoonlightSvg, WeatherSunSunnyTemperatureSvg, WinterSnowCloudsWeatherSvg } from "./weatherSvgs2";
-
-const widget_type = EWidgetType.WEATHER;
-
-const menuItem: IWidgetMenuItem = {
-  label: 'Weather',
-  widget: {
-    widget_type,
-    content: {
-      items: [
-        {
-          style: EWeatherWidgetStyle.CURRENT,
-          units: EWeatherWidgetUnits.METRIC,
-          location: null,
-          useCurrentLocation: true,
-          showLocation: true,
-          showNumForecastDays: 5,
-          showTemperature: true,
-          showUnits: false,
-          showIcon: true,
-          showDescription: true,
-          showTime: true,
-        },
-      ],
-    },
-    card_style: {
-      background_color: DEFAULT_WIDGET_COLOR,
-    },
-    layout: {
-      w: 3,
-      h: 1,
-      isResizable: true,
-      preserveAspectRatio: false,
-    },
-  },
-}
 
 // https://ui8.net/msakta/products/weather-animated-icons
 export const weatherUI83dLottieMap: Record<string, any> = {
@@ -182,20 +145,3 @@ export const weatherLucideIconMap: Record<string, any> = {
 
 export const defaultWeatherSvgMap = weatherColor2SvgMap;
 export const defaultLottieMap = weatherUI83dLottieMap;
-
-export const unitsHTMLCodeMap: Record<string, string> = {
-  [EWeatherWidgetUnits.STANDARD]: '&#8490;', // K
-  [EWeatherWidgetUnits.METRIC]: '&#8451;', // C
-  [EWeatherWidgetUnits.IMPERIAL]: '&#8457;', // F
-}
-export const unitsSymbolMap: Record<string, string> = {
-  [EWeatherWidgetUnits.STANDARD]: 'K', // K
-  [EWeatherWidgetUnits.METRIC]: 'C', // C
-  [EWeatherWidgetUnits.IMPERIAL]: 'F', // F
-}
-
-export default {
-  widget_type,
-  component,
-  menuItem,
-}
