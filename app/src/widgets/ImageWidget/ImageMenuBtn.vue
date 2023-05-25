@@ -2,14 +2,10 @@
 import { DEFAULT_WIDGET_COLOR, EWidgetType } from '@/enums/widget';
 import { EImageWidgetBackgroundSize, EImageWidgetBackgroundPosition, EImageWidgetBackgroundRepeat } from './enums';
 import type { IBaseImageWidget } from './types';
+import SpaceMenuBtn from '@/components/SpaceMenuBtn.vue';
 
-const emits = defineEmits<{
-  (e: 'widgetMenuBtnClicked', defaultWidget: IBaseImageWidget): void,
-}>();
-
-const widgetType = EWidgetType.IMAGE;
 const defaultWidget: IBaseImageWidget = {
-  widget_type: widgetType,
+  widget_type: EWidgetType.IMAGE,
   content: {
     url: null,
     backgroundSize: EImageWidgetBackgroundSize.COVER,
@@ -26,16 +22,12 @@ const defaultWidget: IBaseImageWidget = {
     preserveAspectRatio: false,
   },
 };
-
-function handleBtnClick() {
-  emits('widgetMenuBtnClicked', defaultWidget);
-}
 </script>
 
 <template>
-  <button @click="handleBtnClick">
+  <SpaceMenuBtn :defaultWidget="defaultWidget">
     Image
-  </button>
+  </SpaceMenuBtn>
 </template>
 
 <style scoped></style>

@@ -1,14 +1,10 @@
 <script setup lang="ts">
 import { DEFAULT_WIDGET_COLOR, EWidgetType } from '@/enums/widget';
 import type { IBaseTextWidget } from './types';
+import SpaceMenuBtn from '@/components/SpaceMenuBtn.vue';
 
-const emits = defineEmits<{
-  (e: 'widgetMenuBtnClicked', defaultWidget: IBaseTextWidget): void,
-}>();
-
-const widgetType = EWidgetType.TEXT;
 const defaultWidget: IBaseTextWidget = {
-  widget_type: widgetType,
+  widget_type: EWidgetType.TEXT,
   content: {
     text: "",
     isInteractive: false,
@@ -28,16 +24,12 @@ const defaultWidget: IBaseTextWidget = {
     preserveAspectRatio: false,
   },
 };
-
-function handleBtnClick() {
-  emits('widgetMenuBtnClicked', defaultWidget);
-}
 </script>
 
 <template>
-  <button @click="handleBtnClick">
+  <SpaceMenuBtn :defaultWidget="defaultWidget">
     Text
-  </button>
+  </SpaceMenuBtn>
 </template>
 
 <style scoped></style>

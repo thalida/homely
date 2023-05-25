@@ -1,14 +1,10 @@
 <script setup lang="ts">
 import { DEFAULT_WIDGET_COLOR, EWidgetType } from '@/enums/widget';
 import type { IBaseDateTimeWidget } from './types';
+import SpaceMenuBtn from '@/components/SpaceMenuBtn.vue';
 
-const emits = defineEmits<{
-  (e: 'widgetMenuBtnClicked', defaultWidget: IBaseDateTimeWidget): void,
-}>();
-
-const widgetType = EWidgetType.DATETIME;
 const defaultWidget: IBaseDateTimeWidget = {
-  widget_type: widgetType,
+  widget_type: EWidgetType.DATETIME,
   content: {
     items: [
       {
@@ -35,16 +31,12 @@ const defaultWidget: IBaseDateTimeWidget = {
     preserveAspectRatio: false,
   },
 };
-
-function handleBtnClick() {
-  emits('widgetMenuBtnClicked', defaultWidget);
-}
 </script>
 
 <template>
-  <button @click="handleBtnClick">
+  <SpaceMenuBtn :defaultWidget="defaultWidget">
     Date Time
-  </button>
+  </SpaceMenuBtn>
 </template>
 
 <style scoped></style>

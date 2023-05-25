@@ -3,13 +3,8 @@ import { DEFAULT_WIDGET_COLOR, EWidgetType } from '@/enums/widget';
 import type { IBaseWeatherWidget } from './types';
 import { EWeatherWidgetStyle, EWeatherWidgetUnits } from './enums';
 
-const emits = defineEmits<{
-  (e: 'widgetMenuBtnClicked', defaultWidget: IBaseWeatherWidget): void,
-}>();
-
-const widgetType = EWidgetType.WEATHER;
 const defaultWidget: IBaseWeatherWidget = {
-  widget_type: widgetType,
+  widget_type: EWidgetType.WEATHER,
   content: {
     items: [
       {
@@ -37,16 +32,12 @@ const defaultWidget: IBaseWeatherWidget = {
     preserveAspectRatio: false,
   },
 };
-
-function handleBtnClick() {
-  emits('widgetMenuBtnClicked', defaultWidget);
-}
 </script>
 
 <template>
-  <button @click="handleBtnClick">
+  <SpaceMenuBtn :defaultWidget="defaultWidget">
     Weather
-  </button>
+  </SpaceMenuBtn>
 </template>
 
 <style scoped></style>

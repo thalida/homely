@@ -3,13 +3,8 @@ import { DEFAULT_WIDGET_COLOR, EWidgetType } from '@/enums/widget';
 import { ELinkWidgetStyle } from './enums';
 import type { IBaseLinkWidget } from './types';
 
-const emits = defineEmits<{
-  (e: 'widgetMenuBtnClicked', defaultWidget: IBaseLinkWidget): void,
-}>();
-
-const widgetType = EWidgetType.LINK;
 const defaultWidget: IBaseLinkWidget = {
-  widget_type: widgetType,
+  widget_type: EWidgetType.LINK,
   content: {
     url: null,
     style: ELinkWidgetStyle.FLAG,
@@ -33,16 +28,12 @@ const defaultWidget: IBaseLinkWidget = {
   link: null,
   original_link: null,
 };
-
-function handleBtnClick() {
-  emits('widgetMenuBtnClicked', defaultWidget);
-}
 </script>
 
 <template>
-  <button @click="handleBtnClick">
+  <SpaceMenuBtn :defaultWidget="defaultWidget">
     Link
-  </button>
+  </SpaceMenuBtn>
 </template>
 
 <style scoped></style>
