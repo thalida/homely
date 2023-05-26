@@ -1,27 +1,21 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { ref } from 'vue';
 import type { CallbackTypes } from "vue3-google-login";
 import { useFontStore } from './stores/fonts';
 import { useUserStore } from './stores/user';
 import { useThemeStore } from './stores/theme';
+import { useSpaceStore } from './stores/space';
 import SpaceLayout from './components/SpaceLayout.vue'
 
 useThemeStore()
 
 const fontStore = useFontStore()
 const userStore = useUserStore()
+const spaceStore = useSpaceStore()
 const isLoading = ref(true)
 
 userStore.autoLogin().then(() => {
   isLoading.value = false
-})
-
-const spaces = computed(() => {
-  return userStore.user?.spaces || []
-})
-
-const defaultSpaceId = computed(() => {
-  return spaces.value && spaces.value.length > 0 ? spaces.value[0] : null
 })
 
 const callback: CallbackTypes.TokenResponseCallback = (response) => {
@@ -41,12 +35,12 @@ const callback: CallbackTypes.TokenResponseCallback = (response) => {
         <button>Login Using Google</button>
       </GoogleLogin>
     </template>
-    <template v-else-if="defaultSpaceId">
+    <template v-else-if="spaceStore.activeSpace">
       <teleport to="body">
         <link rel="preconnect" href="https://fonts.gstatic.com" />
         <link v-if="fontStore.fontsUrl" :key="fontStore.fontsUrl" :href="fontStore.fontsUrl" rel="stylesheet" type="text/css" />
       </teleport>
-      <SpaceLayout :spaceId="defaultSpaceId" />
+      <SpaceLayout :key="spaceStore.activeSpace" :spaceId="spaceStore.activeSpace" />
     </template>
   </main>
 </template>

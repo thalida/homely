@@ -4,7 +4,7 @@ from rest_framework import viewsets, mixins
 from rest_framework.exceptions import PermissionDenied
 
 from spaces.models import Space, Widget
-from spaces.seralizers import SpaceSerializer, WidgetSerializer
+from spaces.seralizers import SpaceWithWidgetsSerializer, WidgetSerializer
 
 class SpaceViewSet(
     mixins.CreateModelMixin,
@@ -17,14 +17,15 @@ class SpaceViewSet(
     API endpoint that allows spaces to be viewed or edited.
     """
     queryset = Space.objects.all()
-    serializer_class = SpaceSerializer
+    serializer_class = SpaceWithWidgetsSerializer
     permission_classes = [permissions.IsAuthenticated,]
 
     def get_queryset(self):
         return super().get_queryset().filter(owner=self.request.user)
 
-    def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
+    def create(self, request, *args, **kwargs):
+        request.data["owner"] = request.user.uid
+        return super().create(request, *args, **kwargs)
 
 
 class WidgetViewSet(

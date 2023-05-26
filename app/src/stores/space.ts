@@ -4,27 +4,51 @@ import { useLocalStorage } from '@vueuse/core'
 import { cloneDeep } from 'lodash'
 import { useWidgetStore } from '@/stores/widget'
 import type { IWidgets } from '@/types/widget'
-import type { ISpaces } from '@/types/space'
-import { getSpace } from '@/api/space'
+import type { ISpace, ISpaceResponse, ISpaces } from '@/types/space'
+import { getSpace, createSpace as createSpaceReq } from '@/api/space'
 
 export const useSpaceStore = defineStore('space', () => {
   const widgetStore = useWidgetStore()
   const collection: Ref<ISpaces> = ref({})
+  const activeSpace = ref('')
   const backupWidgets: Ref<IWidgets> = ref({})
   const isEditMode: Ref<boolean> = useLocalStorage('homely/space/isEditMode', false)
 
-  async function fetchSpace(spaceId: string) {
-    const spaceRes = await getSpace(spaceId)
+  function initSpaces(spaces: ISpace[]) {
+    collection.value = {}
 
-    collection.value[spaceId] = {
-      uid: spaceRes.uid,
-      name: spaceRes.name,
-      owner: spaceRes.owner,
-      created_at: spaceRes.created_at,
-      updated_at: spaceRes.updated_at,
+    for (const space of spaces) {
+      collection.value[space.uid] = { ...space }
     }
 
-    const widgets = spaceRes.widgets.map((widget: any) => {
+    if (spaces.length > 0) {
+      activeSpace.value = spaces[0].uid
+    }
+  }
+
+  async function fetchSpace(spaceId: string) {
+    const spaceRes = await getSpace(spaceId)
+    addSpace(spaceRes)
+  }
+
+  async function createSpace() {
+    const randomName = Math.random().toString(36).substring(7)
+
+    const spaceRes = await createSpaceReq(randomName)
+    addSpace(spaceRes)
+    activeSpace.value = spaceRes.uid
+  }
+
+  function addSpace(space: ISpaceResponse) {
+    collection.value[space.uid] = {
+      uid: space.uid,
+      name: space.name,
+      owner: space.owner,
+      created_at: space.created_at,
+      updated_at: space.updated_at,
+    }
+
+    const widgets = space.widgets.map((widget: any) => {
       const updatedWidget = {
         ...widget,
         state: {
@@ -38,7 +62,7 @@ export const useSpaceStore = defineStore('space', () => {
       return updatedWidget
     })
 
-    widgetStore.setSpaceWidgets(spaceId, widgets)
+    widgetStore.setSpaceWidgets(space.uid, widgets)
   }
 
   function createBackup() {
@@ -66,9 +90,13 @@ export const useSpaceStore = defineStore('space', () => {
     isEditMode,
     setEditMode,
     toggleEditMode,
+    collection,
+    activeSpace,
+    initSpaces,
+    fetchSpace,
+    createSpace,
     createBackup,
     deleteBackup,
     resetFromBackup,
-    fetchSpace,
   }
 })

@@ -17,3 +17,11 @@ export async function getSpace(id: string): Promise<ISpaceResponse> {
 
   return res.data
 }
+
+export async function createSpace(name: string): Promise<ISpaceResponse> {
+  const url = `${API_URL}/spaces/`;
+  const config = getConfig()
+  const res = await axios.post<never, AxiosResponse<ISpaceResponse>>(url, { name }, config)
+
+  return res.data
+}

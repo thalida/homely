@@ -9,8 +9,10 @@ import {
   loginWithGoogle as loginWithGoogleReq,
   logout as logoutReq,
 } from '@/api/user';
+import { useSpaceStore } from '@/stores/space';
 
 export const useUserStore = defineStore('user', () => {
+  const spaceStore = useSpaceStore()
   const accessToken: Ref<string | null> = useLocalStorage('homely/user/accessToken', null)
   const refreshToken: Ref<string | null> = useLocalStorage('homely/user/refreshToken', null)
   const user: Ref<IUser | null> = ref(null)
@@ -24,6 +26,8 @@ export const useUserStore = defineStore('user', () => {
     const userRes = await getUserReq()
 
     user.value = userRes
+
+    spaceStore.initSpaces(userRes.spaces)
   }
 
   async function verifyAccessToken(): Promise<boolean> {

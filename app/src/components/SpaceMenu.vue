@@ -108,18 +108,26 @@ function scrollToWidget(widget: IWidget) {
       <select v-model="themeStore.appTheme">
         <option v-for="theme in supportedAppThemes" :key="theme" :value="theme">{{ theme }}</option>
       </select>
+      <select v-model="spaceStore.activeSpace">
+        <option v-for="space in spaceStore.collection" :key="space.uid" :value="space.uid">{{ space.name }}</option>
+      </select>
+      <button @click="spaceStore.createSpace">
+        Create Space
+      </button>
     </div>
     <template v-if="spaceStore.isEditMode">
       <button @click="userStore.logout()">Logout</button>
       {{ numSelectedWidgets }} selected:
       <button @click="handleDelete" class="p-2 bg-red-400 disabled:opacity-50" :disabled="numSelectedWidgets === 0">Delete</button>
-      <component
-        class="p-2 bg-blue-400"
-        v-for="component in widgetMenuBtnComponents"
-        :key="component.name"
-        :is="component"
-        @widgetMenuBtnClicked="handleWidgetMenuBtnClicked"
-      />
+      <div class="flex flex-row flex-wrap">
+        <component
+          class="p-2 bg-blue-400"
+          v-for="component in widgetMenuBtnComponents"
+          :key="component.name"
+          :is="component"
+          @widgetMenuBtnClicked="handleWidgetMenuBtnClicked"
+        />
+      </div>
     </template>
     <div id="space__shared-widget-menu"></div>
     <div id="space__widget-menu"></div>

@@ -2,6 +2,7 @@
 import { DEFAULT_WIDGET_COLOR, EWidgetType } from '@/enums/widget';
 import { ELinkWidgetStyle } from './enums';
 import type { IBaseLinkWidget } from './types';
+import SpaceMenuBtn from '@/components/SpaceMenuBtn.vue';
 
 const defaultWidget: IBaseLinkWidget = {
   widget_type: EWidgetType.LINK,

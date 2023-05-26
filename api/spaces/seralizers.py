@@ -13,9 +13,14 @@ class WidgetSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class SpaceSerializer(serializers.ModelSerializer):
+class SpaceWithWidgetsSerializer(serializers.ModelSerializer):
     widgets = WidgetSerializer(many=True, read_only=True)
 
+    class Meta:
+        model = Space
+        fields = "__all__"
+
+class SpaceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Space
         fields = "__all__"
