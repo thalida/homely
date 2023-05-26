@@ -1,17 +1,15 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+import { RouterView } from "vue-router";
 import type { CallbackTypes } from "vue3-google-login";
 import { useFontStore } from './stores/fonts';
 import { useUserStore } from './stores/user';
 import { useThemeStore } from './stores/theme';
-import { useSpaceStore } from './stores/space';
-import SpaceLayout from './components/SpaceLayout.vue'
 
 useThemeStore()
 
 const fontStore = useFontStore()
 const userStore = useUserStore()
-const spaceStore = useSpaceStore()
 const isLoading = ref(true)
 
 userStore.autoLogin().then(() => {
@@ -35,12 +33,12 @@ const callback: CallbackTypes.TokenResponseCallback = (response) => {
         <button>Login Using Google</button>
       </GoogleLogin>
     </template>
-    <template v-else-if="spaceStore.activeSpace">
+    <template v-else>
       <teleport to="body">
         <link rel="preconnect" href="https://fonts.gstatic.com" />
         <link v-if="fontStore.fontsUrl" :key="fontStore.fontsUrl" :href="fontStore.fontsUrl" rel="stylesheet" type="text/css" />
       </teleport>
-      <SpaceLayout :key="spaceStore.activeSpace" :spaceId="spaceStore.activeSpace" />
+      <RouterView />
     </template>
   </main>
 </template>

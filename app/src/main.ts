@@ -6,6 +6,7 @@ import vue3GoogleLogin from 'vue3-google-login'
 import Vue3Lottie from 'vue3-lottie'
 import 'vue3-lottie/dist/style.css'
 import App from './App.vue'
+import router from './router'
 
 import './assets/main.css'
 
@@ -18,5 +19,6 @@ app.use(vue3GoogleLogin, {
 });
 app.use(GesturePlugin)
 app.use(MotionPlugin)
+app.use(router);
 
 app.mount('#app')

@@ -2,6 +2,7 @@
 import { computed, nextTick } from 'vue';
 import { cloneDeep, filter } from 'lodash';
 import { SettingsIcon } from 'lucide-vue-next';
+import { RouterLink } from 'vue-router';
 import { useUserStore } from '@/stores/user';
 import { useSpaceStore } from '@/stores/space';
 import { useWidgetStore } from '@/stores/widget';
@@ -9,6 +10,7 @@ import { useThemeStore } from '@/stores/theme';
 import type { IWidget } from '@/types/widget';
 import { widgetMenuBtnComponents } from '@/widgets'
 import { EAppTheme } from '@/enums/themes';
+import router from '@/router';
 
 const userStore = useUserStore();
 const spaceStore = useSpaceStore();
@@ -89,6 +91,11 @@ function scrollToWidget(widget: IWidget) {
     inline: 'center',
   })
 }
+
+async function handleCreateSpace() {
+  const space = await spaceStore.createSpace()
+  router.push({ name: 'Space', params: { spaceUid: space.uid } })
+}
 </script>
 
 <template>
@@ -108,10 +115,23 @@ function scrollToWidget(widget: IWidget) {
       <select v-model="themeStore.appTheme">
         <option v-for="theme in supportedAppThemes" :key="theme" :value="theme">{{ theme }}</option>
       </select>
-      <select v-model="spaceStore.activeSpace">
+      <!-- HTML accordion -->
+      <details>
+        <summary>Spaces</summary>
+        <div class="space-x-2">
+          <RouterLink
+            v-for="space in spaceStore.collection"
+            :key="space.uid"
+            :to="{ name: 'Space', params: { spaceUid: space.uid } }">
+            {{ space.name }}
+          </RouterLink>
+        </div>
+      </details>
+
+      <!-- <select v-model="spaceStore.activeSpace">
         <option v-for="space in spaceStore.collection" :key="space.uid" :value="space.uid">{{ space.name }}</option>
-      </select>
-      <button @click="spaceStore.createSpace">
+      </select> -->
+      <button @click="handleCreateSpace">
         Create Space
       </button>
     </div>

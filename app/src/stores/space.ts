@@ -10,7 +10,7 @@ import { getSpace, createSpace as createSpaceReq } from '@/api/space'
 export const useSpaceStore = defineStore('space', () => {
   const widgetStore = useWidgetStore()
   const collection: Ref<ISpaces> = ref({})
-  const activeSpace = ref('')
+  const defaultSpace = ref('')
   const backupWidgets: Ref<IWidgets> = ref({})
   const isEditMode: Ref<boolean> = useLocalStorage('homely/space/isEditMode', false)
 
@@ -22,7 +22,8 @@ export const useSpaceStore = defineStore('space', () => {
     }
 
     if (spaces.length > 0) {
-      activeSpace.value = spaces[0].uid
+      const defaultUid = spaces[0].uid
+      defaultSpace.value = defaultUid
     }
   }
 
@@ -36,7 +37,8 @@ export const useSpaceStore = defineStore('space', () => {
 
     const spaceRes = await createSpaceReq(randomName)
     addSpace(spaceRes)
-    activeSpace.value = spaceRes.uid
+
+    return collection.value[spaceRes.uid]
   }
 
   function addSpace(space: ISpaceResponse) {
@@ -91,7 +93,7 @@ export const useSpaceStore = defineStore('space', () => {
     setEditMode,
     toggleEditMode,
     collection,
-    activeSpace,
+    defaultSpace,
     initSpaces,
     fetchSpace,
     createSpace,
