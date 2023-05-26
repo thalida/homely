@@ -4,7 +4,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 from authentication.models import User
-from spaces.choices import WidgetType
+from spaces.choices import SpaceAccess, WidgetType
 
 
 class Space(models.Model):
@@ -18,7 +18,7 @@ class Space(models.Model):
         related_name="spaces",
     )
     name = models.CharField(max_length=100)
-
+    access = models.IntegerField(choices=SpaceAccess.choices, default=SpaceAccess.PRIVATE)
 
 
 class Widget(models.Model):

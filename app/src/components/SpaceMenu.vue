@@ -3,6 +3,7 @@ import { computed, nextTick } from 'vue';
 import { cloneDeep, filter } from 'lodash';
 import { SettingsIcon } from 'lucide-vue-next';
 import { RouterLink } from 'vue-router';
+import type { CallbackTypes } from "vue3-google-login";
 import { useUserStore } from '@/stores/user';
 import { useSpaceStore } from '@/stores/space';
 import { useWidgetStore } from '@/stores/widget';
@@ -29,6 +30,18 @@ const emits = defineEmits<{
   (e: 'editModeStart'): void,
   (e: 'editModeDone'): void,
 }>();
+
+const isAuthenticated = computed(() => {
+  return userStore.isAuthenticated;
+});
+
+const space = computed(() => {
+  return spaceStore.collection[props.spaceId];
+});
+
+const isSpaceOwner = computed(() => {
+  return userStore.user?.pk === space.value?.owner;
+});
 
 const selectedWidgets = computed(() => {
   const widgetIds = widgetsStore.activeWidgetsBySpace[props.spaceId];
@@ -96,6 +109,10 @@ async function handleCreateSpace() {
   const space = await spaceStore.createSpace()
   router.push({ name: 'Space', params: { spaceUid: space.uid } })
 }
+
+const handleLoginWithGoogle: CallbackTypes.TokenResponseCallback = (response) => {
+  userStore.loginWithGoogle(response.access_token)
+};
 </script>
 
 <template>
@@ -105,18 +122,19 @@ async function handleCreateSpace() {
     'h-full w-80 p-4 m-0': spaceStore.isEditMode,
   }">
     <div>
-      <button v-if="spaceStore.isEditMode" @click="handleEditModeCancel" class="p-2 bg-slate-400">Cancel</button>
-      <button v-if="spaceStore.isEditMode" @click="handleEditModeToggle" class="p-2 bg-green-300">
-        Save
-      </button>
-      <button v-else @click="handleEditModeToggle" class="p-2 bg-green-300">
-        <SettingsIcon />
-      </button>
+      <template v-if="isSpaceOwner">
+        <button v-if="spaceStore.isEditMode" @click="handleEditModeCancel" class="p-2 bg-slate-400">Cancel</button>
+        <button v-if="spaceStore.isEditMode" @click="handleEditModeToggle" class="p-2 bg-green-300">
+          Save
+        </button>
+        <button v-else @click="handleEditModeToggle" class="p-2 bg-green-300">
+          <SettingsIcon />
+        </button>
+      </template>
       <select v-model="themeStore.appTheme">
         <option v-for="theme in supportedAppThemes" :key="theme" :value="theme">{{ theme }}</option>
       </select>
-      <!-- HTML accordion -->
-      <details>
+      <details v-if="isAuthenticated">
         <summary>Spaces</summary>
         <div class="space-x-2">
           <RouterLink
@@ -127,16 +145,16 @@ async function handleCreateSpace() {
           </RouterLink>
         </div>
       </details>
-
-      <!-- <select v-model="spaceStore.activeSpace">
-        <option v-for="space in spaceStore.collection" :key="space.uid" :value="space.uid">{{ space.name }}</option>
-      </select> -->
-      <button @click="handleCreateSpace">
+      <button v-if="isAuthenticated" @click="handleCreateSpace">
         Create Space
       </button>
+      <br />
+      <button v-if="isAuthenticated" @click="userStore.logout()">Logout</button>
+      <GoogleLogin  v-else :callback="handleLoginWithGoogle" popup-type="TOKEN">
+        <button>Login Using Google</button>
+      </GoogleLogin>
     </div>
-    <template v-if="spaceStore.isEditMode">
-      <button @click="userStore.logout()">Logout</button>
+    <template v-if="isSpaceOwner && spaceStore.isEditMode">
       {{ numSelectedWidgets }} selected:
       <button @click="handleDelete" class="p-2 bg-red-400 disabled:opacity-50" :disabled="numSelectedWidgets === 0">Delete</button>
       <div class="flex flex-row flex-wrap">

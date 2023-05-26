@@ -10,6 +10,7 @@ import {
   logout as logoutReq,
 } from '@/api/user';
 import { useSpaceStore } from '@/stores/space';
+import router from '@/router';
 
 export const useUserStore = defineStore('user', () => {
   const spaceStore = useSpaceStore()
@@ -81,8 +82,9 @@ export const useUserStore = defineStore('user', () => {
 
     accessToken.value = res.access
     refreshToken.value = res.refresh
-    user.value = res.user
     isAuthenticated.value = true
+    user.value = res.user
+    spaceStore.initSpaces(res.user.spaces)
   }
 
   async function logout() {
@@ -92,6 +94,10 @@ export const useUserStore = defineStore('user', () => {
     accessToken.value = null
     refreshToken.value = null
     user.value = null
+    spaceStore.initSpaces([])
+    spaceStore.isEditMode = false
+
+    window.location.href = '/'
   }
 
 

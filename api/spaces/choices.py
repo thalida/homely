@@ -6,3 +6,8 @@ class WidgetType(models.IntegerChoices):
     IMAGE = 20, "Image"
     DATETIME = 30, "DateTime"
     WEAHTER = 40, "Weather"
+
+
+class SpaceAccess(models.IntegerChoices):
+    PRIVATE = 1, "Private"
+    PUBLIC = 2, "Public"

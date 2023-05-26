@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from 'uuid'
 import type { PartialDeep } from 'type-fest'
 import { debounce, merge, omit } from 'lodash'
 import type { IWidgets, IWidgetLayout, IWidget } from '@/types/widget';
-import { createWidget, deleteWidget } from '@/api/widget';
+import { createWidget as createWidgetReq, deleteWidget as deleteWidgetReq, updateWidget as updateWidgetReq } from '@/api/widget';
 
 export const useWidgetStore = defineStore('widget', () => {
   const collection = ref<IWidgets>({})
@@ -209,12 +209,13 @@ export const useWidgetStore = defineStore('widget', () => {
     for (const widgetId of spaceWidgets) {
       const widget = collection.value[widgetId]
 
+
       if (!widget || !widget.state.dirty) {
         continue
       }
 
       if (widget.state.new) {
-        const newWidget = await createWidget({
+        const newWidget = await createWidgetReq({
           ...omit(widget, ['state', 'uid']),
           layout: omit(widget.layout, ['i']),
         })
@@ -232,13 +233,13 @@ export const useWidgetStore = defineStore('widget', () => {
       }
 
       if (widget.state.deleted) {
-        await deleteWidget(widget.uid)
+        await deleteWidgetReq(widget.uid)
         delete collection.value[widget.uid]
         continue
       }
 
 
-      const updatedWidget = await updateWidget(widget.uid, {
+      const updatedWidget = await updateWidgetReq(widget.uid, {
         ...omit(widget, ['state']),
       });
 

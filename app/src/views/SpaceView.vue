@@ -19,7 +19,7 @@ const currentSpace = computed(() => {
 </script>
 
 <template>
-  <SpaceLayout :key="currentSpace" :spaceId="currentSpace" />
+  <SpaceLayout v-if="currentSpace" :key="currentSpace" :spaceId="currentSpace" />
 </template>
 
 <style scoped>

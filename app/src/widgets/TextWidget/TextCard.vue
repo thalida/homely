@@ -9,9 +9,11 @@ import UnderlineExtension from '@tiptap/extension-underline'
 import { useWidgetStore } from '@/stores/widget'
 import { useSpaceStore } from '@/stores/space'
 import { useFontStore } from '@/stores/fonts'
+import { useUserStore } from '@/stores/user'
 import type { TTextWidget } from './types'
 import TextMenuSettings from './TextMenuSettings.vue'
 
+const userStore = useUserStore()
 const spaceStore = useSpaceStore()
 const widgetStore = useWidgetStore()
 const fontStore = useFontStore()
@@ -34,6 +36,14 @@ const isEditMode = computed(() => {
 
 const widget = computed((): TTextWidget => {
   return widgetStore.getWidgetById(props.widgetId) as TTextWidget;
+})
+
+const space = computed(() => {
+  return spaceStore.collection[widget.value.space]
+})
+
+const isSpaceOwner = computed(() => {
+  return space.value?.owner === userStore.user?.pk
 })
 
 const selectedFontSpecs = computed(() => {
@@ -81,7 +91,7 @@ const parsedFontStyle = computed(() => {
 })
 
 const editor = useEditor({
-  editable: isEditMode.value || widget.value?.content?.isInteractive,
+  editable: isSpaceOwner.value && (isEditMode.value || widget.value?.content?.isInteractive),
   extensions: [
     StarterKit.configure({
       blockquote: false,
@@ -110,7 +120,7 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
-  const editable = isEditMode.value || widget.value?.content?.isInteractive
+  const editable = isSpaceOwner.value && (isEditMode.value || widget.value?.content?.isInteractive)
   editor.value?.setEditable(editable)
 })
 

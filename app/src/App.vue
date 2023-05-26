@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { RouterView } from "vue-router";
-import type { CallbackTypes } from "vue3-google-login";
 import { useFontStore } from './stores/fonts';
 import { useUserStore } from './stores/user';
 import { useThemeStore } from './stores/theme';
@@ -15,10 +14,6 @@ const isLoading = ref(true)
 userStore.autoLogin().then(() => {
   isLoading.value = false
 })
-
-const callback: CallbackTypes.TokenResponseCallback = (response) => {
-  userStore.loginWithGoogle(response.access_token)
-};
 </script>
 
 <template>
@@ -27,11 +22,6 @@ const callback: CallbackTypes.TokenResponseCallback = (response) => {
       <div>
         Loading&hellip;
       </div>
-    </template>
-    <template v-else-if="!userStore.isAuthenticated">
-      <GoogleLogin :callback="callback" popup-type="TOKEN">
-        <button>Login Using Google</button>
-      </GoogleLogin>
     </template>
     <template v-else>
       <teleport to="body">
