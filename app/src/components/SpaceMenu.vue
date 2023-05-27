@@ -113,6 +113,11 @@ async function handleCreateSpace() {
 const handleLoginWithGoogle: CallbackTypes.TokenResponseCallback = (response) => {
   userStore.loginWithGoogle(response.access_token)
 };
+
+function handleToggleBookmark() {
+  spaceStore.toggleBookmark(props.spaceId)
+}
+
 </script>
 
 <template>
@@ -122,37 +127,47 @@ const handleLoginWithGoogle: CallbackTypes.TokenResponseCallback = (response) =>
     'h-full w-80 p-4 m-0': spaceStore.isEditMode,
   }">
     <div>
-      <template v-if="isSpaceOwner">
-        <button v-if="spaceStore.isEditMode" @click="handleEditModeCancel" class="p-2 bg-slate-400">Cancel</button>
-        <button v-if="spaceStore.isEditMode" @click="handleEditModeToggle" class="p-2 bg-green-300">
-          Save
-        </button>
-        <button v-else @click="handleEditModeToggle" class="p-2 bg-green-300">
-          <SettingsIcon />
-        </button>
-      </template>
       <select v-model="themeStore.appTheme">
         <option v-for="theme in supportedAppThemes" :key="theme" :value="theme">{{ theme }}</option>
       </select>
-      <details v-if="isAuthenticated">
-        <summary>Spaces</summary>
-        <div class="space-x-2">
-          <RouterLink
-            v-for="space in spaceStore.collection"
-            :key="space.uid"
-            :to="{ name: 'Space', params: { spaceUid: space.uid } }">
-            {{ space.name }}
-          </RouterLink>
-        </div>
-      </details>
-      <button v-if="isAuthenticated" @click="handleCreateSpace">
-        Create Space
-      </button>
-      <br />
-      <button v-if="isAuthenticated" @click="userStore.logout()">Logout</button>
-      <GoogleLogin  v-else :callback="handleLoginWithGoogle" popup-type="TOKEN">
-        <button>Login Using Google</button>
-      </GoogleLogin>
+      <template v-if="isAuthenticated">
+        <details>
+          <summary>Spaces</summary>
+          <div class="space-x-2">
+            <RouterLink
+              v-for="space in spaceStore.mySpaces"
+              :key="space.uid"
+              :to="{ name: 'Space', params: { spaceUid: space.uid } }">
+              {{ space.name }}
+            </RouterLink>
+          </div>
+        </details>
+        <button @click="handleCreateSpace">
+          Create Space
+        </button>
+        <br />
+        <label>
+          <span>Bookmark</span>
+          <input type="checkbox" v-model="space.is_bookmarked" @change="handleToggleBookmark" />
+        </label>
+        <br />
+        <button @click="userStore.logout()">Logout</button>
+        <br /><br />
+        <template v-if="isSpaceOwner">
+          <button v-if="spaceStore.isEditMode" @click="handleEditModeCancel" class="p-2 bg-slate-400">Cancel</button>
+          <button v-if="spaceStore.isEditMode" @click="handleEditModeToggle" class="p-2 bg-green-300">
+            Save
+          </button>
+          <button v-else @click="handleEditModeToggle" class="p-2 bg-green-300">
+            <SettingsIcon />
+          </button>
+        </template>
+      </template>
+      <template v-else>
+        <GoogleLogin :callback="handleLoginWithGoogle" popup-type="TOKEN">
+          <button>Login Using Google</button>
+        </GoogleLogin>
+      </template>
     </div>
     <template v-if="isSpaceOwner && spaceStore.isEditMode">
       {{ numSelectedWidgets }} selected:

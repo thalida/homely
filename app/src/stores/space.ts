@@ -1,27 +1,52 @@
-import { ref, type Ref } from 'vue'
+import { computed, ref, type Ref } from 'vue'
 import { defineStore } from 'pinia'
 import { useLocalStorage } from '@vueuse/core'
-import { cloneDeep } from 'lodash'
+import { cloneDeep, filter } from 'lodash'
 import { useWidgetStore } from '@/stores/widget'
+import { useUserStore } from '@/stores/user'
 import type { IWidgets } from '@/types/widget'
 import type { ISpace, ISpaceResponse, ISpaces } from '@/types/space'
-import { getSpace, createSpace as createSpaceReq } from '@/api/space'
+import { getSpace, createSpace as createSpaceReq, getSpaces, toggleSpaceBookmark } from '@/api/space'
 
 export const useSpaceStore = defineStore('space', () => {
   const widgetStore = useWidgetStore()
+  const userStore = useUserStore()
   const collection: Ref<ISpaces> = ref({})
   const defaultSpace = ref('')
   const backupWidgets: Ref<IWidgets> = ref({})
   const isEditMode: Ref<boolean> = useLocalStorage('homely/space/isEditMode', false)
+  const homepageSpaces = ref<ISpace[]>([])
 
-  function initSpaces(spaces: ISpace[]) {
-    collection.value = {}
+  const mySpaces = computed(() => {
+    const user = userStore.user
 
-    for (const space of spaces) {
-      collection.value[space.uid] = { ...space }
+    if (user === null) {
+      return []
     }
 
-    if (spaces.length > 0) {
+    const userId = user.pk
+    return filter(collection.value, (space) => space.owner === userId)
+  })
+
+
+  async function fetchHomepageSpaces() {
+    const spaces = await getSpaces({ is_homepage: true })
+    homepageSpaces.value = spaces
+
+    for (const space of spaces) {
+      addSpace(space)
+    }
+  }
+
+  function initSpaces(
+      spaces: ISpaceResponse[],
+      setDefault = false,
+    ) {
+    for (const space of spaces) {
+      addSpace(space)
+    }
+
+    if (setDefault && spaces.length > 0) {
       const defaultUid = spaces[0].uid
       defaultSpace.value = defaultUid
     }
@@ -48,23 +73,27 @@ export const useSpaceStore = defineStore('space', () => {
       owner: space.owner,
       created_at: space.created_at,
       updated_at: space.updated_at,
+      is_bookmarked: space.is_bookmarked,
     }
 
-    const widgets = space.widgets.map((widget: any) => {
-      const updatedWidget = {
-        ...widget,
-        state: {
-          selected: false,
-          dirty: false,
-          deleted: false,
-          new: false,
-        },
-      }
-      updatedWidget.layout.i = updatedWidget.uid
-      return updatedWidget
-    })
+    if (typeof space.widgets !== 'undefined' && space.widgets !== null) {
+      const widgets = space.widgets.map((widget: any) => {
+        const updatedWidget = {
+          ...widget,
+          state: {
+            selected: false,
+            dirty: false,
+            deleted: false,
+            new: false,
+          },
+        }
+        updatedWidget.layout.i = updatedWidget.uid
+        return updatedWidget
+      })
 
-    widgetStore.setSpaceWidgets(space.uid, widgets)
+      widgetStore.setSpaceWidgets(space.uid, widgets)
+    }
+
   }
 
   function createBackup() {
@@ -88,17 +117,30 @@ export const useSpaceStore = defineStore('space', () => {
     isEditMode.value = value
   }
 
+  async function toggleBookmark(spaceUid: string) {
+    const user = userStore.user
+    if (!user) {
+      return
+    }
+
+    await toggleSpaceBookmark(spaceUid)
+  }
+
   return {
     isEditMode,
     setEditMode,
     toggleEditMode,
     collection,
     defaultSpace,
+    fetchHomepageSpaces,
+    homepageSpaces,
+    mySpaces,
     initSpaces,
     fetchSpace,
     createSpace,
     createBackup,
     deleteBackup,
     resetFromBackup,
+    toggleBookmark,
   }
 })

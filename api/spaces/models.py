@@ -15,10 +15,16 @@ class Space(models.Model):
     owner = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name="spaces",
+        related_name="owned_spaces",
     )
     name = models.CharField(max_length=100)
     access = models.IntegerField(choices=SpaceAccess.choices, default=SpaceAccess.PRIVATE)
+    is_homepage = models.BooleanField(default=False)
+    bookmarked_by = models.ManyToManyField(
+        User,
+        related_name="bookmarked_spaces",
+        blank=True
+    )
 
 
 class Widget(models.Model):

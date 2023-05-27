@@ -10,8 +10,9 @@ export interface ISpace {
   updated_at: string
   owner: string
   name: string
+  is_bookmarked: boolean
 }
 
 export interface ISpaceResponse extends ISpace {
-  widgets: IWidget[]
+  widgets?: IWidget[]
 }

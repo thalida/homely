@@ -10,7 +10,6 @@ import {
   logout as logoutReq,
 } from '@/api/user';
 import { useSpaceStore } from '@/stores/space';
-import router from '@/router';
 
 export const useUserStore = defineStore('user', () => {
   const spaceStore = useSpaceStore()
@@ -28,7 +27,7 @@ export const useUserStore = defineStore('user', () => {
 
     user.value = userRes
 
-    spaceStore.initSpaces(userRes.spaces)
+    spaceStore.initSpaces(userRes.spaces, true)
   }
 
   async function verifyAccessToken(): Promise<boolean> {
@@ -82,9 +81,8 @@ export const useUserStore = defineStore('user', () => {
 
     accessToken.value = res.access
     refreshToken.value = res.refresh
+    await getUser()
     isAuthenticated.value = true
-    user.value = res.user
-    spaceStore.initSpaces(res.user.spaces)
   }
 
   async function logout() {
@@ -94,7 +92,6 @@ export const useUserStore = defineStore('user', () => {
     accessToken.value = null
     refreshToken.value = null
     user.value = null
-    spaceStore.initSpaces([])
     spaceStore.isEditMode = false
 
     window.location.href = '/'

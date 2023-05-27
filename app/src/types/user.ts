@@ -1,4 +1,4 @@
-import type { ISpace } from "./space";
+import type { ISpaceResponse } from "./space";
 
 export interface IUser {
   pk: string,
@@ -6,7 +6,7 @@ export interface IUser {
   email: string,
   first_name: string,
   last_name: string,
-  spaces: ISpace[],
+  spaces: ISpaceResponse[],
 }
 
 

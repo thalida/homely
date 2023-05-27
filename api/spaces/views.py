@@ -1,7 +1,8 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Q
-from rest_framework import permissions
 from rest_framework import viewsets, mixins
+from rest_framework.decorators import action
+from rest_framework.response import Response
 from rest_framework.exceptions import PermissionDenied
 from spaces.choices import SpaceAccess
 
@@ -14,6 +15,8 @@ class SpaceViewSet(viewsets.ModelViewSet):
     """
     queryset = Space.objects.all()
     serializer_class = SpaceWithWidgetsSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ["is_homepage",]
 
     def get_queryset(self):
         user = self.request.user
@@ -62,6 +65,26 @@ class SpaceViewSet(viewsets.ModelViewSet):
             raise PermissionDenied("You do not have permission to delete this space.")
 
         return super().destroy(request, *args, **kwargs)
+
+
+    @action(detail=True, methods=["post"], url_path="toggle-bookmark")
+    def toggle_bookmark(self, request, pk=None):
+        user = request.user
+
+        if user.is_anonymous:
+            raise PermissionDenied("You do not have permission to bookmark this space.")
+
+        space = self.get_object()
+
+        if user in space.bookmarked_by.all():
+            space.bookmarked_by.remove(user)
+
+        else:
+            space.bookmarked_by.add(user)
+
+        serializer = self.get_serializer(space)
+
+        return Response(serializer.data)
 
 
 class WidgetViewSet(

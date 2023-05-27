@@ -4,7 +4,6 @@ from unfold.admin import ModelAdmin
 
 from spaces.models import Space, Widget
 
-
 @admin.register(Space)
 class SpaceAdmin(ModelAdmin):
     """
