@@ -34,6 +34,9 @@ class Space(models.Model):
         related_name="clones",
     )
 
+    def __str__(self):
+        return f"{self.name} by {self.owner}"
+
 
 class Widget(models.Model):
     uid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -56,6 +59,9 @@ class Widget(models.Model):
         null=True,
         related_name="widgets",
     )
+
+    def __str__(self):
+        return f"{self.widget_type} widget in {self.space}"
 
 
 
