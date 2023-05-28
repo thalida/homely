@@ -19,6 +19,7 @@ const props = defineProps({
 
 const isReady = ref(false)
 const spaceRef = ref<HTMLElement>()
+const spaceMenuRef = ref<InstanceType<typeof SpaceMenu>>()
 const gridLayoutRef = ref<InstanceType<typeof GridLayout>>()
 const gridLayoutSettings = ref({
   rowHeight: 32,
@@ -31,10 +32,6 @@ onMounted(async () => {
   await spaceStore.fetchSpace(props.spaceId)
   setGridRowHeight()
 
-  if (spaceStore.isEditMode) {
-    startEditMode()
-  }
-
   window.addEventListener('resize', throttle(setGridRowHeight))
 
   isReady.value = true
@@ -43,23 +40,6 @@ onMounted(async () => {
 onBeforeUnmount(() => {
   window.removeEventListener('resize', throttle(setGridRowHeight))
 })
-
-function startEditMode() {
-  spaceStore.setEditMode(true)
-  spaceStore.createBackup()
-}
-
-function stopEditMode() {
-  widgetsStore.saveDirtyWidgets(props.spaceId)
-  spaceStore.setEditMode(false)
-  spaceStore.deleteBackup()
-  widgetsStore.unselectAllWidgets(props.spaceId)
-}
-
-function cancelEditMode() {
-  spaceStore.resetFromBackup()
-  stopEditMode()
-}
 
 function handleSpaceClick(e: Event) {
   const target = e.target as HTMLElement
@@ -121,7 +101,7 @@ function handleGridItemResized(widgetId: string, w: number, h: number) {
     @click="handleSpaceClick"
   >
     <GridLayout
-      v-if="isReady"
+      v-if="isReady && spaceMenuRef"
       ref="gridLayoutRef"
       class="grid-layout grow shrink-0 w-full h-full"
       :class="{
@@ -157,13 +137,7 @@ function handleGridItemResized(widgetId: string, w: number, h: number) {
         <SpaceWidget :id="`space-widget-${widgetId}`" :widget-id="widgetId" />
       </GridItem>
     </GridLayout>
-    <SpaceMenu
-      class="shrink-0"
-      :spaceId="props.spaceId"
-      @editModeStart="startEditMode"
-      @editModeDone="stopEditMode"
-      @editModeCancel="cancelEditMode"
-    />
+    <SpaceMenu v-if="isReady" ref="spaceMenuRef" class="shrink-0" :spaceId="props.spaceId" />
   </div>
 </template>
 

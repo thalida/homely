@@ -1,18 +1,25 @@
 import { computed, ref, type Ref } from 'vue'
 import { defineStore } from 'pinia'
 import { useLocalStorage } from '@vueuse/core'
-import { cloneDeep, filter } from 'lodash'
+import { cloneDeep, filter, omit } from 'lodash'
 import { useWidgetStore } from '@/stores/widget'
 import { useUserStore } from '@/stores/user'
 import type { IWidgets } from '@/types/widget'
 import type { ISpace, ISpaceResponse, ISpaces } from '@/types/space'
-import { getSpace, createSpace as createSpaceReq, getSpaces, toggleSpaceBookmark } from '@/api/space'
+import {
+  getSpace,
+  getSpaces,
+  createSpace as createSpaceReq,
+  updateSpace as updateSpaceReq,
+  toggleSpaceBookmark,
+} from '@/api/space'
 
 export const useSpaceStore = defineStore('space', () => {
   const widgetStore = useWidgetStore()
   const userStore = useUserStore()
   const collection: Ref<ISpaces> = ref({})
   const defaultSpace = ref('')
+  const backupSpaces: Ref<ISpaces> = ref({})
   const backupWidgets: Ref<IWidgets> = ref({})
   const isEditMode: Ref<boolean> = useLocalStorage('homely/space/isEditMode', false)
   const homepageSpaces = ref<ISpace[]>([])
@@ -26,6 +33,10 @@ export const useSpaceStore = defineStore('space', () => {
 
     const userId = user.pk
     return filter(collection.value, (space) => space.owner === userId)
+  })
+
+  const myBookmarkedSpaces = computed(() => {
+    return filter(collection.value, (space) => space.is_bookmarked)
   })
 
 
@@ -66,14 +77,17 @@ export const useSpaceStore = defineStore('space', () => {
     return collection.value[spaceRes.uid]
   }
 
+  async function updateSpace(spaceId: string) {
+    const spaceRes = await updateSpaceReq(spaceId, collection.value[spaceId])
+    addSpace(spaceRes)
+
+    return collection.value[spaceRes.uid]
+
+  }
+
   function addSpace(space: ISpaceResponse) {
     collection.value[space.uid] = {
-      uid: space.uid,
-      name: space.name,
-      owner: space.owner,
-      created_at: space.created_at,
-      updated_at: space.updated_at,
-      is_bookmarked: space.is_bookmarked,
+      ...omit(space, ['widgets']),
     }
 
     if (typeof space.widgets !== 'undefined' && space.widgets !== null) {
@@ -97,14 +111,17 @@ export const useSpaceStore = defineStore('space', () => {
   }
 
   function createBackup() {
+    backupSpaces.value = cloneDeep(collection.value)
     backupWidgets.value = cloneDeep(widgetStore.collection)
   }
 
   function deleteBackup() {
+    backupSpaces.value = {}
     backupWidgets.value = {}
   }
 
   function resetFromBackup() {
+    collection.value = cloneDeep(backupSpaces.value)
     widgetStore.collection = cloneDeep(backupWidgets.value)
     deleteBackup()
   }
@@ -135,9 +152,11 @@ export const useSpaceStore = defineStore('space', () => {
     fetchHomepageSpaces,
     homepageSpaces,
     mySpaces,
+    myBookmarkedSpaces,
     initSpaces,
     fetchSpace,
     createSpace,
+    updateSpace,
     createBackup,
     deleteBackup,
     resetFromBackup,

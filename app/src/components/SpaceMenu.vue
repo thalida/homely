@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick } from 'vue';
+import { computed, nextTick, onBeforeUnmount, onMounted } from 'vue';
 import { cloneDeep, filter } from 'lodash';
 import { SettingsIcon } from 'lucide-vue-next';
 import { RouterLink } from 'vue-router';
@@ -25,11 +25,17 @@ const props = defineProps({
   }
 });
 
-const emits = defineEmits<{
-  (e: 'editModeCancel'): void,
-  (e: 'editModeStart'): void,
-  (e: 'editModeDone'): void,
-}>();
+onMounted(async () => {
+  if (spaceStore.isEditMode) {
+    handleEditModeStart()
+  }
+
+  window.addEventListener('beforeunload', handlePageRefresh)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('beforeunload', handlePageRefresh)
+})
 
 const isAuthenticated = computed(() => {
   return userStore.isAuthenticated;
@@ -59,17 +65,33 @@ const supportedAppThemes = computed(() => {
   return Object.values(EAppTheme);
 });
 
-function handleEditModeCancel() {
-  spaceStore.setEditMode(false);
-  emits('editModeCancel');
-}
-function handleEditModeToggle() {
-  spaceStore.toggleEditMode();
+function handlePageRefresh(e: BeforeUnloadEvent) {
   if (spaceStore.isEditMode) {
-    emits('editModeStart');
-  } else {
-    emits('editModeDone');
+    e.preventDefault()
+    e.returnValue = ''
   }
+}
+
+function handleEditModeStart() {
+  spaceStore.setEditMode(true)
+  spaceStore.createBackup()
+}
+
+function handleEditModeSave() {
+  widgetsStore.saveDirtyWidgets(props.spaceId)
+  spaceStore.updateSpace(props.spaceId)
+  stopEditMode();
+}
+
+function handleEditModeCancel() {
+  spaceStore.resetFromBackup()
+  stopEditMode()
+}
+
+function stopEditMode() {
+  spaceStore.setEditMode(false)
+  spaceStore.deleteBackup()
+  widgetsStore.unselectAllWidgets(props.spaceId)
 }
 
 async function handleDelete() {
@@ -130,7 +152,17 @@ function handleToggleBookmark() {
       <select v-model="themeStore.appTheme">
         <option v-for="theme in supportedAppThemes" :key="theme" :value="theme">{{ theme }}</option>
       </select>
+
       <template v-if="isAuthenticated">
+        <button @click="userStore.logout()">Logout</button>
+      </template>
+      <template v-else>
+        <GoogleLogin :callback="handleLoginWithGoogle" popup-type="TOKEN">
+          <button>Login Using Google</button>
+        </GoogleLogin>
+      </template>
+
+      <template v-if="isAuthenticated && !spaceStore.isEditMode">
         <details>
           <summary>Spaces</summary>
           <div class="space-x-2">
@@ -142,45 +174,64 @@ function handleToggleBookmark() {
             </RouterLink>
           </div>
         </details>
+        <details>
+          <summary>Bookmarked Spaces</summary>
+          <div class="space-x-2">
+            <RouterLink
+              v-for="space in spaceStore.myBookmarkedSpaces"
+              :key="space.uid"
+              :to="{ name: 'Space', params: { spaceUid: space.uid } }">
+              {{ space.name }}
+            </RouterLink>
+          </div>
+        </details>
         <button @click="handleCreateSpace">
           Create Space
         </button>
+      </template>
+    </div>
+    <template v-if="isSpaceOwner">
+      <template v-if="spaceStore.isEditMode">
+        <button @click="handleEditModeCancel" class="p-2 bg-slate-400">Cancel</button>
+        <button @click="handleEditModeSave" class="p-2 bg-green-300">
+          Save
+        </button>
+
+        <h2>Space</h2>
+        <label>
+          <span>Space Name</span>
+          <input type="text" v-model="space.name" />
+        </label>
         <br />
+        <label>
+          <span>Space Description</span>
+          <input type="text" v-model="space.description" />
+        </label>
+
+        <h2>Widgets</h2>
+        {{ numSelectedWidgets }} selected:
+        <button @click="handleDelete" class="p-2 bg-red-400 disabled:opacity-50" :disabled="numSelectedWidgets === 0">Delete</button>
+        <div class="flex flex-row flex-wrap">
+          <component
+            class="p-2 bg-blue-400"
+            v-for="component in widgetMenuBtnComponents"
+            :key="component.name"
+            :is="component"
+            @widgetMenuBtnClicked="handleWidgetMenuBtnClicked"
+          />
+        </div>
+      </template>
+      <template v-else>
+          <button @click="handleEditModeStart" class="p-2 bg-green-300">
+            <SettingsIcon />
+          </button>
+      </template>
+    </template>
+    <template v-else>
         <label>
           <span>Bookmark</span>
           <input type="checkbox" v-model="space.is_bookmarked" @change="handleToggleBookmark" />
         </label>
-        <br />
-        <button @click="userStore.logout()">Logout</button>
-        <br /><br />
-        <template v-if="isSpaceOwner">
-          <button v-if="spaceStore.isEditMode" @click="handleEditModeCancel" class="p-2 bg-slate-400">Cancel</button>
-          <button v-if="spaceStore.isEditMode" @click="handleEditModeToggle" class="p-2 bg-green-300">
-            Save
-          </button>
-          <button v-else @click="handleEditModeToggle" class="p-2 bg-green-300">
-            <SettingsIcon />
-          </button>
-        </template>
-      </template>
-      <template v-else>
-        <GoogleLogin :callback="handleLoginWithGoogle" popup-type="TOKEN">
-          <button>Login Using Google</button>
-        </GoogleLogin>
-      </template>
-    </div>
-    <template v-if="isSpaceOwner && spaceStore.isEditMode">
-      {{ numSelectedWidgets }} selected:
-      <button @click="handleDelete" class="p-2 bg-red-400 disabled:opacity-50" :disabled="numSelectedWidgets === 0">Delete</button>
-      <div class="flex flex-row flex-wrap">
-        <component
-          class="p-2 bg-blue-400"
-          v-for="component in widgetMenuBtnComponents"
-          :key="component.name"
-          :is="component"
-          @widgetMenuBtnClicked="handleWidgetMenuBtnClicked"
-        />
-      </div>
     </template>
     <div id="space__shared-widget-menu"></div>
     <div id="space__widget-menu"></div>

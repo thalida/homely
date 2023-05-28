@@ -18,6 +18,7 @@ class Space(models.Model):
         related_name="owned_spaces",
     )
     name = models.CharField(max_length=100)
+    description = models.TextField(blank=True)
     access = models.IntegerField(choices=SpaceAccess.choices, default=SpaceAccess.PRIVATE)
     is_homepage = models.BooleanField(default=False)
     bookmarked_by = models.ManyToManyField(

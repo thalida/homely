@@ -10,6 +10,7 @@ export interface ISpace {
   updated_at: string
   owner: string
   name: string
+  description: string
   is_bookmarked: boolean
 }
 
