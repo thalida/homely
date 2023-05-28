@@ -11,6 +11,8 @@ import {
   getSpaces,
   createSpace as createSpaceReq,
   updateSpace as updateSpaceReq,
+  cloneSpace as cloneSpaceReq,
+  deleteSpace as deleteSpaceReq,
   toggleSpaceBookmark,
 } from '@/api/space'
 
@@ -82,7 +84,18 @@ export const useSpaceStore = defineStore('space', () => {
     addSpace(spaceRes)
 
     return collection.value[spaceRes.uid]
+  }
 
+  async function cloneSpace(spaceId: string) {
+    const spaceRes = await cloneSpaceReq(spaceId)
+    addSpace(spaceRes)
+
+    return collection.value[spaceRes.uid]
+  }
+
+  async function deleteSpace(spaceId: string) {
+    await deleteSpaceReq(spaceId)
+    delete collection.value[spaceId]
   }
 
   function addSpace(space: ISpaceResponse) {
@@ -157,6 +170,8 @@ export const useSpaceStore = defineStore('space', () => {
     fetchSpace,
     createSpace,
     updateSpace,
+    cloneSpace,
+    deleteSpace,
     createBackup,
     deleteBackup,
     resetFromBackup,

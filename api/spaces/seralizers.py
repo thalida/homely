@@ -13,8 +13,21 @@ class WidgetSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class ClonedSpaceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Space
+        fields = [
+            "uid",
+            "owner",
+            "name",
+        ]
+
+
 class SpaceSerializer(serializers.ModelSerializer):
+    cloned_from = ClonedSpaceSerializer(read_only=True)
     is_bookmarked = serializers.SerializerMethodField()
+    num_bookmarks = serializers.SerializerMethodField()
+    num_clones = serializers.SerializerMethodField()
 
     # get if the current user has bookmakred this space
     def get_is_bookmarked(self, obj):
@@ -24,6 +37,14 @@ class SpaceSerializer(serializers.ModelSerializer):
             return False
 
         return user.bookmarked_spaces.filter(uid=obj.uid).exists()
+
+    # get the number of bookmarks for this space
+    def get_num_bookmarks(self, obj):
+        return obj.bookmarked_by.count()
+
+    # get the number of clones for this space
+    def get_num_clones(self, obj):
+        return obj.clones.count()
 
 
     class Meta:
@@ -36,6 +57,9 @@ class SpaceSerializer(serializers.ModelSerializer):
             "name",
             "access",
             "is_bookmarked",
+            "num_bookmarks",
+            "num_clones",
+            "cloned_from",
         ]
 
 

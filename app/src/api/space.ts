@@ -50,3 +50,11 @@ export async function toggleSpaceBookmark(id: string): Promise<ISpaceResponse> {
 
   return res.data
 }
+
+export async function cloneSpace(id: string): Promise<ISpaceResponse> {
+  const url = `${API_URL}/spaces/${id}/clone/`;
+  const config = getConfig()
+  const res = await axios.post<never, AxiosResponse<ISpaceResponse>>(url, {}, config)
+
+  return res.data
+}

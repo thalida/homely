@@ -12,6 +12,8 @@ export interface ISpace {
   name: string
   description: string
   is_bookmarked: boolean
+  num_bookmarks: number
+  num_clones: number
 }
 
 export interface ISpaceResponse extends ISpace {

@@ -26,6 +26,13 @@ class Space(models.Model):
         related_name="bookmarked_spaces",
         blank=True
     )
+    cloned_from = models.ForeignKey(
+        "self",
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        related_name="clones",
+    )
 
 
 class Widget(models.Model):

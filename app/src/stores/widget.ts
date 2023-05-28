@@ -256,6 +256,20 @@ export const useWidgetStore = defineStore('widget', () => {
 
   const debouncedSaveDirtyWidgets = debounce(saveDirtyWidgets, 500)
 
+  function deleteWidgetsBySpace(spaceId: string) {
+    const spaceWidgets = allWidgetsBySpace.value[spaceId]
+
+    if (!spaceWidgets) {
+      return;
+    }
+
+    for (const widgetId of spaceWidgets) {
+      collection.value[widgetId].state.deleted = true
+    }
+
+    debouncedSaveDirtyWidgets(spaceId)
+  }
+
 
   return {
     collection,
@@ -269,6 +283,7 @@ export const useWidgetStore = defineStore('widget', () => {
     setSpaceWidgets,
     unselectAllWidgets,
     selectWidgetById,
+    deleteWidgetsBySpace,
 
     markWidgetAsDirty,
     saveDirtyWidgets,

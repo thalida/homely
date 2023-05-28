@@ -1,3 +1,4 @@
+from django.forms import model_to_dict
 from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Q
 from rest_framework import viewsets, mixins
@@ -83,6 +84,37 @@ class SpaceViewSet(viewsets.ModelViewSet):
             space.bookmarked_by.add(user)
 
         serializer = self.get_serializer(space)
+
+        return Response(serializer.data)
+
+    @action(detail=True, methods=["post"], url_path="clone")
+    def clone(self, request, pk=None):
+        user = request.user
+
+        if user.is_anonymous:
+            raise PermissionDenied("You do not have permission to clone this space.")
+
+        space = self.get_object()
+        space_widgets = space.widgets.all()
+        cloned_space = Space.objects.create(
+            owner=user,
+            name=f"{space.name} (clone)",
+            description=space.description,
+            access=SpaceAccess.PRIVATE,
+            is_homepage=False,
+            cloned_from=space,
+        )
+
+        for widget in space_widgets:
+            cloned_widget = widget
+            cloned_widget.space = cloned_space
+            cloned_widget.uid = None
+            cloned_widget.created_at = None
+            cloned_widget.updated_at = None
+            cloned_widget.save()
+
+
+        serializer = self.get_serializer(cloned_space)
 
         return Response(serializer.data)
 
