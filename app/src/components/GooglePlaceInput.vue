@@ -2,6 +2,9 @@
 import type { ILocation } from '@/types/location';
 import { Loader } from '@googlemaps/js-api-loader';
 import { ref, onMounted, type PropType } from 'vue';
+import { useLocationStore } from '@/stores/location';
+
+const locationStore = useLocationStore()
 
 defineProps({
   place: {
@@ -54,6 +57,7 @@ onMounted(() => {
           lat: place.geometry.location.lat(),
           lng: place.geometry.location.lng(),
         }
+        locationStore.addLocation(location)
         emits('change', location, place)
       });
     })
