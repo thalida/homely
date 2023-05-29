@@ -28,6 +28,7 @@
     "axios": "^1.4.0",
     "dayjs": "^1.11.7",
     "grid-layout-plus": "^1.0.2",
+    "gridstack": "^8.2.1",
     "lodash": "^4.17.21",
     "lucide-static": "^0.216.0",
     "lucide-vue-next": "^0.215.0",

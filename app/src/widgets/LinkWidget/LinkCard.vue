@@ -76,7 +76,7 @@ watchEffect(() => {
         v-if="widget.content.showImage"
         class="bg-cover bg-no-repeat bg-center shrink-0 from-indigo-500 via-purple-500 to-pink-500"
         :class="{
-          'fixed inset-y-0 left-0': widget.content.style === ELinkWidgetStyle.FLAG,
+          'h-full inset-y-0 left-0 grow': widget.content.style === ELinkWidgetStyle.FLAG,
           'inset-x-0 top-0 grow': widget.content.style === ELinkWidgetStyle.CARD,
           'w-1/3 rounded-l-2xl': widget.content.style === ELinkWidgetStyle.FLAG && (widget.content.showDescription || widget.content.showTitle || widget.content.showUrl),
           'h-1/2 rounded-t-2xl': widget.content.style === ELinkWidgetStyle.CARD && (widget.content.showDescription || widget.content.showTitle || widget.content.showUrl),

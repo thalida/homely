@@ -71,6 +71,46 @@ export const useWidgetStore = defineStore('widget', () => {
     set() {},
   });
 
+  const gridStackBySpace = computed({
+    get() {
+      const res: Record<string, any[]> = {}
+      for (const spaceId of spaces.value) {
+        res[spaceId] = []
+
+        const widgets = activeWidgetsBySpace.value[spaceId]
+        if (!widgets) {
+          continue
+        }
+
+        for (const widgetId of widgets) {
+          if (!collection.value[widgetId]) {
+            continue
+          }
+
+          if (collection.value[widgetId].state.deleted) {
+            continue
+          }
+
+          const gridStack = {
+            x: collection.value[widgetId].layout.x,
+            y: collection.value[widgetId].layout.y,
+            w: collection.value[widgetId].layout.w,
+            h: collection.value[widgetId].layout.h,
+            locked: true,
+            widget: collection.value[widgetId],
+            // widget: omit(collection.value[widgetId], ['layout']),
+            // content: "widget.content"
+            // content: `<component :is="SpaceWidget" :widgetId="${widgetId}"></component>`
+          }
+          res[spaceId].push(gridStack)
+        }
+      }
+
+      return res
+    },
+    set() {},
+  });
+
   function setSpaceWidgets(spaceId: string, widgets: IWidget[]) {
     if (spaces.value.indexOf(spaceId) === -1) {
       spaces.value.push(spaceId)
@@ -293,5 +333,7 @@ export const useWidgetStore = defineStore('widget', () => {
     draftUpdateWidget,
     draftDeleteWidget,
     draftCreateWidget,
+
+    gridStackBySpace,
   }
 })

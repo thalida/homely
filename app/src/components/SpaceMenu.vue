@@ -24,6 +24,10 @@ const props = defineProps({
     required: true
   }
 });
+const emits = defineEmits<{
+  (e: 'editModeStart'): void
+  (e: 'editModeStop'): void
+}>();
 
 onMounted(async () => {
   if (spaceStore.isEditMode) {
@@ -66,15 +70,14 @@ const supportedAppThemes = computed(() => {
 });
 
 function handlePageRefresh(e: BeforeUnloadEvent) {
-  if (spaceStore.isEditMode) {
-    e.preventDefault()
-    e.returnValue = ''
-  }
+  // if (spaceStore.isEditMode) {
+  //   e.preventDefault()
+  //   e.returnValue = ''
+  // }
 }
 
 function handleEditModeStart() {
-  spaceStore.setEditMode(true)
-  spaceStore.createBackup()
+  startEditMode()
 }
 
 function handleEditModeSave() {
@@ -88,10 +91,17 @@ function handleEditModeCancel() {
   stopEditMode()
 }
 
+function startEditMode() {
+  spaceStore.setEditMode(true)
+  spaceStore.createBackup()
+  emits('editModeStart')
+}
+
 function stopEditMode() {
   spaceStore.setEditMode(false)
   spaceStore.deleteBackup()
   widgetsStore.unselectAllWidgets(props.spaceId)
+  emits('editModeStop')
 }
 
 async function handleDelete() {

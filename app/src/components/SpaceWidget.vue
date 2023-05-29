@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
+import { useSpaceStore } from '@/stores/space';
 import { useWidgetStore } from '@/stores/widget'
 import { EWidgetColorNames } from '@/enums/widget';
 import { cardComponentsByType } from '@/widgets'
 
+const spaceStore = useSpaceStore()
 const widgetStore = useWidgetStore()
 
 const props = defineProps({
@@ -53,6 +55,17 @@ watch(() => widget.value?.card_style, (after, before) => {
 }, {
   deep: true
 })
+
+function handleWidgetClick() {
+  if (!spaceStore.isEditMode) {
+    return
+  }
+
+  if (widget.value) {
+    widgetStore.unselectAllWidgets(widget.value.space)
+    widgetStore.selectWidgetById(props.widgetId)
+  }
+}
 </script>
 
 <template>
@@ -61,6 +74,7 @@ watch(() => widget.value?.card_style, (after, before) => {
     :is="component"
     v-bind="$attrs"
     :widgetId="props.widgetId"
+    @click="handleWidgetClick"
     class="rounded-2xl w-full h-full overflow-auto"
     :class="{
         'ring-2 ring-yellow-500': isSelected,
