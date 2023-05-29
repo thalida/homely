@@ -243,7 +243,7 @@ function handleToggleBookmark() {
           </button>
       </template>
     </template>
-    <template v-else>
+    <template v-else-if="isAuthenticated">
         <label>
           <span>Bookmark</span>
           <input type="checkbox" v-model="space.is_bookmarked" @change="handleToggleBookmark" />

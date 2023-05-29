@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref } from 'vue'
+import { onBeforeUnmount, onMounted, ref, watchEffect } from 'vue'
 import { throttle } from 'lodash'
 import { GridLayout, GridItem } from 'grid-layout-plus'
 import { useSpaceStore } from '@/stores/space'
@@ -17,12 +17,14 @@ const props = defineProps({
   }
 })
 
+const MIN_ROW_HEIGHT = 100
+
 const isReady = ref(false)
 const spaceRef = ref<HTMLElement>()
 const spaceMenuRef = ref<InstanceType<typeof SpaceMenu>>()
 const gridLayoutRef = ref<InstanceType<typeof GridLayout>>()
 const gridLayoutSettings = ref({
-  rowHeight: 32,
+  rowHeight: MIN_ROW_HEIGHT,
   columns: 12,
   margin: [12, 12],
 })
@@ -30,15 +32,17 @@ const gridLayoutSettings = ref({
 
 onMounted(async () => {
   await spaceStore.fetchSpace(props.spaceId)
-  setGridRowHeight()
-
-  window.addEventListener('resize', throttle(setGridRowHeight))
-
   isReady.value = true
 })
 
-onBeforeUnmount(() => {
-  window.removeEventListener('resize', throttle(setGridRowHeight))
+watchEffect(() => {
+    if (!gridLayoutRef.value) {
+      return
+    }
+
+    const gridWidth = gridLayoutRef.value.state.width
+    const rowHeight = (gridWidth / gridLayoutSettings.value.columns) - gridLayoutSettings.value.margin[0]
+    gridLayoutSettings.value.rowHeight = Math.max(rowHeight, MIN_ROW_HEIGHT)
 })
 
 function handleSpaceClick(e: Event) {
@@ -49,15 +53,6 @@ function handleSpaceClick(e: Event) {
   if (isGridElement || isWrapper) {
     widgetsStore.unselectAllWidgets(props.spaceId)
   }
-}
-
-function setGridRowHeight() {
-  if (!spaceRef.value) {
-    return
-  }
-
-  const parentRect = spaceRef.value.getBoundingClientRect()
-  gridLayoutSettings.value.rowHeight = (parentRect.width / gridLayoutSettings.value.columns) - gridLayoutSettings.value.margin[0]
 }
 
 function handleGridItemClick(e:KeyboardEvent, widgetId: string) {
@@ -146,5 +141,9 @@ function handleGridItemResized(widgetId: string, w: number, h: number) {
   width: 100vw;
   height: 100vh;
   overflow: auto;
+}
+
+.grid-layout {
+  min-width: 1024px;
 }
 </style>
