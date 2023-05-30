@@ -11,6 +11,7 @@ export interface ISpace {
   owner: string
   name: string
   description: string
+  is_default: boolean
   is_bookmarked: boolean
   num_bookmarks: number
   num_clones: number

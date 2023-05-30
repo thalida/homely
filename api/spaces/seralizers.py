@@ -24,10 +24,21 @@ class ClonedSpaceSerializer(serializers.ModelSerializer):
 
 
 class SpaceSerializer(serializers.ModelSerializer):
-    cloned_from = ClonedSpaceSerializer(read_only=True)
+    is_default = serializers.SerializerMethodField()
     is_bookmarked = serializers.SerializerMethodField()
+    cloned_from = ClonedSpaceSerializer(read_only=True)
+
     num_bookmarks = serializers.SerializerMethodField()
     num_clones = serializers.SerializerMethodField()
+
+    # get if the current user has this space as their default space
+    def get_is_default(self, obj):
+        request = self.context.get("request")
+        user = request.user
+        if user.is_anonymous:
+            return False
+
+        return user.default_space == obj
 
     # get if the current user has bookmakred this space
     def get_is_bookmarked(self, obj):
@@ -56,6 +67,7 @@ class SpaceSerializer(serializers.ModelSerializer):
             "owner",
             "name",
             "access",
+            "is_default",
             "is_bookmarked",
             "num_bookmarks",
             "num_clones",

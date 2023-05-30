@@ -1,6 +1,5 @@
 import { computed, ref, type Ref } from 'vue'
 import { defineStore } from 'pinia'
-import { useLocalStorage } from '@vueuse/core'
 import { cloneDeep, filter, omit } from 'lodash'
 import { useWidgetStore } from '@/stores/widget'
 import { useUserStore } from '@/stores/user'
@@ -17,16 +16,21 @@ import {
 } from '@/api/space'
 import { randomItemFromArray } from '@/utils/array'
 import { HOME_TERMS, SPACE_TERMS } from '@/enums/space'
+import { updateUser } from '@/api/user'
 
 export const useSpaceStore = defineStore('space', () => {
   const widgetStore = useWidgetStore()
   const userStore = useUserStore()
   const collection: Ref<ISpaces> = ref({})
-  const defaultSpace = ref('')
   const backupSpaces: Ref<ISpaces> = ref({})
   const backupWidgets: Ref<IWidgets> = ref({})
   const isEditMode = ref(false)
   const homepageSpaces = ref<ISpace[]>([])
+  const defaultSpace = computed(() => {
+    const foundDefault = Object.values(collection.value).find((space) => space.is_default)
+    return foundDefault ? foundDefault.uid : Object.keys(collection.value)[0]
+  });
+
 
   const mySpaces = computed(() => {
     const user = userStore.user
@@ -53,17 +57,9 @@ export const useSpaceStore = defineStore('space', () => {
     }
   }
 
-  function initSpaces(
-      spaces: ISpaceResponse[],
-      setDefault = false,
-    ) {
+  function initSpaces(spaces: ISpaceResponse[]) {
     for (const space of spaces) {
       addSpace(space)
-    }
-
-    if (setDefault && spaces.length > 0) {
-      const defaultUid = spaces[0].uid
-      defaultSpace.value = defaultUid
     }
   }
 
@@ -159,12 +155,24 @@ export const useSpaceStore = defineStore('space', () => {
     await toggleSpaceBookmark(spaceUid)
   }
 
+  async function setDefaultSpace(spaceUid: string | null) {
+    updateUser({
+      default_space: spaceUid,
+    })
+
+    collection.value[defaultSpace.value].is_default = false
+
+    if (spaceUid !== null) {
+      collection.value[spaceUid].is_default = true
+    }
+  }
   return {
     isEditMode,
     setEditMode,
     toggleEditMode,
     collection,
     defaultSpace,
+    setDefaultSpace,
     fetchHomepageSpaces,
     homepageSpaces,
     mySpaces,

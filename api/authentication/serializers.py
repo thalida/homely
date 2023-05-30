@@ -21,4 +21,4 @@ class UserSerializer(UserDetailsSerializer):
 
 
     class Meta(UserDetailsSerializer.Meta):
-        fields = UserDetailsSerializer.Meta.fields + ("spaces",)
+        fields = UserDetailsSerializer.Meta.fields + ("spaces", "default_space",)

@@ -134,6 +134,12 @@ function handleToggleBookmark() {
   spaceStore.toggleBookmark(props.spaceId)
 }
 
+function handleToggleDefaultSpace() {
+  const spaceId = (space.value.is_default) ? props.spaceId : null
+  console.log('handleToggleDefaultSpace', spaceId, space.value.is_default)
+  spaceStore.setDefaultSpace(spaceId)
+}
+
 </script>
 
 <template>
@@ -192,6 +198,10 @@ function handleToggleBookmark() {
       <button @click="handleDeleteSpace" v-if="isSpaceOwner">
         Delete Space
       </button>
+      <label>
+        <span>Make Default</span>
+        <input type="checkbox" v-model="space.is_default" @change="handleToggleDefaultSpace" />
+      </label>
     </template>
 
     <template v-if="isSpaceOwner">

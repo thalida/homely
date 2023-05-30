@@ -27,7 +27,7 @@ export const useUserStore = defineStore('user', () => {
 
     user.value = userRes
 
-    spaceStore.initSpaces(userRes.spaces, true)
+    spaceStore.initSpaces(userRes.spaces)
   }
 
   async function verifyAccessToken(): Promise<boolean> {

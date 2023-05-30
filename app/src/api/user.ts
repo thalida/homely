@@ -12,6 +12,15 @@ export async function getUser() {
   return res.data
 }
 
+export async function updateUser(data: Partial<IUser>) {
+  const url = `${API_URL}/auth/user/`;
+  const config = getConfig()
+
+  const res = await axios.patch<Partial<IUser>, AxiosResponse<IUser>>(url, data, config)
+
+  return res.data
+}
+
 export async function verifyAccessToken(accessToken: string): Promise<boolean> {
   const url = `${API_URL}/auth/token/verify/`;
 
