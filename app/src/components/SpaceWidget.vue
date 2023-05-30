@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, ref, watch, watchEffect } from 'vue'
+import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { useSpaceStore } from '@/stores/space';
 import { useWidgetStore } from '@/stores/widget'
 import { EWidgetColorNames } from '@/enums/widget';

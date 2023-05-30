@@ -56,6 +56,21 @@ onMounted(async () => {
     }
   });
 
+  grid.on('removed', function(event: Event, items: GridStackNode[]) {
+    for (const item of items) {
+      const itemEl = item.el as HTMLElement
+      const itemElContent = itemEl.querySelector('.grid-stack-item-content') as HTMLElement
+
+      const widgetId = item.id
+
+      if (typeof widgetId === 'undefined') {
+        continue
+      }
+
+      render(null, itemElContent)
+    }
+  });
+
   grid.on('dragstart', function(event: Event, el: GridItemHTMLElement) {
     const widgetId = el.getAttribute('gs-id')
 
