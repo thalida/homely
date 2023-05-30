@@ -3,7 +3,7 @@ import { defineStore } from 'pinia'
 import { v4 as uuidv4 } from 'uuid'
 import type { PartialDeep } from 'type-fest'
 import { debounce, merge, omit } from 'lodash'
-import type { IWidgets, IWidgetLayout, IWidget } from '@/types/widget';
+import type { IWidgets, IWidget } from '@/types/widget';
 import { createWidget as createWidgetReq, deleteWidget as deleteWidgetReq, updateWidget as updateWidgetReq } from '@/api/widget';
 
 export const useWidgetStore = defineStore('widget', () => {

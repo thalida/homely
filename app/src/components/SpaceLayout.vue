@@ -134,7 +134,6 @@ onMounted(async () => {
     })
   });
 
-
   function resizeGrid() {
     if (!grid) return
 
