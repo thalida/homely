@@ -21,6 +21,15 @@ const spaceRef = ref<HTMLElement>()
 const gridStackRef = ref<InstanceType<typeof GridStack>>()
 const spaceMenuRef = ref<InstanceType<typeof SpaceMenu>>()
 
+const gridStackOptions = {
+  margin: 12,
+  cellHeight: 100 + (12 * 2),
+  float: true,
+  disableOneColumnMode: true,
+  acceptWidgets: true,
+  minRow: 1,
+}
+
 const isDraggingWidget = ref(false)
 const isResizingWidget = ref(false)
 const isResizingWindow = ref(false)
@@ -201,10 +210,11 @@ function handleGridChange(event: Event, items: GridStackNode[]) {
     <GridStack
       ref="gridStackRef"
       :editable="spaceStore.isEditMode"
-      @dragStart="handleGridDragStart"
-      @dragStop="handleGridDragStop"
-      @resizeStart="handleGridResizeStart"
-      @resizeStop="handleGridResizeStop"
+      :options="gridStackOptions"
+      @dragstart="handleGridDragStart"
+      @dragstop="handleGridDragStop"
+      @resizestart="handleGridResizeStart"
+      @resizestop="handleGridResizeStop"
       @dropped="handleGridDropped"
       @change="handleGridChange" />
     <SpaceMenu
