@@ -7,6 +7,7 @@ import SpaceMenu from './SpaceMenu.vue'
 import 'gridstack/dist/gridstack.min.css';
 import 'gridstack/dist/gridstack-extra.min.css';
 import { GridStack, type GridStackNode, type GridItemHTMLElement } from 'gridstack';
+import { debounce } from 'lodash'
 
 const spaceStore = useSpaceStore()
 const widgetsStore = useWidgetStore()
@@ -20,6 +21,9 @@ const props = defineProps({
 
 const spaceRef = ref<HTMLElement>()
 const spaceMenuRef = ref<InstanceType<typeof SpaceMenu>>()
+const isDraggingWidget = ref(false)
+const isResizingWidget = ref(false)
+const isResizingWindow = ref(false)
 
 let grid: GridStack | null = null;
 
@@ -59,18 +63,21 @@ onMounted(async () => {
       return
     }
 
+    isDraggingWidget.value = true
     widgetsStore.unselectAllWidgets(props.spaceId)
     widgetsStore.selectWidgetById(widgetId)
   });
 
   grid.on('dragstop', function(event: Event, el: GridItemHTMLElement) {
     if (!el.gridstackNode) {
+      isDraggingWidget.value = false
       return
     }
 
     const node: GridStackNode = el.gridstackNode;
 
     if (!node.id) {
+      isDraggingWidget.value = false
       return
     }
 
@@ -82,6 +89,7 @@ onMounted(async () => {
         h: node.h,
       }
     })
+    isDraggingWidget.value = false
   });
 
   grid.on('resizestart', function(event: Event, el: GridItemHTMLElement) {
@@ -91,18 +99,21 @@ onMounted(async () => {
       return
     }
 
+    isResizingWidget.value = true
     widgetsStore.unselectAllWidgets(props.spaceId)
     widgetsStore.selectWidgetById(widgetId)
   });
 
   grid.on('resizestop', function(event: Event, el: GridItemHTMLElement) {
     if (!el.gridstackNode) {
+      isResizingWidget.value = false
       return
     }
 
     const node: GridStackNode = el.gridstackNode;
 
     if (!node.id) {
+      isResizingWidget.value = false
       return
     }
 
@@ -114,6 +125,7 @@ onMounted(async () => {
         h: node.h,
       }
     })
+    isResizingWidget.value = false
   });
 
   grid.on('dropped', function(event: Event, previousWidget: GridStackNode, newWidget: GridStackNode) {
@@ -136,8 +148,31 @@ onMounted(async () => {
     widgetsStore.draftCreateWidget(props.spaceId, newWidgetSettings)
   });
 
+  grid.on('change', function(event: Event, items: GridStackNode[]) {
+    if (isResizingWindow.value) {
+      return
+    }
+
+    for (const item of items) {
+      if (!item.id) {
+        continue
+      }
+
+      widgetsStore.draftUpdateWidget(item.id, {
+        layout: {
+          x: item.x,
+          y: item.y,
+          w: item.w,
+          h: item.h,
+        }
+      })
+    }
+  });
+
   function resizeGrid() {
     if (!grid) return
+
+    isResizingWindow.value = true
 
     let width = document.body.clientWidth;
     const layout = 'move'
@@ -152,7 +187,15 @@ onMounted(async () => {
     } else {
       grid.column(12, layout);
     }
+
+    debouceResizeEnd()
   };
+
+  function resizeEnd () {
+    isResizingWindow.value = false
+  }
+
+  const debouceResizeEnd = debounce(resizeEnd, 200)
 
   window.addEventListener('resize', resizeGrid);
 
@@ -194,6 +237,9 @@ function handleSpaceClick(e: Event) {
   <div
     ref="spaceRef"
     class="space-layout flex bg-white dark:bg-slate-900"
+    :class="{
+      'is-editing': spaceStore.isEditMode,
+    }"
     @click="handleSpaceClick"
   >
     <div class="grid-stack grow shrink-0 w-full h-full"></div>
@@ -214,6 +260,10 @@ function handleSpaceClick(e: Event) {
 }
 </style>
 <style>
+.is-editing .grid-stack{
+  margin-right: 320px;
+  margin-bottom: 320px;
+}
 .grid-stack>.grid-stack-item>.grid-stack-item-content {
   overflow: visible;
 }
