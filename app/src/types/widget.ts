@@ -42,7 +42,6 @@ export interface IWidget extends IBaseWidget {
 }
 
 export interface IWidgetLayout extends IBaseWidgetLayout {
-  i: string
   x: number
   y: number
 }

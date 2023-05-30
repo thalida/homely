@@ -114,7 +114,6 @@ export const useSpaceStore = defineStore('space', () => {
             new: false,
           },
         }
-        updatedWidget.layout.i = updatedWidget.uid
         return updatedWidget
       })
 

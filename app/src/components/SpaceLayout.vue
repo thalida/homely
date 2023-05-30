@@ -30,6 +30,8 @@ onMounted(async () => {
     cellHeight: 100 + (12 * 2),
     float: true,
     disableOneColumnMode: true,
+    acceptWidgets: true,
+    minRow: 1,
   })
 
   setGridEditability()
@@ -38,6 +40,24 @@ onMounted(async () => {
     for (const item of items) {
       const itemEl = item.el as HTMLElement
       const itemElContent = itemEl.querySelector('.grid-stack-item-content') as HTMLElement
+
+      const isNewWidget = itemEl.dataset.isNewWidget === 'true'
+
+      if (isNewWidget) {
+        const newWidgetSettings = JSON.parse(itemEl.dataset.createWidget as string)
+
+        if (!newWidgetSettings) {
+          continue
+        }
+
+        newWidgetSettings.layout.x = item.x
+        newWidgetSettings.layout.y = item.y
+        newWidgetSettings.layout.w = item.w
+        newWidgetSettings.layout.h = item.h
+
+        widgetsStore.draftCreateWidget(props.spaceId, newWidgetSettings)
+        return
+      }
 
       const widgetId = item.id
 

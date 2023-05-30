@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, onMounted } from 'vue';
-import { cloneDeep, filter } from 'lodash';
+import { computed, onBeforeUnmount, onMounted } from 'vue';
+import { filter } from 'lodash';
 import { SettingsIcon } from 'lucide-vue-next';
 import { RouterLink } from 'vue-router';
 import type { CallbackTypes } from "vue3-google-login";
@@ -8,7 +8,6 @@ import { useUserStore } from '@/stores/user';
 import { useSpaceStore } from '@/stores/space';
 import { useWidgetStore } from '@/stores/widget';
 import { useThemeStore } from '@/stores/theme';
-import type { IWidget } from '@/types/widget';
 import { widgetMenuBtnComponents } from '@/widgets'
 import { EAppTheme } from '@/enums/themes';
 import router from '@/router';
@@ -239,11 +238,9 @@ function handleToggleBookmark() {
         <button @click="handleDelete" class="p-2 bg-red-400 disabled:opacity-50" :disabled="numSelectedWidgets === 0">Delete</button>
         <div class="flex flex-row flex-wrap">
           <component
-            class="p-2 bg-blue-400"
             v-for="component in widgetMenuBtnComponents"
             :key="component.name"
             :is="component"
-            @widgetMenuBtnClicked="handleWidgetMenuBtnClicked"
           />
         </div>
       </template>
@@ -254,10 +251,10 @@ function handleToggleBookmark() {
       </template>
     </template>
     <template v-else-if="isAuthenticated">
-        <label>
-          <span>Bookmark</span>
-          <input type="checkbox" v-model="space.is_bookmarked" @change="handleToggleBookmark" />
-        </label>
+      <label>
+        <span>Bookmark</span>
+        <input type="checkbox" v-model="space.is_bookmarked" @change="handleToggleBookmark" />
+      </label>
     </template>
     <div id="space__shared-widget-menu"></div>
     <div id="space__widget-menu"></div>

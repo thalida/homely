@@ -43,43 +43,39 @@ export const useWidgetStore = defineStore('widget', () => {
     return bySpace
   });
 
-  const gridStackBySpace = computed({
-    get() {
-      const res: Record<string, any[]> = {}
-      for (const spaceId of spaces.value) {
-        res[spaceId] = []
+  const gridStackBySpace = computed(() => {
+    const res: Record<string, any[]> = {}
 
-        const widgets = activeWidgetsBySpace.value[spaceId]
-        if (!widgets) {
+    for (const spaceId of spaces.value) {
+      res[spaceId] = []
+
+      const widgets = activeWidgetsBySpace.value[spaceId]
+      if (!widgets) {
+        continue
+      }
+
+      for (const widgetId of widgets) {
+        if (!collection.value[widgetId]) {
           continue
         }
 
-        for (const widgetId of widgets) {
-          if (!collection.value[widgetId]) {
-            continue
-          }
-
-          if (collection.value[widgetId].state.deleted) {
-            continue
-          }
-
-          const gridStack = {
-            x: collection.value[widgetId].layout.x,
-            y: collection.value[widgetId].layout.y,
-            w: collection.value[widgetId].layout.w,
-            h: collection.value[widgetId].layout.h,
-            locked: true,
-            id: widgetId,
-          }
-          res[spaceId].push(gridStack)
+        if (collection.value[widgetId].state.deleted) {
+          continue
         }
-      }
 
-      return res
-    },
-    set() {
-      console.log('set gridStackBySpace')
-    },
+        const gridStack = {
+          x: collection.value[widgetId].layout.x,
+          y: collection.value[widgetId].layout.y,
+          w: collection.value[widgetId].layout.w,
+          h: collection.value[widgetId].layout.h,
+          locked: true,
+          id: widgetId,
+        }
+        res[spaceId].push(gridStack)
+      }
+    }
+
+    return res
   });
 
   function setSpaceWidgets(spaceId: string, widgets: IWidget[]) {
@@ -140,7 +136,6 @@ export const useWidgetStore = defineStore('widget', () => {
         new: true,
       },
     }
-    newWidget.layout.i = newWidget.uid
     collection.value[newWidget.uid] = newWidget;
 
     return collection.value[newWidget.uid]
@@ -200,9 +195,8 @@ export const useWidgetStore = defineStore('widget', () => {
       if (widget.state.new) {
         const newWidget = await createWidgetReq({
           ...omit(widget, ['state', 'uid']),
-          layout: omit(widget.layout, ['i']),
+          layout: widget.layout,
         })
-        newWidget.layout.i = newWidget.uid
         newWidget.state = {
           new: false,
           selected: false,
