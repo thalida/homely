@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { h, onMounted, ref, render, watchEffect } from 'vue'
+import { h, createVNode, onMounted, ref, render, watchEffect, createBlock, openBlock } from 'vue'
 import { useSpaceStore } from '@/stores/space'
 import { useWidgetStore } from '@/stores/widget'
 import SpaceWidget from './SpaceWidget.vue'
 import SpaceMenu from './SpaceMenu.vue'
+import GridStackItem from './GridStackItem.vue'
 import 'gridstack/dist/gridstack.min.css';
 import 'gridstack/dist/gridstack-extra.min.css';
 import { GridStack, type GridStackNode, type GridItemHTMLElement } from 'gridstack';
@@ -27,6 +28,49 @@ const isResizingWindow = ref(false)
 
 let grid: GridStack | null = null;
 
+let wrappers: Record<string, HTMLElement> = {}
+
+
+function addWidget(host: GridItemHTMLElement | HTMLElement, w: GridStackNode): HTMLElement | undefined {
+  const itemId = w.id
+  if (typeof itemId === 'undefined') {
+    return
+  }
+
+  const itemVNode = h(GridStackItem, { itemId })
+  wrappers[itemId] = document.createElement('div')
+  wrappers[itemId].id = `shadow-root-widget-${itemId}`
+  render(itemVNode, wrappers[itemId])
+  return itemVNode.el as HTMLElement
+}
+
+function removeWidget(host: GridItemHTMLElement | HTMLElement, w: GridStackNode): HTMLElement | undefined {
+  const itemId = w.id
+  if (typeof itemId === 'undefined') {
+    return
+  }
+
+  render(null, wrappers[itemId])
+  return;
+}
+
+
+function gsAddRemoveVueComponents(host: GridItemHTMLElement | HTMLElement, w: GridStackNode, add: boolean, isGrid: boolean): HTMLElement | undefined {
+  if (!host) {
+    console.error('gsAddRemoveVueComponents: host is undefined')
+    return
+  }
+
+  // Not supported yet
+  if (isGrid) {
+    console.log('gsAddRemoveVueComponents: adding grids is not currently supported')
+    return;
+  }
+
+  return add ? addWidget(host, w) : removeWidget(host, w);
+}
+
+
 onMounted(async () => {
   await spaceStore.fetchSpace(props.spaceId)
   grid = GridStack.init({
@@ -38,38 +82,9 @@ onMounted(async () => {
     minRow: 1,
   })
 
+  GridStack.addRemoveCB = gsAddRemoveVueComponents;
+
   setGridEditability()
-
-  grid.on('added', function(event: Event, items: GridStackNode[]) {
-    for (const item of items) {
-      const itemEl = item.el as HTMLElement
-      const itemElContent = itemEl.querySelector('.grid-stack-item-content') as HTMLElement
-
-      const widgetId = item.id
-
-      if (typeof widgetId === 'undefined') {
-        continue
-      }
-
-      const widgetNode = h(SpaceWidget, { widgetId })
-      render(widgetNode, itemElContent)
-    }
-  });
-
-  grid.on('removed', function(event: Event, items: GridStackNode[]) {
-    for (const item of items) {
-      const itemEl = item.el as HTMLElement
-      const itemElContent = itemEl.querySelector('.grid-stack-item-content') as HTMLElement
-
-      const widgetId = item.id
-
-      if (typeof widgetId === 'undefined') {
-        continue
-      }
-
-      render(null, itemElContent)
-    }
-  });
 
   grid.on('dragstart', function(event: Event, el: GridItemHTMLElement) {
     const widgetId = el.getAttribute('gs-id')
