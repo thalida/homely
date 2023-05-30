@@ -15,6 +15,8 @@ import {
   deleteSpace as deleteSpaceReq,
   toggleSpaceBookmark,
 } from '@/api/space'
+import { randomItemFromArray } from '@/utils/array'
+import { HOME_TERMS, SPACE_TERMS } from '@/enums/space'
 
 export const useSpaceStore = defineStore('space', () => {
   const widgetStore = useWidgetStore()
@@ -71,7 +73,9 @@ export const useSpaceStore = defineStore('space', () => {
   }
 
   async function createSpace() {
-    const randomName = Math.random().toString(36).substring(7)
+    const randomStarWord = randomItemFromArray(SPACE_TERMS)
+    const randomHomeWord = randomItemFromArray(HOME_TERMS)
+    const randomName = `${randomStarWord} ${randomHomeWord}`
 
     const spaceRes = await createSpaceReq(randomName)
     addSpace(spaceRes)

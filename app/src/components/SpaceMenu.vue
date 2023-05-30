@@ -110,33 +110,6 @@ async function handleDelete() {
   }
 }
 
-// async function handleWidgetMenuBtnClicked(defaultWidget: unknown) {
-//   const maxPosition = widgetsStore.maxLayoutPositionBySpace[props.spaceId]
-//   const newWidgetInput: IWidget = cloneDeep(defaultWidget) as IWidget
-//   newWidgetInput.layout.x = maxPosition.x
-//   newWidgetInput.layout.y = maxPosition.y
-
-//   const widget = widgetsStore.draftCreateWidget(props.spaceId, newWidgetInput)
-
-//   await nextTick()
-//   await nextTick()
-
-//   scrollToWidget(widget)
-// }
-
-// function scrollToWidget(widget: IWidget) {
-//   const widgetElement = document.getElementById(`space-widget-${widget.uid}`)
-//   if (!widgetElement) {
-//     return
-//   }
-
-//   widgetElement.scrollIntoView({
-//     behavior: 'smooth',
-//     block: 'center',
-//     inline: 'center',
-//   })
-// }
-
 async function handleCreateSpace() {
   const space = await spaceStore.createSpace()
   router.push({ name: 'Space', params: { spaceUid: space.uid } })
@@ -182,6 +155,11 @@ function handleToggleBookmark() {
       </GoogleLogin>
     </template>
 
+    <div>
+      {{ space.name }}
+      {{ space.description }}
+    </div>
+
     <template v-if="isAuthenticated && !spaceStore.isEditMode">
       <details>
         <summary>Spaces</summary>
@@ -211,7 +189,7 @@ function handleToggleBookmark() {
       <button @click="handleCloneSpace">
         Clone Space
       </button>
-      <button @click="handleDeleteSpace">
+      <button @click="handleDeleteSpace" v-if="isSpaceOwner">
         Delete Space
       </button>
     </template>
