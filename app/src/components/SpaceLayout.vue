@@ -1,13 +1,10 @@
 <script setup lang="ts">
-import { h, createVNode, onMounted, ref, render, watchEffect, createBlock, openBlock } from 'vue'
+import { onMounted, ref, watchEffect } from 'vue'
 import { useSpaceStore } from '@/stores/space'
 import { useWidgetStore } from '@/stores/widget'
-import SpaceWidget from './SpaceWidget.vue'
 import SpaceMenu from './SpaceMenu.vue'
-import GridStackItem from './GridStackItem.vue'
-import 'gridstack/dist/gridstack.min.css';
-import 'gridstack/dist/gridstack-extra.min.css';
-import { GridStack, type GridStackNode, type GridItemHTMLElement } from 'gridstack';
+import GridStack from './GridStack.vue'
+import type { GridStackNode, GridItemHTMLElement } from 'gridstack';
 import { debounce } from 'lodash'
 
 const spaceStore = useSpaceStore()
@@ -21,236 +18,52 @@ const props = defineProps({
 })
 
 const spaceRef = ref<HTMLElement>()
+const gridStackRef = ref<InstanceType<typeof GridStack>>()
 const spaceMenuRef = ref<InstanceType<typeof SpaceMenu>>()
+
 const isDraggingWidget = ref(false)
 const isResizingWidget = ref(false)
 const isResizingWindow = ref(false)
 
-let grid: GridStack | null = null;
-
-let wrappers: Record<string, HTMLElement> = {}
-
-
-function addWidget(host: GridItemHTMLElement | HTMLElement, w: GridStackNode): HTMLElement | undefined {
-  const itemId = w.id
-  if (typeof itemId === 'undefined') {
-    return
-  }
-
-  const itemVNode = h(GridStackItem, { itemId })
-  wrappers[itemId] = document.createElement('div')
-  wrappers[itemId].id = `shadow-root-widget-${itemId}`
-  render(itemVNode, wrappers[itemId])
-  return itemVNode.el as HTMLElement
-}
-
-function removeWidget(host: GridItemHTMLElement | HTMLElement, w: GridStackNode): HTMLElement | undefined {
-  const itemId = w.id
-  if (typeof itemId === 'undefined') {
-    return
-  }
-
-  render(null, wrappers[itemId])
-  return;
-}
-
-
-function gsAddRemoveVueComponents(host: GridItemHTMLElement | HTMLElement, w: GridStackNode, add: boolean, isGrid: boolean): HTMLElement | undefined {
-  if (!host) {
-    console.error('gsAddRemoveVueComponents: host is undefined')
-    return
-  }
-
-  // Not supported yet
-  if (isGrid) {
-    console.log('gsAddRemoveVueComponents: adding grids is not currently supported')
-    return;
-  }
-
-  return add ? addWidget(host, w) : removeWidget(host, w);
-}
-
-
 onMounted(async () => {
   await spaceStore.fetchSpace(props.spaceId)
-  grid = GridStack.init({
-    margin: 12,
-    cellHeight: 100 + (12 * 2),
-    float: true,
-    disableOneColumnMode: true,
-    acceptWidgets: true,
-    minRow: 1,
-  })
-
-  GridStack.addRemoveCB = gsAddRemoveVueComponents;
-
-  setGridEditability()
-
-  grid.on('dragstart', function(event: Event, el: GridItemHTMLElement) {
-    const widgetId = el.getAttribute('gs-id')
-
-    if (!widgetId) {
-      return
-    }
-
-    isDraggingWidget.value = true
-    widgetsStore.unselectAllWidgets(props.spaceId)
-    widgetsStore.selectWidgetById(widgetId)
-  });
-
-  grid.on('dragstop', function(event: Event, el: GridItemHTMLElement) {
-    if (!el.gridstackNode) {
-      isDraggingWidget.value = false
-      return
-    }
-
-    const node: GridStackNode = el.gridstackNode;
-
-    if (!node.id) {
-      isDraggingWidget.value = false
-      return
-    }
-
-    widgetsStore.draftUpdateWidget(node.id, {
-      layout: {
-        x: node.x,
-        y: node.y,
-        w: node.w,
-        h: node.h,
-      }
-    })
-    isDraggingWidget.value = false
-  });
-
-  grid.on('resizestart', function(event: Event, el: GridItemHTMLElement) {
-    const widgetId = el.getAttribute('gs-id')
-
-    if (!widgetId) {
-      return
-    }
-
-    isResizingWidget.value = true
-    widgetsStore.unselectAllWidgets(props.spaceId)
-    widgetsStore.selectWidgetById(widgetId)
-  });
-
-  grid.on('resizestop', function(event: Event, el: GridItemHTMLElement) {
-    if (!el.gridstackNode) {
-      isResizingWidget.value = false
-      return
-    }
-
-    const node: GridStackNode = el.gridstackNode;
-
-    if (!node.id) {
-      isResizingWidget.value = false
-      return
-    }
-
-    widgetsStore.draftUpdateWidget(node.id, {
-      layout: {
-        x: node.x,
-        y: node.y,
-        w: node.w,
-        h: node.h,
-      }
-    })
-    isResizingWidget.value = false
-  });
-
-  grid.on('dropped', function(event: Event, previousWidget: GridStackNode, newWidget: GridStackNode) {
-    if (typeof newWidget === 'undefined' || newWidget === null) {
-      return
-    }
-
-    const newWidgetEl = newWidget.el as HTMLElement
-    const newWidgetSettings = JSON.parse(newWidgetEl.dataset.createWidget as string)
-
-    if (!newWidgetSettings) {
-      return
-    }
-
-    newWidgetSettings.layout.x = newWidget.x
-    newWidgetSettings.layout.y = newWidget.y
-    newWidgetSettings.layout.w = newWidget.w
-    newWidgetSettings.layout.h = newWidget.h
-
-    widgetsStore.draftCreateWidget(props.spaceId, newWidgetSettings)
-  });
-
-  grid.on('change', function(event: Event, items: GridStackNode[]) {
-    if (isResizingWindow.value) {
-      return
-    }
-
-    for (const item of items) {
-      if (!item.id) {
-        continue
-      }
-
-      widgetsStore.draftUpdateWidget(item.id, {
-        layout: {
-          x: item.x,
-          y: item.y,
-          w: item.w,
-          h: item.h,
-        }
-      })
-    }
-  });
-
-  function resizeGrid() {
-    if (!grid) return
-
-    isResizingWindow.value = true
-
-    let width = document.body.clientWidth;
-    const layout = 'move'
-    if (width < 700) {
-      grid.column(1, layout);
-    } else if (width < 850) {
-      grid.column(3, layout);
-    } else if (width < 950) {
-      grid.column(6, layout);
-    } else if (width < 1100) {
-      grid.column(8, layout);
-    } else {
-      grid.column(12, layout);
-    }
-
-    debouceResizeEnd()
-  };
-
-  function resizeEnd () {
-    isResizingWindow.value = false
-  }
-
-  const debouceResizeEnd = debounce(resizeEnd, 200)
-
-  window.addEventListener('resize', resizeGrid);
 
   watchEffect(() => {
-    grid?.load(widgetsStore.gridStackBySpace[props.spaceId])
+    gridStackRef.value?.getGrid()?.load(widgetsStore.gridStackBySpace[props.spaceId])
   })
+
+  window.addEventListener('resize', resizeGrid);
 })
 
-function setGridEditability() {
+function resizeGrid() {
+  let grid = gridStackRef.value?.getGrid()
+
   if (!grid) return
 
-  if (spaceStore.isEditMode) {
-    grid.enable()
+  isResizingWindow.value = true
+
+  let width = document.body.clientWidth;
+  const layout = 'move'
+  if (width < 700) {
+    grid.column(1, layout);
+  } else if (width < 850) {
+    grid.column(3, layout);
+  } else if (width < 950) {
+    grid.column(6, layout);
+  } else if (width < 1100) {
+    grid.column(8, layout);
   } else {
-    grid.disable()
+    grid.column(12, layout);
   }
+
+  debouceResizeEnd()
+};
+
+function resizeEnd () {
+  isResizingWindow.value = false
 }
 
-function handleEditModeStart() {
-  setGridEditability()
-}
-
-function handleEditModeStop() {
-  setGridEditability()
-}
+const debouceResizeEnd = debounce(resizeEnd, 200)
 
 function handleSpaceClick(e: Event) {
   const target = e.target as HTMLElement
@@ -259,6 +72,119 @@ function handleSpaceClick(e: Event) {
 
   if (isGridElement || isWrapper) {
     widgetsStore.unselectAllWidgets(props.spaceId)
+  }
+}
+
+function handleGridDragStart(event: Event, el: GridItemHTMLElement) {
+  const widgetId = el.getAttribute('gs-id')
+
+  if (!widgetId) {
+    return
+  }
+
+  isDraggingWidget.value = true
+  widgetsStore.unselectAllWidgets(props.spaceId)
+  widgetsStore.selectWidgetById(widgetId)
+}
+
+function handleGridDragStop(event: Event, el: GridItemHTMLElement) {
+  if (!el.gridstackNode) {
+    isDraggingWidget.value = false
+    return
+  }
+
+  const node: GridStackNode = el.gridstackNode;
+
+  if (!node.id) {
+    isDraggingWidget.value = false
+    return
+  }
+
+  widgetsStore.draftUpdateWidget(node.id, {
+    layout: {
+      x: node.x,
+      y: node.y,
+      w: node.w,
+      h: node.h,
+    }
+  })
+  isDraggingWidget.value = false
+}
+
+function handleGridResizeStart(event: Event, el: GridItemHTMLElement) {
+    const widgetId = el.getAttribute('gs-id')
+
+  if (!widgetId) {
+    return
+  }
+
+  isResizingWidget.value = true
+  widgetsStore.unselectAllWidgets(props.spaceId)
+  widgetsStore.selectWidgetById(widgetId)
+}
+
+function handleGridResizeStop(event: Event, el: GridItemHTMLElement) {
+  if (!el.gridstackNode) {
+    isResizingWidget.value = false
+    return
+  }
+
+  const node: GridStackNode = el.gridstackNode;
+
+  if (!node.id) {
+    isResizingWidget.value = false
+    return
+  }
+
+  widgetsStore.draftUpdateWidget(node.id, {
+    layout: {
+      x: node.x,
+      y: node.y,
+      w: node.w,
+      h: node.h,
+    }
+  })
+  isResizingWidget.value = false
+}
+
+function handleGridDropped(event: Event, previousWidget: GridStackNode, newWidget: GridStackNode) {
+  if (typeof newWidget === 'undefined' || newWidget === null) {
+    return
+  }
+
+  const newWidgetEl = newWidget.el as HTMLElement
+  const newWidgetSettings = JSON.parse(newWidgetEl.dataset.createWidget as string)
+
+  if (!newWidgetSettings) {
+    return
+  }
+
+  newWidgetSettings.layout.x = newWidget.x
+  newWidgetSettings.layout.y = newWidget.y
+  newWidgetSettings.layout.w = newWidget.w
+  newWidgetSettings.layout.h = newWidget.h
+
+  widgetsStore.draftCreateWidget(props.spaceId, newWidgetSettings)
+}
+
+function handleGridChange(event: Event, items: GridStackNode[]) {
+  if (isResizingWindow.value) {
+    return
+  }
+
+  for (const item of items) {
+    if (!item.id) {
+      continue
+    }
+
+    widgetsStore.draftUpdateWidget(item.id, {
+      layout: {
+        x: item.x,
+        y: item.y,
+        w: item.w,
+        h: item.h,
+      }
+    })
   }
 }
 </script>
@@ -272,13 +198,19 @@ function handleSpaceClick(e: Event) {
     }"
     @click="handleSpaceClick"
   >
-    <div class="grid-stack grow shrink-0 w-full h-full"></div>
+    <GridStack
+      ref="gridStackRef"
+      :editable="spaceStore.isEditMode"
+      @dragStart="handleGridDragStart"
+      @dragStop="handleGridDragStop"
+      @resizeStart="handleGridResizeStart"
+      @resizeStop="handleGridResizeStop"
+      @dropped="handleGridDropped"
+      @change="handleGridChange" />
     <SpaceMenu
       ref="spaceMenuRef"
       class="shrink-0"
-      :spaceId="props.spaceId"
-      @editModeStart="handleEditModeStart"
-      @editModeStop="handleEditModeStop" />
+      :spaceId="props.spaceId" />
   </div>
 </template>
 
