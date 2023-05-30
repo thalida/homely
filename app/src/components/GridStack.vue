@@ -35,7 +35,7 @@ const emits = defineEmits<{
 const gridEl = ref<HTMLElement>();
 let grid: GridStack | null = null;
 
-let wrappers: Record<string, HTMLElement> = {}
+let shadowDom: Record<string, HTMLElement> = {}
 
 onMounted(() => {
   grid = GridStack.init(props.options, gridEl.value);
@@ -120,9 +120,8 @@ function addWidget(host: GridItemHTMLElement | HTMLElement, w: GridStackNode): H
   }
 
   const itemVNode = h(GridStackItem, { itemId })
-  wrappers[itemId] = document.createElement('div')
-  wrappers[itemId].id = `shadow-root-widget-${itemId}`
-  render(itemVNode, wrappers[itemId])
+  shadowDom[itemId] = document.createElement('div')
+  render(itemVNode, shadowDom[itemId])
   return itemVNode.el as HTMLElement
 }
 
@@ -132,7 +131,7 @@ function removeWidget(host: GridItemHTMLElement | HTMLElement, w: GridStackNode)
     return
   }
 
-  render(null, wrappers[itemId])
+  render(null, shadowDom[itemId])
   return;
 }
 
