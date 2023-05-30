@@ -97,10 +97,7 @@ export const useWidgetStore = defineStore('widget', () => {
             w: collection.value[widgetId].layout.w,
             h: collection.value[widgetId].layout.h,
             locked: true,
-            widget: collection.value[widgetId],
-            // widget: omit(collection.value[widgetId], ['layout']),
-            // content: "widget.content"
-            // content: `<component :is="SpaceWidget" :widgetId="${widgetId}"></component>`
+            id: widgetId,
           }
           res[spaceId].push(gridStack)
         }
@@ -108,7 +105,9 @@ export const useWidgetStore = defineStore('widget', () => {
 
       return res
     },
-    set() {},
+    set() {
+      console.log('set gridStackBySpace')
+    },
   });
 
   function setSpaceWidgets(spaceId: string, widgets: IWidget[]) {
@@ -174,6 +173,14 @@ export const useWidgetStore = defineStore('widget', () => {
     }
 
     collection.value[uid].state.selected = true
+  }
+
+  function unselectWidgetById(uid: string) {
+    if (!collection.value[uid]) {
+      return;
+    }
+
+    collection.value[uid].state.selected = false
   }
 
   function markWidgetAsDirty(uid: string) {
@@ -323,7 +330,7 @@ export const useWidgetStore = defineStore('widget', () => {
     setSpaceWidgets,
     unselectAllWidgets,
     selectWidgetById,
-    deleteWidgetsBySpace,
+    unselectWidgetById,
 
     markWidgetAsDirty,
     saveDirtyWidgets,
@@ -333,6 +340,8 @@ export const useWidgetStore = defineStore('widget', () => {
     draftUpdateWidget,
     draftDeleteWidget,
     draftCreateWidget,
+
+    deleteWidgetsBySpace,
 
     gridStackBySpace,
   }

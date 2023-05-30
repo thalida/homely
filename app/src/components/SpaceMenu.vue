@@ -92,15 +92,15 @@ function handleEditModeCancel() {
 }
 
 function startEditMode() {
-  spaceStore.setEditMode(true)
   spaceStore.createBackup()
+  spaceStore.setEditMode(true)
   emits('editModeStart')
 }
 
 function stopEditMode() {
+  widgetsStore.unselectAllWidgets(props.spaceId)
   spaceStore.setEditMode(false)
   spaceStore.deleteBackup()
-  widgetsStore.unselectAllWidgets(props.spaceId)
   emits('editModeStop')
 }
 
