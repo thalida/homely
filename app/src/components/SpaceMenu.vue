@@ -110,32 +110,32 @@ async function handleDelete() {
   }
 }
 
-async function handleWidgetMenuBtnClicked(defaultWidget: unknown) {
-  const maxPosition = widgetsStore.maxLayoutPositionBySpace[props.spaceId]
-  const newWidgetInput: IWidget = cloneDeep(defaultWidget) as IWidget
-  newWidgetInput.layout.x = maxPosition.x
-  newWidgetInput.layout.y = maxPosition.y
+// async function handleWidgetMenuBtnClicked(defaultWidget: unknown) {
+//   const maxPosition = widgetsStore.maxLayoutPositionBySpace[props.spaceId]
+//   const newWidgetInput: IWidget = cloneDeep(defaultWidget) as IWidget
+//   newWidgetInput.layout.x = maxPosition.x
+//   newWidgetInput.layout.y = maxPosition.y
 
-  const widget = widgetsStore.draftCreateWidget(props.spaceId, newWidgetInput)
+//   const widget = widgetsStore.draftCreateWidget(props.spaceId, newWidgetInput)
 
-  await nextTick()
-  await nextTick()
+//   await nextTick()
+//   await nextTick()
 
-  scrollToWidget(widget)
-}
+//   scrollToWidget(widget)
+// }
 
-function scrollToWidget(widget: IWidget) {
-  const widgetElement = document.getElementById(`space-widget-${widget.uid}`)
-  if (!widgetElement) {
-    return
-  }
+// function scrollToWidget(widget: IWidget) {
+//   const widgetElement = document.getElementById(`space-widget-${widget.uid}`)
+//   if (!widgetElement) {
+//     return
+//   }
 
-  widgetElement.scrollIntoView({
-    behavior: 'smooth',
-    block: 'center',
-    inline: 'center',
-  })
-}
+//   widgetElement.scrollIntoView({
+//     behavior: 'smooth',
+//     block: 'center',
+//     inline: 'center',
+//   })
+// }
 
 async function handleCreateSpace() {
   const space = await spaceStore.createSpace()

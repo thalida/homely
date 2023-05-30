@@ -5,6 +5,7 @@ import { useWidgetStore } from '@/stores/widget'
 import SpaceWidget from './SpaceWidget.vue'
 import SpaceMenu from './SpaceMenu.vue'
 import 'gridstack/dist/gridstack.min.css';
+import 'gridstack/dist/gridstack-extra.min.css';
 import { GridStack, type GridStackNode, type GridItemHTMLElement } from 'gridstack';
 
 const spaceStore = useSpaceStore()
@@ -25,9 +26,10 @@ let grid: GridStack | null = null;
 onMounted(async () => {
   await spaceStore.fetchSpace(props.spaceId)
   grid = GridStack.init({
-    column: 12,
     margin: 12,
-    cellHeight: 'auto',
+    cellHeight: 100 + (12 * 2),
+    float: true,
+    disableOneColumnMode: true,
   })
 
   setGridEditability()
@@ -48,25 +50,6 @@ onMounted(async () => {
     }
   });
 
-  grid.on('change', function(event: Event, items: GridStackNode[]) {
-    for (const item of items) {
-      const widgetId = item.id
-
-      if (typeof widgetId === 'undefined') {
-        continue
-      }
-
-      widgetsStore.draftUpdateWidget(widgetId, {
-        layout: {
-          x: item.x,
-          y: item.y,
-          w: item.w,
-          h: item.h,
-        }
-      })
-    }
-  });
-
   grid.on('dragstart', function(event: Event, el: GridItemHTMLElement) {
     const widgetId = el.getAttribute('gs-id')
 
@@ -76,6 +59,27 @@ onMounted(async () => {
 
     widgetsStore.unselectAllWidgets(props.spaceId)
     widgetsStore.selectWidgetById(widgetId)
+  });
+
+  grid.on('dragstop', function(event: Event, el: GridItemHTMLElement) {
+    if (!el.gridstackNode) {
+      return
+    }
+
+    const node: GridStackNode = el.gridstackNode;
+
+    if (!node.id) {
+      return
+    }
+
+    widgetsStore.draftUpdateWidget(node.id, {
+      layout: {
+        x: node.x,
+        y: node.y,
+        w: node.w,
+        h: node.h,
+      }
+    })
   });
 
   grid.on('resizestart', function(event: Event, el: GridItemHTMLElement) {
@@ -88,6 +92,48 @@ onMounted(async () => {
     widgetsStore.unselectAllWidgets(props.spaceId)
     widgetsStore.selectWidgetById(widgetId)
   });
+
+  grid.on('resizestop', function(event: Event, el: GridItemHTMLElement) {
+    if (!el.gridstackNode) {
+      return
+    }
+
+    const node: GridStackNode = el.gridstackNode;
+
+    if (!node.id) {
+      return
+    }
+
+    widgetsStore.draftUpdateWidget(node.id, {
+      layout: {
+        x: node.x,
+        y: node.y,
+        w: node.w,
+        h: node.h,
+      }
+    })
+  });
+
+
+  function resizeGrid() {
+    if (!grid) return
+
+    let width = document.body.clientWidth;
+    const layout = 'move'
+    if (width < 700) {
+      grid.column(1, layout);
+    } else if (width < 850) {
+      grid.column(3, layout);
+    } else if (width < 950) {
+      grid.column(6, layout);
+    } else if (width < 1100) {
+      grid.column(8, layout);
+    } else {
+      grid.column(12, layout);
+    }
+  };
+
+  window.addEventListener('resize', resizeGrid);
 
   watchEffect(() => {
     grid?.load(widgetsStore.gridStackBySpace[props.spaceId])
