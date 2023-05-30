@@ -23,7 +23,7 @@ export const useSpaceStore = defineStore('space', () => {
   const defaultSpace = ref('')
   const backupSpaces: Ref<ISpaces> = ref({})
   const backupWidgets: Ref<IWidgets> = ref({})
-  const isEditMode: Ref<boolean> = useLocalStorage('homely/space/isEditMode', false)
+  const isEditMode = ref(false)
   const homepageSpaces = ref<ISpace[]>([])
 
   const mySpaces = computed(() => {

@@ -68,7 +68,7 @@ export const useWidgetStore = defineStore('widget', () => {
           y: collection.value[widgetId].layout.y,
           w: collection.value[widgetId].layout.w,
           h: collection.value[widgetId].layout.h,
-          locked: true,
+          locked: false,
           id: widgetId,
         }
         res[spaceId].push(gridStack)

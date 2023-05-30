@@ -39,7 +39,7 @@ const widget = computed((): TTextWidget => {
 })
 
 const space = computed(() => {
-  return spaceStore.collection[widget.value.space]
+  return widget.value ? spaceStore.collection[widget.value.space] : null
 })
 
 const isSpaceOwner = computed(() => {

@@ -69,10 +69,11 @@ const supportedAppThemes = computed(() => {
 });
 
 function handlePageRefresh(e: BeforeUnloadEvent) {
-  // if (spaceStore.isEditMode) {
-  //   e.preventDefault()
-  //   e.returnValue = ''
-  // }
+  const isProduction = import.meta.env.PROD
+  if (isProduction && spaceStore.isEditMode) {
+    e.preventDefault()
+    e.returnValue = ''
+  }
 }
 
 function handleEditModeStart() {

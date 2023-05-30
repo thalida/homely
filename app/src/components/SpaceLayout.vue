@@ -41,24 +41,6 @@ onMounted(async () => {
       const itemEl = item.el as HTMLElement
       const itemElContent = itemEl.querySelector('.grid-stack-item-content') as HTMLElement
 
-      const isNewWidget = itemEl.dataset.isNewWidget === 'true'
-
-      if (isNewWidget) {
-        const newWidgetSettings = JSON.parse(itemEl.dataset.createWidget as string)
-
-        if (!newWidgetSettings) {
-          continue
-        }
-
-        newWidgetSettings.layout.x = item.x
-        newWidgetSettings.layout.y = item.y
-        newWidgetSettings.layout.w = item.w
-        newWidgetSettings.layout.h = item.h
-
-        widgetsStore.draftCreateWidget(props.spaceId, newWidgetSettings)
-        return
-      }
-
       const widgetId = item.id
 
       if (typeof widgetId === 'undefined') {
@@ -132,6 +114,26 @@ onMounted(async () => {
         h: node.h,
       }
     })
+  });
+
+  grid.on('dropped', function(event: Event, previousWidget: GridStackNode, newWidget: GridStackNode) {
+    if (typeof newWidget === 'undefined' || newWidget === null) {
+      return
+    }
+
+    const newWidgetEl = newWidget.el as HTMLElement
+    const newWidgetSettings = JSON.parse(newWidgetEl.dataset.createWidget as string)
+
+    if (!newWidgetSettings) {
+      return
+    }
+
+    newWidgetSettings.layout.x = newWidget.x
+    newWidgetSettings.layout.y = newWidget.y
+    newWidgetSettings.layout.w = newWidget.w
+    newWidgetSettings.layout.h = newWidget.h
+
+    widgetsStore.draftCreateWidget(props.spaceId, newWidgetSettings)
   });
 
   function resizeGrid() {
