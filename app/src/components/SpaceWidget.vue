@@ -123,7 +123,7 @@ function handleWidgetClick() {
         }"
     />
     <teleport to="#space__shared-widget-menu">
-      <div v-if="isSelected">
+      <div v-if="!isPlaceholder && isSelected">
         <label>
           <span>Card Color</span>
           <select

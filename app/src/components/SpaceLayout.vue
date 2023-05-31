@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref, watchEffect } from 'vue'
+import { onMounted, ref, watchEffect, provide, readonly } from 'vue'
 import { useSpaceStore } from '@/stores/space'
 import { useWidgetStore } from '@/stores/widget'
 import SpaceMenu from './SpaceMenu.vue'
@@ -20,7 +20,6 @@ const props = defineProps({
 const spaceRef = ref<HTMLElement>()
 const gridStackRef = ref<InstanceType<typeof GridStack>>()
 const spaceMenuRef = ref<InstanceType<typeof SpaceMenu>>()
-
 const gridStackOptions = {
   margin: 12,
   cellHeight: 100 + (12 * 2),
@@ -33,6 +32,8 @@ const gridStackOptions = {
 const isDraggingWidget = ref(false)
 const isResizingWidget = ref(false)
 const isResizingWindow = ref(false)
+
+provide('gridStackRef', readonly(gridStackRef))
 
 onMounted(async () => {
   await spaceStore.fetchSpace(props.spaceId)

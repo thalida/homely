@@ -224,7 +224,7 @@ function handleToggleDefaultSpace() {
 
         <h2 class="font-bold">Widgets</h2>
         <button @click="handleDelete" class="p-2 bg-red-400 disabled:opacity-50" :disabled="numSelectedWidgets === 0">Delete</button>
-        <div v-if="numSelectedWidgets === 0" class="">
+        <div v-if="numSelectedWidgets === 0" class="grid grid-cols-3 gap-2">
           <component
             v-for="component in widgetMenuBtnComponents"
             :key="component.name"

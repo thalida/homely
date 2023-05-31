@@ -117,7 +117,7 @@ const editor = useEditor({
   ],
   editorProps: {
     attributes: {
-      class: 'p-4 focus:outline-none',
+      class: 'focus:outline-none',
     },
   },
   content: widget.value?.content?.text || '',
@@ -180,18 +180,19 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <editor-content
-    v-bind="$attrs"
-    class="widget-theme-bg widget-theme-text text-widget cursor-auto flex flex-col prose prose-base max-w-none focus:outline-none"
-    :style="{
-      fontFamily: widget.content.fontFamily,
-      fontSize: widget.content.fontSize + 'px',
-      textAlign: widget.content.textAlign,
-      fontWeight: parsedFontWeight,
-      fontStyle: parsedFontStyle,
-      lineHeight: widget.content.lineHeight,
-    }"
-    :editor="editor"/>
+  <div class="widget-theme-bg widget-theme-text text-widget p-4" v-bind="$attrs">
+    <editor-content
+      class="cursor-auto flex flex-col prose prose-base max-w-none widget-theme-text focus:outline-none"
+      :style="{
+        fontFamily: widget.content.fontFamily,
+        fontSize: widget.content.fontSize + 'px',
+        textAlign: widget.content.textAlign,
+        fontWeight: parsedFontWeight,
+        fontStyle: parsedFontStyle,
+        lineHeight: widget.content.lineHeight,
+      }"
+      :editor="editor"/>
+  </div>
   <teleport to="#space__widget-menu">
     <TextMenuSettings v-if="editor" :widgetId="widgetId" :editor="editor" />
   </teleport>
