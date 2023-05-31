@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import type { IBaseWidget } from '@/types/widget';
 import { computed, onMounted, type Ref, inject, type PropType } from 'vue';
-import type GridStackVue from './GridStack.vue'
 import { GridStack } from 'gridstack';
 import SpaceWidget from './SpaceWidget.vue';
+import type SpaceGrid from './SpaceGrid.vue';
 
 const props = defineProps({
   defaultWidget: {
@@ -11,24 +11,21 @@ const props = defineProps({
     required: true
   },
 });
-
 const widgetAsString = computed(() => {
   return JSON.stringify(props.defaultWidget);
 });
-
-const gridStackRef = inject('gridStackRef') as Ref<InstanceType<typeof GridStackVue>>;
+const spaceGridRef = inject('spaceGridRef') as Ref<InstanceType<typeof SpaceGrid>>;
 const numGridCols = computed(() => {
-  return gridStackRef.value?.getGrid()?.getColumn() ?? 12;
+  return spaceGridRef.value?.gridStackRef?.getGrid()?.getColumn() ?? 12;
 });
 const numGridColsClass = computed(() => {
   return `gs-${numGridCols.value}`;
 });
 const gridMargin = computed(() => {
-  return gridStackRef.value?.getGrid()?.getMargin() ?? 12;
+  return spaceGridRef.value?.gridStackRef?.getGrid()?.getMargin() ?? 12;
 });
 
 onMounted(() => {
-  console.log('gridStackRef', gridStackRef.value.getGrid())
   GridStack.setupDragIn(".space-menu-btn", { appendTo: 'body', helper: 'clone', scroll: true });
 })
 </script>
