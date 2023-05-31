@@ -35,7 +35,7 @@ const defaultWidget: IBaseDateTimeWidget = {
 
 <template>
   <SpaceMenuBtn :defaultWidget="defaultWidget">
-    Date Time
+    <DateTimeCard />
   </SpaceMenuBtn>
 </template>
 

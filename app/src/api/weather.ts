@@ -1,4 +1,4 @@
-import { EWeatherWidgetUnits } from "@/widgets/WeatherWidget/enums";
+import { EWeatherWidgetUnits } from "@/widgets/WeatherWidget/constants";
 import axios from "axios";
 
 export async function getWeather (latlng: { lat: number, lng: number }) {

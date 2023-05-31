@@ -1,4 +1,4 @@
-import { EWeatherWidgetUnits } from "@/widgets/WeatherWidget/enums";
+import { EWeatherWidgetUnits } from "@/widgets/WeatherWidget/constants";
 
 export function celsiusToFahrenheit(celsius: number) {
     return (celsius * 1.8) + 32;
