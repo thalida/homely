@@ -5,7 +5,7 @@ import { useLocationStore } from '@/stores/location';
 import * as datetimeUtils from '@/utils/datetime'
 import type { IWeatherWidgetItem } from './types';
 import { defaultWeatherSvgMap } from './assets';
-import { unitsHTMLCodeMap } from './enums';
+import { unitsHTMLCodeMap } from './constants';
 import { formatTemp } from '@/utils/weather';
 
 const props = defineProps({

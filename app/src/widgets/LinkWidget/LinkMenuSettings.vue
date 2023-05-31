@@ -3,7 +3,7 @@ import { cloneDeep } from 'lodash'
 import { computed, ref, watchEffect } from 'vue'
 import { useWidgetStore } from '@/stores/widget'
 import type { TLinkWidget } from './types'
-import { ELinkWidgetStyle } from './enums'
+import { ELinkWidgetStyle } from './constants'
 import { getLinkByUrl } from '@/api/links'
 
 const props = defineProps({

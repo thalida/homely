@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { type PropType, watch } from 'vue';
 import type { IWeatherWidgetItem } from './types';
-import { EWeatherWidgetStyle } from './enums';
+import { EWeatherWidgetStyle } from './constants';
 import { useWeatherStore } from '@/stores/weather';
 import WeatherRowWindow from './WeatherRowWindow.vue';
 import WeatherRowCurrent from './WeatherRowCurrent.vue';

@@ -4,7 +4,7 @@ import { useWidgetStore } from '@/stores/widget'
 import { ImageOffIcon } from 'lucide-vue-next'
 import ImageMenuSettings from './ImageMenuSettings.vue';
 import type { TImageWidget } from './types';
-import { EImageWidgetBackgroundSize, EImageWidgetBackgroundRepeat } from './enums';
+import { EImageWidgetBackgroundSize, EImageWidgetBackgroundRepeat } from './constants';
 
 const props = defineProps({
   widgetId: {

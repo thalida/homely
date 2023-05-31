@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { DEFAULT_WIDGET_COLOR, EWidgetType } from '@/constants/widget';
-import { ELinkWidgetStyle } from './enums';
+import { ELinkWidgetStyle } from './constants';
 import type { IBaseLinkWidget } from './types';
 import SpaceMenuBtn from '@/components/SpaceMenuBtn.vue';
 

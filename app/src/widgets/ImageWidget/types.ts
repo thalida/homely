@@ -1,5 +1,5 @@
 import type { IBaseWidget, IWidget } from "@/types/widget";
-import type { EImageWidgetBackgroundSize } from "./enums";
+import type { EImageWidgetBackgroundSize } from "./constants";
 
 export interface IBaseImageWidget extends IBaseWidget {
   content: {

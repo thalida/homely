@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useWidgetStore } from '@/stores/widget'
-import { EImageWidgetBackgroundPosition, EImageWidgetBackgroundSize, EImageWidgetBackgroundRepeat } from './enums';
+import { EImageWidgetBackgroundPosition, EImageWidgetBackgroundSize, EImageWidgetBackgroundRepeat } from './constants';
 import type { TImageWidget } from './types';
 
 const props = defineProps({

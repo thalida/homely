@@ -3,7 +3,7 @@ import { computed, type PropType } from 'vue';
 import { useWeatherStore } from '@/stores/weather';
 import { useLocationStore } from '@/stores/location';
 import type { IWeatherWidgetItem } from './types';
-import { unitsHTMLCodeMap } from './enums';
+import { unitsHTMLCodeMap } from './constants';
 import { defaultWeatherSvgMap } from './assets';
 import { formatTemp } from '@/utils/weather';
 

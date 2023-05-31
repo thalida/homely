@@ -1,6 +1,6 @@
 import type { ILocation } from "@/types/location";
 import type { IBaseWidget, IWidget } from "@/types/widget";
-import type { EWeatherWidgetStyle, EWeatherWidgetUnits } from "./enums";
+import type { EWeatherWidgetStyle, EWeatherWidgetUnits } from "./constants";
 
 export interface IBaseWeatherWidget extends IBaseWidget {
   content: {

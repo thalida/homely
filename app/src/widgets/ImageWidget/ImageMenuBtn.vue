@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { DEFAULT_WIDGET_COLOR, EWidgetType } from '@/constants/widget';
-import { EImageWidgetBackgroundSize, EImageWidgetBackgroundPosition, EImageWidgetBackgroundRepeat } from './enums';
+import { EImageWidgetBackgroundSize, EImageWidgetBackgroundPosition, EImageWidgetBackgroundRepeat } from './constants';
 import type { IBaseImageWidget } from './types';
 import SpaceMenuBtn from '@/components/SpaceMenuBtn.vue';
 

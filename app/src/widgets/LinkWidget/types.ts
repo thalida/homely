@@ -1,5 +1,5 @@
 import type { IBaseWidget, IWidget } from "@/types/widget";
-import type { ELinkWidgetStyle } from "./enums";
+import type { ELinkWidgetStyle } from "./constants";
 
 
 export interface IBaseLinkWidget extends IBaseWidget {

@@ -3,7 +3,7 @@ import { computed, ref, watchEffect } from 'vue'
 import { useWidgetStore } from '@/stores/widget'
 import { useSpaceStore } from '@/stores/space'
 import LinkMenuSettings from './LinkMenuSettings.vue'
-import { ELinkWidgetStyle } from './enums'
+import { ELinkWidgetStyle } from './constants'
 import type { TLinkWidget } from './types'
 
 const props = defineProps({

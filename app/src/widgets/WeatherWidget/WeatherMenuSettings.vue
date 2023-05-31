@@ -5,7 +5,7 @@ import { useWeatherStore } from '@/stores/weather';
 import type { ILocation } from '@/types/location';
 import { moveItemInArray } from '@/utils/array';
 import GooglePlaceInput from '@/components/GooglePlaceInput.vue';
-import { EWeatherWidgetStyle, EWeatherWidgetUnits, unitsSymbolMap } from './enums'
+import { EWeatherWidgetStyle, EWeatherWidgetUnits, unitsSymbolMap } from './constants'
 import type { IWeatherWidgetItem, TWeatherWidget } from './types';
 
 
