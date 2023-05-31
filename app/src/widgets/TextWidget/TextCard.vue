@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref, watch, watchEffect } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch, watchEffect, type PropType } from 'vue'
 import { useEditor, EditorContent } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
 import LinkExtension from '@tiptap/extension-link'
@@ -25,7 +25,17 @@ const props = defineProps({
     type: String,
     required: false,
     default: null
-  }
+  },
+  isPlaceholder: {
+    type: Boolean,
+    required: false,
+    default: false
+  },
+  placeholderWidget: {
+    type: Object as PropType<TTextWidget>,
+    required: false,
+    default: null
+  },
 })
 
 const widgetId = ref<string | null>(null)
@@ -35,7 +45,7 @@ const isEditMode = computed(() => {
 })
 
 const widget = computed((): TTextWidget => {
-  return widgetStore.getWidgetById(props.widgetId) as TTextWidget;
+  return props.isPlaceholder ? props.placeholderWidget : widgetStore.getWidgetById(props.widgetId) as TTextWidget;
 })
 
 const space = computed(() => {
@@ -152,7 +162,11 @@ watch(
 )
 
 onMounted(() => {
-  fontStore.connect(widget.value.uid)
+  if (!widgetId.value) {
+    return
+  }
+
+  fontStore.connect(widgetId.value)
 })
 
 onBeforeUnmount(() => {

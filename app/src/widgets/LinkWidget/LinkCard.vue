@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watchEffect } from 'vue'
+import { computed, ref, watchEffect, type PropType } from 'vue'
 import { useWidgetStore } from '@/stores/widget'
 import { useSpaceStore } from '@/stores/space'
 import LinkMenuSettings from './LinkMenuSettings.vue'
@@ -11,7 +11,17 @@ const props = defineProps({
     type: String,
     required: false,
     default: null
-  }
+  },
+  isPlaceholder: {
+    type: Boolean,
+    required: false,
+    default: false
+  },
+  placeholderWidget: {
+    type: Object as PropType<TLinkWidget>,
+    required: false,
+    default: null
+  },
 })
 
 const spaceStore = useSpaceStore()
@@ -20,7 +30,7 @@ const widgetStore = useWidgetStore()
 const linkEl = ref(null)
 
 const widget = computed(() => {
-  return widgetStore.getWidgetById(props.widgetId) as TLinkWidget;
+  return props.isPlaceholder ? props.placeholderWidget : widgetStore.getWidgetById(props.widgetId) as TLinkWidget;
 })
 
 const isEditing = computed(() => {

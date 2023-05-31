@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, onBeforeUnmount, watchEffect, ref } from 'vue'
+import { computed, onMounted, onBeforeUnmount, watchEffect, ref, type PropType } from 'vue'
 import { useWidgetStore } from '@/stores/widget'
 import { useWeatherStore } from '@/stores/weather';
 import WeatherCardRow from './WeatherCardRow.vue';
@@ -12,14 +12,24 @@ const props = defineProps({
     type: String,
     required: false,
     default: null
-  }
+  },
+  isPlaceholder: {
+    type: Boolean,
+    required: false,
+    default: false
+  },
+  placeholderWidget: {
+    type: Object as PropType<TWeatherWidget>,
+    required: false,
+    default: null
+  },
 })
 
 const isReady = ref(false)
 const widgetStore = useWidgetStore()
 const weatherStore = useWeatherStore()
 const widget = computed(() => {
-  return widgetStore.getWidgetById(props.widgetId) as TWeatherWidget
+  return props.isPlaceholder ? props.placeholderWidget : widgetStore.getWidgetById(props.widgetId) as TWeatherWidget
 })
 const widgetId = ref<string | null>(null)
 

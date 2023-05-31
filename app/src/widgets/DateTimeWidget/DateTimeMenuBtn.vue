@@ -2,6 +2,8 @@
 import { DEFAULT_WIDGET_COLOR, EWidgetType } from '@/constants/widget';
 import type { IBaseDateTimeWidget } from './types';
 import SpaceMenuBtn from '@/components/SpaceMenuBtn.vue';
+import { CalendarClockIcon } from 'lucide-vue-next';
+import DateTimeCard from './DateTimeCard.vue';
 
 const defaultWidget: IBaseDateTimeWidget = {
   widget_type: EWidgetType.DATETIME,
@@ -35,7 +37,12 @@ const defaultWidget: IBaseDateTimeWidget = {
 
 <template>
   <SpaceMenuBtn :defaultWidget="defaultWidget">
-    <DateTimeCard />
+    <template #icon>
+      <CalendarClockIcon class="h-full w-auto" />
+    </template>
+    <template #label>
+      Date &amp; Time
+    </template>
   </SpaceMenuBtn>
 </template>
 

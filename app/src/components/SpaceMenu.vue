@@ -136,10 +136,8 @@ function handleToggleBookmark() {
 
 function handleToggleDefaultSpace() {
   const spaceId = (space.value.is_default) ? props.spaceId : null
-  console.log('handleToggleDefaultSpace', spaceId, space.value.is_default)
   spaceStore.setDefaultSpace(spaceId)
 }
-
 </script>
 
 <template>
@@ -189,19 +187,21 @@ function handleToggleDefaultSpace() {
           </RouterLink>
         </div>
       </details>
-      <button @click="handleCreateSpace">
-        Create Space
-      </button>
-      <button @click="handleCloneSpace">
-        Clone Space
-      </button>
-      <button @click="handleDeleteSpace" v-if="isSpaceOwner">
-        Delete Space
-      </button>
-      <label>
-        <span>Make Default</span>
-        <input type="checkbox" v-model="space.is_default" @change="handleToggleDefaultSpace" />
-      </label>
+      <div class="flex flex-col">
+        <button @click="handleCreateSpace">
+          Create Space
+        </button>
+        <button @click="handleCloneSpace">
+          Clone Space
+        </button>
+        <button @click="handleDeleteSpace" v-if="isSpaceOwner">
+          Delete Space
+        </button>
+        <label>
+          <span>Make Default</span>
+          <input type="checkbox" v-model="space.is_default" @change="handleToggleDefaultSpace" />
+        </label>
+      </div>
     </template>
 
     <template v-if="isSpaceOwner">
@@ -211,7 +211,7 @@ function handleToggleDefaultSpace() {
           Save
         </button>
 
-        <h2>Space</h2>
+        <h2 class="font-bold">Space</h2>
         <label>
           <span>Space Name</span>
           <input type="text" v-model="space.name" />
@@ -222,10 +222,9 @@ function handleToggleDefaultSpace() {
           <input type="text" v-model="space.description" />
         </label>
 
-        <h2>Widgets</h2>
-        {{ numSelectedWidgets }} selected:
+        <h2 class="font-bold">Widgets</h2>
         <button @click="handleDelete" class="p-2 bg-red-400 disabled:opacity-50" :disabled="numSelectedWidgets === 0">Delete</button>
-        <div class="flex flex-row flex-wrap">
+        <div v-if="numSelectedWidgets === 0" class="">
           <component
             v-for="component in widgetMenuBtnComponents"
             :key="component.name"

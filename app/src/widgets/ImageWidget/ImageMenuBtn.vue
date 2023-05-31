@@ -3,6 +3,7 @@ import { DEFAULT_WIDGET_COLOR, EWidgetType } from '@/constants/widget';
 import { EImageWidgetBackgroundSize, EImageWidgetBackgroundPosition, EImageWidgetBackgroundRepeat } from './constants';
 import type { IBaseImageWidget } from './types';
 import SpaceMenuBtn from '@/components/SpaceMenuBtn.vue';
+import { ImageIcon } from 'lucide-vue-next';
 
 const defaultWidget: IBaseImageWidget = {
   widget_type: EWidgetType.IMAGE,
@@ -26,7 +27,12 @@ const defaultWidget: IBaseImageWidget = {
 
 <template>
   <SpaceMenuBtn :defaultWidget="defaultWidget">
-    Image
+    <template #icon>
+      <ImageIcon class="h-full w-auto" />
+    </template>
+    <template #label>
+      Image
+    </template>
   </SpaceMenuBtn>
 </template>
 

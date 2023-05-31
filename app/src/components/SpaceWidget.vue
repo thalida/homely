@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, ref, watch, type PropType } from 'vue'
 import { useSpaceStore } from '@/stores/space';
 import { useWidgetStore } from '@/stores/widget'
-import { EWidgetColorNames } from '@/constants/widget';
+import { EWidgetColorNames, EWidgetType } from '@/constants/widget';
 import { cardComponentsByType } from '@/widgets'
+import type { IWidget } from '@/types/widget';
 
 const spaceStore = useSpaceStore()
 const widgetStore = useWidgetStore()
@@ -12,19 +13,29 @@ const props = defineProps({
   widgetId: {
     type: String,
     required: true
+  },
+  isPlaceholder: {
+    type: Boolean,
+    required: false,
+    default: false
+  },
+  placeholderWidget: {
+    type: Object as PropType<IWidget>,
+    required: false,
+    default: null
   }
 })
 
 const widget = computed(() => {
-  return widgetStore.getWidgetById(props.widgetId)
+  return props.isPlaceholder ? props.placeholderWidget : widgetStore.getWidgetById(props.widgetId)
 })
 
 const isSelected = computed(() => {
-  return widget.value ? widget.value.state.selected : false;
+  return widget.value && widget.value.state ? widget.value.state.selected : false;
 })
 
 const isDeleted = computed(() => {
-  return widget.value ? widget.value.state.deleted : false;
+  return widget.value && widget.value.state  ? widget.value.state.deleted : false;
 })
 
 const component = computed(() => {
@@ -65,28 +76,38 @@ watch(() => widget.value?.card_style, (after, before) => {
 })
 
 function handleWidgetClick() {
-  if (!spaceStore.isEditMode) {
+  if (!widget.value) {
     return
   }
 
-  if (widget.value) {
-    widgetStore.unselectAllWidgets(widget.value.space)
-    widgetStore.selectWidgetById(props.widgetId)
+  let isEditable = spaceStore.isEditMode
+
+  if (widget.value.widget_type === EWidgetType.TEXT) {
+    isEditable = isEditable || widget.value?.content?.isInteractive
   }
+
+  if (!isEditable) {
+    widgetStore.unselectAllWidgets(widget.value.space)
+    return
+  }
+
+  widgetStore.unselectAllWidgets(widget.value.space)
+  widgetStore.selectWidgetById(props.widgetId)
 }
 </script>
 
 <template>
   <template v-if="isRenderable">
     <component
-      :id='`widget-${props.widgetId}`'
       :is="component"
       v-bind="$attrs"
       :widgetId="props.widgetId"
+      :isPlaceholder="props.isPlaceholder"
+      :placeholderWidget="props.placeholderWidget"
       @click="handleWidgetClick"
       class="space-widget rounded-2xl w-full h-full overflow-auto"
       :class="{
-          'ring-2 ring-yellow-500': isSelected,
+          'ring-4 ring-yellow-500 drop-shadow-lg': isSelected,
           'widget-theme-red': widget.card_style.background_color === EWidgetColorNames.RED,
           'widget-theme-orange': widget.card_style.background_color === EWidgetColorNames.ORANGE,
           'widget-theme-yellow': widget.card_style.background_color === EWidgetColorNames.YELLOW,
@@ -102,7 +123,7 @@ function handleWidgetClick() {
         }"
     />
     <teleport to="#space__shared-widget-menu">
-      <div v-if="widget.state.selected">
+      <div v-if="isSelected">
         <label>
           <span>Card Color</span>
           <select

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, onBeforeUnmount, watchEffect, ref } from 'vue'
+import { computed, onMounted, onBeforeUnmount, watchEffect, ref, type PropType } from 'vue'
 import { useWidgetStore } from '@/stores/widget'
 import { useDateTimeStore } from '@/stores/datetime'
 import DateTimeCardRow from './DateTimeCardRow.vue';
@@ -11,13 +11,23 @@ const props = defineProps({
     type: String,
     required: false,
     default: null
+  },
+  isPlaceholder: {
+    type: Boolean,
+    required: false,
+    default: false
+  },
+  placeholderWidget: {
+    type: Object as PropType<TDateTimeWidget>,
+    required: false,
+    default: null
   }
 })
 
 const widgetStore = useWidgetStore()
 const dateTimeStore = useDateTimeStore()
 const widget = computed(() => {
-  return widgetStore.getWidgetById(props.widgetId) as TDateTimeWidget
+  return props.isPlaceholder ? props.placeholderWidget : widgetStore.getWidgetById(props.widgetId) as TDateTimeWidget
 })
 const widgetId = ref<string | null>(null)
 

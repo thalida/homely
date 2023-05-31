@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, type PropType } from 'vue'
 import { useWidgetStore } from '@/stores/widget'
 import { ImageOffIcon } from 'lucide-vue-next'
 import ImageMenuSettings from './ImageMenuSettings.vue';
@@ -11,12 +11,22 @@ const props = defineProps({
     type: String,
     required: false,
     default: null
-  }
+  },
+  isPlaceholder: {
+    type: Boolean,
+    required: false,
+    default: false
+  },
+  placeholderWidget: {
+    type: Object as PropType<TImageWidget>,
+    required: false,
+    default: null
+  },
 })
 
 const widgetStore = useWidgetStore()
 const widget = computed(() => {
-  return widgetStore.getWidgetById(props.widgetId) as TImageWidget;
+  return props.isPlaceholder ? props.placeholderWidget : widgetStore.getWidgetById(props.widgetId) as TImageWidget;
 })
 const bgPositionStyle = computed(() => {
   return widget.value.content.backgroundPosition.replace('-', ' ')

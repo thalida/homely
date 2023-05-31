@@ -76,10 +76,10 @@ const debouceResizeEnd = debounce(resizeEnd, 200)
 
 function handleSpaceClick(e: Event) {
   const target = e.target as HTMLElement
-  const isGridElement = target.classList.contains('grid-layout')
-  const isWrapper = target.classList.contains('space-layout')
+  const isGridStack = target.classList.contains('grid-stack')
+  const isSpaceLayout = target.classList.contains('space-layout')
 
-  if (isGridElement || isWrapper) {
+  if (isGridStack || isSpaceLayout) {
     widgetsStore.unselectAllWidgets(props.spaceId)
   }
 }
@@ -234,7 +234,6 @@ function handleGridChange(event: Event, items: GridStackNode[]) {
 <style>
 .is-editing .grid-stack{
   margin-right: 320px;
-  margin-bottom: 320px;
 }
 .grid-stack>.grid-stack-item>.grid-stack-item-content {
   overflow: visible;

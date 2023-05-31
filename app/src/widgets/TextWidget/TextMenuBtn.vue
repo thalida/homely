@@ -2,6 +2,7 @@
 import { DEFAULT_WIDGET_COLOR, EWidgetType } from '@/constants/widget';
 import type { IBaseTextWidget } from './types';
 import SpaceMenuBtn from '@/components/SpaceMenuBtn.vue';
+import { TextIcon } from 'lucide-vue-next';
 
 const defaultWidget: IBaseTextWidget = {
   widget_type: EWidgetType.TEXT,
@@ -28,7 +29,12 @@ const defaultWidget: IBaseTextWidget = {
 
 <template>
   <SpaceMenuBtn :defaultWidget="defaultWidget">
-    Text
+    <template #icon>
+      <TextIcon class="h-full w-auto" />
+    </template>
+    <template #label>
+      Text
+    </template>
   </SpaceMenuBtn>
 </template>
 

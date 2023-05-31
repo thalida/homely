@@ -3,6 +3,7 @@ import { DEFAULT_WIDGET_COLOR, EWidgetType } from '@/constants/widget';
 import type { IBaseWeatherWidget } from './types';
 import { EWeatherWidgetStyle, EWeatherWidgetUnits } from './constants';
 import SpaceMenuBtn from '@/components/SpaceMenuBtn.vue';
+import { SunIcon } from 'lucide-vue-next';
 
 const defaultWidget: IBaseWeatherWidget = {
   widget_type: EWidgetType.WEATHER,
@@ -37,7 +38,12 @@ const defaultWidget: IBaseWeatherWidget = {
 
 <template>
   <SpaceMenuBtn :defaultWidget="defaultWidget">
-    Weather
+    <template #icon>
+      <SunIcon class="h-full w-auto" />
+    </template>
+    <template #label>
+      Weather
+    </template>
   </SpaceMenuBtn>
 </template>
 
