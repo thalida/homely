@@ -9,7 +9,7 @@ import { useSpaceStore } from '@/stores/space';
 import { useWidgetStore } from '@/stores/widget';
 import { useThemeStore } from '@/stores/theme';
 import { widgetMenuBtnComponents } from '@/widgets'
-import { EAppTheme } from '@/enums/themes';
+import { EAppTheme } from '@/constants/themes';
 import router from '@/router';
 
 const userStore = useUserStore();

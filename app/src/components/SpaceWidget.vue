@@ -2,7 +2,7 @@
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { useSpaceStore } from '@/stores/space';
 import { useWidgetStore } from '@/stores/widget'
-import { EWidgetColorNames } from '@/enums/widget';
+import { EWidgetColorNames } from '@/constants/widget';
 import { cardComponentsByType } from '@/widgets'
 
 const spaceStore = useSpaceStore()

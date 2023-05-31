@@ -1,4 +1,4 @@
-import { EWidgetType } from "@/enums/widget";
+import { EWidgetType } from "@/constants/widget";
 import type { IWidgetDefinition } from "@/types/widget";
 import ImageCard from "./ImageCard.vue";
 import ImageMenuBtn from "./ImageMenuBtn.vue";

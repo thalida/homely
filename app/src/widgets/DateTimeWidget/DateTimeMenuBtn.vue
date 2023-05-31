@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { DEFAULT_WIDGET_COLOR, EWidgetType } from '@/enums/widget';
+import { DEFAULT_WIDGET_COLOR, EWidgetType } from '@/constants/widget';
 import type { IBaseDateTimeWidget } from './types';
 import SpaceMenuBtn from '@/components/SpaceMenuBtn.vue';
 

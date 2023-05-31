@@ -1,4 +1,4 @@
-import type { EWidgetColorNames, EWidgetType } from '@/enums/widget'
+import type { EWidgetColorNames, EWidgetType } from '@/constants/widget'
 import type { Component } from 'vue'
 
 export interface IWidgetDefinition {

@@ -1,5 +1,5 @@
 import type { Component } from 'vue'
-import type { EWidgetType } from '@/enums/widget'
+import type { EWidgetType } from '@/constants/widget'
 import LinkWidget from './LinkWidget'
 import TextWidget from './TextWidget'
 import ImageWidget from './ImageWidget'

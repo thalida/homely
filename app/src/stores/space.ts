@@ -15,7 +15,7 @@ import {
   toggleSpaceBookmark,
 } from '@/api/space'
 import { randomItemFromArray } from '@/utils/array'
-import { HOME_TERMS, SPACE_TERMS } from '@/enums/space'
+import { HOME_TERMS, SPACE_TERMS } from '@/constants/space'
 import { updateUser } from '@/api/user'
 
 export const useSpaceStore = defineStore('space', () => {
