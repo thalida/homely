@@ -220,12 +220,11 @@ export const useWidgetStore = defineStore('widget', () => {
         ...omit(widget, ['state']),
       });
 
+      collection.value[widget.uid].state.dirty = false
       collection.value[widget.uid] = {
         ...widget,
         ...updatedWidget
       }
-
-      collection.value[widget.uid].state.dirty = false
     }
 
     isSaving.value = false

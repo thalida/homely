@@ -97,7 +97,7 @@ provide('spaceGridRef', spaceGridRef)
     height: 100%;
   }
   &:before {
-    background: linear-gradient(120deg, rgb(9 0 47 / 60%) , rgb(0 0 0 / 0%))
+    background: linear-gradient(120deg, rgb(46 39 76 / 60%) , rgb(0 0 0 / 0%));
   }
   &:after {
     background: linear-gradient(240deg, rgb(22 22 45 / 60%) , rgb(0 0 0 / 0%))

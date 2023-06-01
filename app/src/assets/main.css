@@ -401,11 +401,11 @@ body {
 }
 
 .widget-theme-dark-gradient,
-.widget-theme-dynamic-gradient
+.widget-theme-dynamic-gradient,
 .light .widget-theme-dynamic-gradient {
   &.widget-theme-bg,
   .widget-theme-bg {
-    background: linear-gradient(140deg, theme(colors.blue.950), theme(colors.indigo.950), theme(colors.slate.900));
+    background: linear-gradient(140deg, theme(colors.indigo.950), theme(colors.violet.950), theme(colors.blue.900));
   }
 
   &.widget-theme-text,
@@ -415,7 +415,7 @@ body {
 
   .widget-pill,
   .widget-pill-group {
-    background: linear-gradient(140deg, theme(colors.blue.950), theme(colors.indigo.950), theme(colors.slate.900));
+    background: linear-gradient(140deg, theme(colors.indigo.950), theme(colors.violet.950), theme(colors.blue.900));
     color: theme(colors.slate.100);
   }
 
