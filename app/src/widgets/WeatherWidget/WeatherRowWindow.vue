@@ -8,6 +8,8 @@ import { getColorGradient } from '@/utils/datetime';
 import { defaultLottieMap } from './assets';
 import type { IWeatherWidgetItem } from './types';
 import { formatTemp } from '@/utils/weather';
+import { Vue3Lottie } from 'vue3-lottie'
+import 'vue3-lottie/dist/style.css'
 
 const props = defineProps({
   widgetId: {
