@@ -14,7 +14,7 @@ body {
   padding: 0;
   height: 100vh;
   width: 100vw;
-  background: #ffd844;
+  background: #fff2e7;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -30,261 +30,396 @@ body {
   }
 }
 
-@layer utilities {
-  .widget-theme-red {
-    &.widget-theme-bg,
-    .widget-theme-bg {
-      background-color: theme(colors.red.300);
-    }
-
-    &.widget-theme-text,
-    .widget-theme-text {
-      color: theme(colors.red.950);
-    }
-
-    .widget-pill,
-    .widget-pill-group {
-      background-color: theme(colors.red.300);
-      color: theme(colors.red.800);
-    }
-
-    .widget-pill-group {
-      @apply divide-red-200;
-    }
+.widget-theme-red {
+  &.widget-theme-bg,
+  .widget-theme-bg {
+    background-color: theme(colors.red.300);
   }
 
-  .widget-theme-orange {
-    &.widget-theme-bg,
-    .widget-theme-bg {
-      background-color: theme(colors.orange.300);
-    }
-
-    &.widget-theme-text,
-    .widget-theme-text {
-      color: theme(colors.orange.950);
-    }
-
-    .widget-pill,
-    .widget-pill-group {
-      background-color: theme(colors.orange.300);
-      color: theme(colors.orange.900);
-    }
-
-    .widget-pill-group {
-      @apply divide-orange-200;
-    }
+  &.widget-theme-text,
+  .widget-theme-text {
+    color: theme(colors.red.950);
   }
 
-  .widget-theme-yellow {
-    &.widget-theme-bg,
-    .widget-theme-bg {
-      background-color: theme(colors.yellow.300);
-    }
-
-    &.widget-theme-text,
-    .widget-theme-text {
-      color: theme(colors.yellow.950);
-    }
-
-    .widget-pill,
-    .widget-pill-group {
-      background-color: theme(colors.yellow.300);
-      color: theme(colors.yellow.900);
-    }
-
-    .widget-pill-group {
-      @apply divide-yellow-200;
-    }
+  .widget-pill,
+  .widget-pill-group {
+    background-color: theme(colors.red.300);
+    color: theme(colors.red.800);
   }
 
-  .widget-theme-green {
-    &.widget-theme-bg,
-    .widget-theme-bg {
-      background-color: theme(colors.green.300);
-    }
+  .widget-pill-group {
+    @apply divide-red-200;
+  }
+}
 
-    &.widget-theme-text,
-    .widget-theme-text {
-      color: theme(colors.green.950);
-    }
-
-    .widget-pill,
-    .widget-pill-group {
-      background-color: theme(colors.green.300);
-      color: theme(colors.green.900);
-    }
-
-    .widget-pill-group {
-      @apply divide-green-200;
-    }
+.widget-theme-orange {
+  &.widget-theme-bg,
+  .widget-theme-bg {
+    background-color: theme(colors.orange.300);
   }
 
-  .widget-theme-blue {
-    &.widget-theme-bg,
-    .widget-theme-bg {
-      background-color: theme(colors.teal.300);
-    }
-
-    &.widget-theme-text,
-    .widget-theme-text {
-      color: theme(colors.teal.950);
-    }
-
-    .widget-pill,
-    .widget-pill-group {
-      background-color: theme(colors.teal.300);
-      color: theme(colors.teal.900);
-    }
-
-    .widget-pill-group {
-      @apply divide-teal-200;
-    }
+  &.widget-theme-text,
+  .widget-theme-text {
+    color: theme(colors.orange.950);
   }
 
-  .widget-theme-purple {
-    &.widget-theme-bg,
-    .widget-theme-bg {
-      background-color: theme(colors.indigo.300);
-    }
-
-    &.widget-theme-text,
-    .widget-theme-text {
-      color: theme(colors.indigo.950);
-    }
-
-    .widget-pill,
-    .widget-pill-group {
-      background-color: theme(colors.indigo.300);
-      color: theme(colors.indigo.900);
-    }
-
-    .widget-pill-group {
-      @apply divide-indigo-200;
-    }
+  .widget-pill,
+  .widget-pill-group {
+    background-color: theme(colors.orange.300);
+    color: theme(colors.orange.900);
   }
 
-  .widget-theme-pink {
-    &.widget-theme-bg,
-    .widget-theme-bg {
-      background-color: theme(colors.pink.300);
-    }
+  .widget-pill-group {
+    @apply divide-orange-200;
+  }
+}
 
-     &.widget-theme-text,
-    .widget-theme-text {
-      color: theme(colors.pink.950);
-    }
-
-    .widget-pill,
-    .widget-pill-group {
-      background-color: theme(colors.pink.300);
-      color: theme(colors.pink.900);
-    }
-
-    .widget-pill-group {
-      @apply divide-pink-200;
-    }
+.widget-theme-yellow {
+  &.widget-theme-bg,
+  .widget-theme-bg {
+    background-color: theme(colors.yellow.300);
   }
 
-  .widget-theme-gray {
-    &.widget-theme-bg,
-    .widget-theme-bg {
-      background-color: theme(colors.slate.300);
-    }
-
-    &.widget-theme-text,
-    .widget-theme-text {
-      color: theme(colors.slate.950);
-    }
-
-    .widget-pill,
-    .widget-pill-group {
-      background-color: theme(colors.slate.300);
-      color: theme(colors.slate.900);
-    }
-
-    .widget-pill-group {
-      @apply divide-slate-200;
-    }
+  &.widget-theme-text,
+  .widget-theme-text {
+    color: theme(colors.yellow.950);
   }
 
-  .widget-theme-black,
-  .widget-theme-dynamic,
-  .light .widget-theme-dynamic {
-    &.widget-theme-bg,
-    .widget-theme-bg {
-      background-color: theme(colors.slate.900);
-    }
-
-    &.widget-theme-text,
-    .widget-theme-text {
-      color: theme(colors.slate.100);
-    }
-
-    .widget-pill,
-    .widget-pill-group {
-      background-color: theme(colors.slate.900);
-      color: theme(colors.slate.100);
-    }
-
-    .widget-pill-group {
-      @apply divide-slate-950;
-    }
+  .widget-pill,
+  .widget-pill-group {
+    background-color: theme(colors.yellow.300);
+    color: theme(colors.yellow.900);
   }
 
-  .widget-theme-white,
-  .dark .widget-theme-dynamic {
-    &.widget-theme-bg,
-    .widget-theme-bg {
-      background-color: theme(colors.slate.100);
-    }
+  .widget-pill-group {
+    @apply divide-yellow-200;
+  }
+}
 
-    &.widget-theme-text,
-    .widget-theme-text {
-      color: theme(colors.slate.900);
-    }
-
-    .widget-pill,
-    .widget-pill-group {
-      background-color: theme(colors.slate.100);
-      color: theme(colors.slate.900);
-    }
-
-    .widget-pill-group {
-      @apply divide-slate-200;
-    }
+.widget-theme-green {
+  &.widget-theme-bg,
+  .widget-theme-bg {
+    background-color: theme(colors.green.300);
   }
 
-  .widget-theme-transparent {
-    &.widget-theme-bg,
-    .widget-theme-bg {
-      background-color: transparent;
-    }
-
-    &.widget-theme-text,
-    .widget-theme-text {
-      color: theme(colors.slate.900);
-    }
-
-    .widget-pill,
-    .widget-pill-group {
-      background-color: transparent;
-      color: theme(colors.slate.900);
-    }
-
-    .widget-pill-group {
-      @apply divide-transparent;
-    }
+  &.widget-theme-text,
+  .widget-theme-text {
+    color: theme(colors.green.950);
   }
 
-  .dark .widget-theme-transparent {
-    &.widget-theme-text,
-    .widget-theme-text {
-      color: theme(colors.slate.100);
-    }
+  .widget-pill,
+  .widget-pill-group {
+    background-color: theme(colors.green.300);
+    color: theme(colors.green.900);
+  }
 
-    .widget-pill,
-    .widget-pill-group {
-      color: theme(colors.slate.100);
-    }
+  .widget-pill-group {
+    @apply divide-green-200;
+  }
+}
+
+.widget-theme-blue {
+  &.widget-theme-bg,
+  .widget-theme-bg {
+    background-color: theme(colors.teal.300);
+  }
+
+  &.widget-theme-text,
+  .widget-theme-text {
+    color: theme(colors.teal.950);
+  }
+
+  .widget-pill,
+  .widget-pill-group {
+    background-color: theme(colors.teal.300);
+    color: theme(colors.teal.900);
+  }
+
+  .widget-pill-group {
+    @apply divide-teal-200;
+  }
+}
+
+.widget-theme-purple {
+  &.widget-theme-bg,
+  .widget-theme-bg {
+    background-color: theme(colors.indigo.300);
+  }
+
+  &.widget-theme-text,
+  .widget-theme-text {
+    color: theme(colors.indigo.950);
+  }
+
+  .widget-pill,
+  .widget-pill-group {
+    background-color: theme(colors.indigo.300);
+    color: theme(colors.indigo.900);
+  }
+
+  .widget-pill-group {
+    @apply divide-indigo-200;
+  }
+}
+
+.widget-theme-pink {
+  &.widget-theme-bg,
+  .widget-theme-bg {
+    background-color: theme(colors.pink.300);
+  }
+
+   &.widget-theme-text,
+  .widget-theme-text {
+    color: theme(colors.pink.950);
+  }
+
+  .widget-pill,
+  .widget-pill-group {
+    background-color: theme(colors.pink.300);
+    color: theme(colors.pink.900);
+  }
+
+  .widget-pill-group {
+    @apply divide-pink-200;
+  }
+}
+
+.widget-theme-gray {
+  &.widget-theme-bg,
+  .widget-theme-bg {
+    background-color: theme(colors.slate.300);
+  }
+
+  &.widget-theme-text,
+  .widget-theme-text {
+    color: theme(colors.slate.950);
+  }
+
+  .widget-pill,
+  .widget-pill-group {
+    background-color: theme(colors.slate.300);
+    color: theme(colors.slate.900);
+  }
+
+  .widget-pill-group {
+    @apply divide-slate-200;
+  }
+}
+
+.widget-theme-transparent {
+  &.widget-theme-bg,
+  .widget-theme-bg {
+    background-color: transparent;
+  }
+
+  &.widget-theme-text,
+  .widget-theme-text {
+    color: theme(colors.slate.900);
+  }
+
+  .widget-pill,
+  .widget-pill-group {
+    background-color: transparent;
+    color: theme(colors.slate.900);
+  }
+
+  .widget-pill-group {
+    @apply divide-transparent;
+  }
+}
+
+.dark .widget-theme-transparent {
+  &.widget-theme-text,
+  .widget-theme-text {
+    color: theme(colors.slate.100);
+  }
+
+  .widget-pill,
+  .widget-pill-group {
+    color: theme(colors.slate.100);
+  }
+}
+
+.widget-theme-light,
+.dark .widget-theme-dynamic {
+  &.widget-theme-bg,
+  .widget-theme-bg {
+    background-color: theme(colors.slate.100);
+  }
+
+  &.widget-theme-text,
+  .widget-theme-text {
+    color: theme(colors.slate.900);
+  }
+
+  .widget-pill,
+  .widget-pill-group {
+    background-color: theme(colors.slate.100);
+    color: theme(colors.slate.900);
+  }
+
+  .widget-pill-group {
+    @apply divide-slate-200;
+  }
+}
+
+.widget-theme-dark,
+.widget-theme-dynamic,
+.light .widget-theme-dynamic {
+  &.widget-theme-bg,
+  .widget-theme-bg {
+    background-color: theme(colors.slate.900);
+  }
+
+  &.widget-theme-text,
+  .widget-theme-text {
+    color: theme(colors.slate.100);
+  }
+
+  .widget-pill,
+  .widget-pill-group {
+    background-color: theme(colors.slate.900);
+    color: theme(colors.slate.100);
+  }
+
+  .widget-pill-group {
+    @apply divide-slate-950;
+  }
+}
+
+.widget-theme-roy-gradient {
+  &.widget-theme-bg,
+  .widget-theme-bg {
+    background: linear-gradient(140deg, theme(colors.red.300), theme(colors.orange.300), theme(colors.yellow.300));
+  }
+
+  &.widget-theme-text,
+  .widget-theme-text {
+    color: theme(colors.slate.900);
+  }
+
+  .widget-pill,
+  .widget-pill-group {
+    background: linear-gradient(140deg, theme(colors.red.300), theme(colors.orange.300), theme(colors.yellow.300));
+    color: theme(colors.slate.900);
+  }
+
+  .widget-pill-group {
+    @apply divide-orange-200;
+  }
+}
+
+.widget-theme-ygb-gradient {
+  &.widget-theme-bg,
+  .widget-theme-bg {
+    background: linear-gradient(140deg, theme(colors.yellow.300), theme(colors.green.300), theme(colors.blue.300));
+  }
+
+  &.widget-theme-text,
+  .widget-theme-text {
+    color: theme(colors.slate.900);
+  }
+
+  .widget-pill,
+  .widget-pill-group {
+    background: linear-gradient(140deg, theme(colors.yellow.300), theme(colors.green.300), theme(colors.blue.300));
+    color: theme(colors.slate.900);
+  }
+
+  .widget-pill-group {
+    @apply divide-green-200;
+  }
+}
+
+.widget-theme-bpp-gradient {
+  &.widget-theme-bg,
+  .widget-theme-bg {
+    background: linear-gradient(140deg, theme(colors.blue.300), theme(colors.purple.300), theme(colors.pink.300));
+  }
+
+  &.widget-theme-text,
+  .widget-theme-text {
+    color: theme(colors.slate.900);
+  }
+
+  .widget-pill,
+  .widget-pill-group {
+    background: linear-gradient(140deg, theme(colors.blue.300), theme(colors.purple.300), theme(colors.pink.300));
+    color: theme(colors.slate.900);
+  }
+
+  .widget-pill-group {
+    @apply divide-purple-200;
+  }
+}
+
+
+
+.widget-theme-gray-gradient {
+  &.widget-theme-bg,
+  .widget-theme-bg {
+    background: linear-gradient(140deg, theme(colors.zinc.300), theme(colors.slate.300), theme(colors.gray.400));
+  }
+
+  &.widget-theme-text,
+  .widget-theme-text {
+    color: theme(colors.slate.900);
+  }
+
+  .widget-pill,
+  .widget-pill-group {
+    background: linear-gradient(140deg, theme(colors.zinc.300), theme(colors.slate.300), theme(colors.gray.400));
+    color: theme(colors.slate.900);
+  }
+
+  .widget-pill-group {
+    @apply divide-slate-200;
+  }
+}
+
+.widget-theme-light-gradient,
+.dark .widget-theme-dynamic-gradient {
+  &.widget-theme-bg,
+  .widget-theme-bg {
+    background: linear-gradient(140deg, theme(colors.lime.100), theme(colors.cyan.100), theme(colors.indigo.100));
+  }
+
+  &.widget-theme-text,
+  .widget-theme-text {
+    color: theme(colors.slate.900);
+  }
+
+  .widget-pill,
+  .widget-pill-group {
+    background: linear-gradient(140deg, theme(colors.lime.100), theme(colors.cyan.100), theme(colors.indigo.100));
+    color: theme(colors.slate.900);
+  }
+
+  .widget-pill-group {
+    @apply divide-slate-200;
+  }
+}
+
+.widget-theme-dark-gradient,
+.widget-theme-dynamic-gradient
+.light .widget-theme-dynamic-gradient {
+  &.widget-theme-bg,
+  .widget-theme-bg {
+    background: linear-gradient(140deg, theme(colors.blue.950), theme(colors.indigo.950), theme(colors.slate.900));
+  }
+
+  &.widget-theme-text,
+  .widget-theme-text {
+    color: theme(colors.slate.100);
+  }
+
+  .widget-pill,
+  .widget-pill-group {
+    background: linear-gradient(140deg, theme(colors.blue.950), theme(colors.indigo.950), theme(colors.slate.900));
+    color: theme(colors.slate.100);
+  }
+
+  .widget-pill-group {
+    @apply divide-indigo-900;
   }
 }

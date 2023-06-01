@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { DEFAULT_WIDGET_COLOR, EWidgetType } from '@/constants/widget';
+import { EWidgetType } from '@/constants/widget';
+import { DEFAULT_WIDGET_COLOR } from '@/constants/theme';
 import type { IBaseWeatherWidget } from './types';
 import { EWeatherWidgetStyle, EWeatherWidgetUnits } from './constants';
 import SpaceMenuBtn from '@/components/SpaceMenuBtn.vue';

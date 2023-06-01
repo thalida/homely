@@ -39,25 +39,29 @@ const hasImage = computed(() => {
 <template>
   <div
     v-bind="$attrs"
-    class="widget-theme-bg widget-theme-text flex"
-    :class="[
-      {
-        'items-center justify-center': !hasImage,
-        'bg-auto': widget.content.backgroundSize === EImageWidgetBackgroundSize.AUTO,
-        'bg-contain': widget.content.backgroundSize === EImageWidgetBackgroundSize.CONTAIN,
-        'bg-cover': widget.content.backgroundSize === EImageWidgetBackgroundSize.COVER,
-        'bg-repeat': widget.content.backgroundRepeat === EImageWidgetBackgroundRepeat.REPEAT,
-        'bg-repeat-x': widget.content.backgroundRepeat === EImageWidgetBackgroundRepeat.REPEAT_X,
-        'bg-repeat-y': widget.content.backgroundRepeat === EImageWidgetBackgroundRepeat.REPEAT_Y,
-        'bg-no-repeat': widget.content.backgroundRepeat === EImageWidgetBackgroundRepeat.NO_REPEAT,
-      },
-    ]"
-    :style="{
-      'background-image': widget.content.url ? 'url(' + widget.content.url + ')' : 'none',
-      'background-position': bgPositionStyle,
-    }"
+    class="widget-theme-bg widget-theme-text flex flex-col items-center justify-center"
   >
-    <ImageOffIcon v-if="!hasImage" />
+    <div
+      class="flex w-full h-full"
+      :class="[
+        {
+          'items-center justify-center': !hasImage,
+          'bg-auto': widget.content.backgroundSize === EImageWidgetBackgroundSize.AUTO,
+          'bg-contain': widget.content.backgroundSize === EImageWidgetBackgroundSize.CONTAIN,
+          'bg-cover': widget.content.backgroundSize === EImageWidgetBackgroundSize.COVER,
+          'bg-repeat': widget.content.backgroundRepeat === EImageWidgetBackgroundRepeat.REPEAT,
+          'bg-repeat-x': widget.content.backgroundRepeat === EImageWidgetBackgroundRepeat.REPEAT_X,
+          'bg-repeat-y': widget.content.backgroundRepeat === EImageWidgetBackgroundRepeat.REPEAT_Y,
+          'bg-no-repeat': widget.content.backgroundRepeat === EImageWidgetBackgroundRepeat.NO_REPEAT,
+        },
+      ]"
+      :style="{
+        'background-image': widget.content.url ? 'url(' + widget.content.url + ')' : 'none',
+        'background-position': bgPositionStyle,
+      }"
+    >
+      <ImageOffIcon v-if="!hasImage" />
+    </div>
   </div>
   <teleport to="#space__widget-menu">
     <ImageMenuSettings v-if="widgetId" :widgetId="widgetId" />

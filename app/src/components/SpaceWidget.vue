@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, ref, watch, type PropType, type Component, type Ref } from 'vue'
+import { computed, onBeforeUnmount, ref, watch, type PropType, type Ref } from 'vue'
 import { useSpaceStore } from '@/stores/space';
 import { useWidgetStore } from '@/stores/widget'
-import { EWidgetColorNames, EWidgetType } from '@/constants/widget';
+import { ESpaceTheme } from '@/constants/theme';
 import { cardComponentsByType } from '@/widgets'
 import type { IWidget } from '@/types/widget';
 
@@ -51,7 +51,11 @@ const isRenderable = computed(() => {
   return component.value !== null && !isDeleted.value
 })
 
-const supportedColors = ref(Object.values(EWidgetColorNames))
+const supportedColors = ref(Object.values(ESpaceTheme))
+
+const widgetThemeClass = computed(() => {
+  return `widget-theme-${widget.value?.card_style.background_color}`
+})
 
 onBeforeUnmount(() => {
   widgetStore.unselectWidgetById(props.widgetId)
@@ -62,6 +66,10 @@ watch(() => widget.value?.content, (after, before) => {
     return
   }
 
+  if (!spaceStore.isEditMode) {
+    return
+  }
+
   widgetStore.markWidgetAsDirty(props.widgetId)
 }, {
   deep: true
@@ -69,6 +77,10 @@ watch(() => widget.value?.content, (after, before) => {
 
 watch(() => widget.value?.card_style, (after, before) => {
   if (typeof before === 'undefined' || typeof after === 'undefined') {
+    return
+  }
+
+  if (!spaceStore.isEditMode) {
     return
   }
 
@@ -109,21 +121,9 @@ function handleWidgetClick() {
       :placeholderWidget="props.placeholderWidget"
       @click="handleWidgetClick"
       class="space-widget rounded-2xl w-full h-full overflow-auto"
-      :class="{
+      :class="[{
           'ring-4 ring-yellow-500 drop-shadow-lg': isSelected,
-          'widget-theme-red': widget.card_style.background_color === EWidgetColorNames.RED,
-          'widget-theme-orange': widget.card_style.background_color === EWidgetColorNames.ORANGE,
-          'widget-theme-yellow': widget.card_style.background_color === EWidgetColorNames.YELLOW,
-          'widget-theme-green': widget.card_style.background_color === EWidgetColorNames.GREEN,
-          'widget-theme-blue': widget.card_style.background_color === EWidgetColorNames.BLUE,
-          'widget-theme-purple': widget.card_style.background_color === EWidgetColorNames.PURPLE,
-          'widget-theme-pink': widget.card_style.background_color === EWidgetColorNames.PINK,
-          'widget-theme-white': widget.card_style.background_color === EWidgetColorNames.WHITE,
-          'widget-theme-gray': widget.card_style.background_color === EWidgetColorNames.GRAY,
-          'widget-theme-black': widget.card_style.background_color === EWidgetColorNames.BLACK,
-          'widget-theme-transparent': widget.card_style.background_color === EWidgetColorNames.TRANSPARENT,
-          'widget-theme-dynamic': widget.card_style.background_color === EWidgetColorNames.DYNAMIC,
-        }"
+      }, widgetThemeClass]"
     />
     <teleport to="#space__shared-widget-menu">
       <div v-if="!isPlaceholder && isSelected">

@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { watchEffect, type Ref, ref, computed } from 'vue';
 import { useLocalStorage } from '@vueuse/core';
-import { EAppTheme } from '@/constants/themes';
+import { EAppTheme } from '@/constants/theme';
 
 export const useThemeStore = defineStore('theme', () => {
   const appTheme: Ref<string> = useLocalStorage('homely/space/appTheme', EAppTheme.SYSTEM);

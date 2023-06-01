@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { DEFAULT_WIDGET_COLOR, EWidgetType } from '@/constants/widget';
+import { EWidgetType } from '@/constants/widget';
+import { DEFAULT_WIDGET_COLOR } from '@/constants/theme';
 import type { IBaseDateTimeWidget } from './types';
 import SpaceMenuBtn from '@/components/SpaceMenuBtn.vue';
 import { CalendarClockIcon } from 'lucide-vue-next';
-import DateTimeCard from './DateTimeCard.vue';
 
 const defaultWidget: IBaseDateTimeWidget = {
   widget_type: EWidgetType.DATETIME,

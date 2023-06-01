@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { DEFAULT_WIDGET_COLOR, EWidgetType } from '@/constants/widget';
+import { EWidgetType } from '@/constants/widget';
+import { DEFAULT_WIDGET_COLOR } from '@/constants/theme';
 import type { IBaseTextWidget } from './types';
 import SpaceMenuBtn from '@/components/SpaceMenuBtn.vue';
 import { TextIcon } from 'lucide-vue-next';

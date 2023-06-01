@@ -1,4 +1,5 @@
-import type { EWidgetColorNames, EWidgetType } from '@/constants/widget'
+import type { ESpaceTheme } from '@/constants/theme'
+import type { EWidgetType } from '@/constants/widget'
 import type { Component } from 'vue'
 
 export interface IWidgetDefinition {
@@ -17,7 +18,7 @@ export interface IBaseWidget {
   layout: IBaseWidgetLayout,
   content: Record<string, any>
   card_style: {
-    background_color: EWidgetColorNames,
+    background_color: ESpaceTheme,
   },
   link?: string | null,
 }
