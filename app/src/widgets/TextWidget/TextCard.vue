@@ -56,6 +56,18 @@ const isSpaceOwner = computed(() => {
   return space.value?.owner === userStore.user?.pk
 })
 
+const isEditable = computed(() => {
+  if (!widget.value) {
+    return false
+  }
+
+  if (!widget.value.content) {
+    return false
+  }
+
+  return isSpaceOwner.value && (isEditMode.value || widget.value.content.isInteractive)
+})
+
 const selectedFontSpecs = computed(() => {
   if (widget.value.content.fontFamily === null || widget.value.content.fontVariant === null) {
     return null
@@ -101,7 +113,7 @@ const parsedFontStyle = computed(() => {
 })
 
 const editor = useEditor({
-  editable: isSpaceOwner.value && (isEditMode.value || widget.value?.content?.isInteractive),
+  editable: isEditable.value,
   extensions: [
     StarterKit.configure({
       blockquote: false,
@@ -130,8 +142,7 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
-  const editable = isSpaceOwner.value && (isEditMode.value || widget.value?.content?.isInteractive)
-  editor.value?.setEditable(editable)
+  editor.value?.setEditable(isEditable.value)
 })
 
 watch(
@@ -177,6 +188,9 @@ onBeforeUnmount(() => {
   fontStore.disconnect(widgetId.value)
 })
 
+defineExpose({
+  canSelect: isEditable
+})
 </script>
 
 <template>
@@ -194,7 +208,7 @@ onBeforeUnmount(() => {
       :editor="editor"/>
   </div>
   <teleport to="#space__widget-menu">
-    <TextMenuSettings v-if="editor" :widgetId="widgetId" :editor="editor" />
+    <TextMenuSettings v-if="editor && isEditable" :widgetId="widgetId" :editor="editor" />
   </teleport>
 </template>
 

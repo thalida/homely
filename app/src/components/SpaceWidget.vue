@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, ref, watch, type PropType } from 'vue'
+import { computed, onBeforeUnmount, ref, watch, type PropType, type Component, type Ref } from 'vue'
 import { useSpaceStore } from '@/stores/space';
 import { useWidgetStore } from '@/stores/widget'
 import { EWidgetColorNames, EWidgetType } from '@/constants/widget';
@@ -25,6 +25,8 @@ const props = defineProps({
     default: null
   }
 })
+
+const widgetComponent: Ref<any | null> = ref(null)
 
 const widget = computed(() => {
   return props.isPlaceholder ? props.placeholderWidget : widgetStore.getWidgetById(props.widgetId)
@@ -80,13 +82,13 @@ function handleWidgetClick() {
     return
   }
 
-  let isEditable = spaceStore.isEditMode
+  const canSelect = (
+    (widgetComponent.value && 'canSelect' in widgetComponent.value)
+    ? widgetComponent.value.canSelect
+    : spaceStore.isEditMode
+  )
 
-  if (widget.value.widget_type === EWidgetType.TEXT) {
-    isEditable = isEditable || widget.value?.content?.isInteractive
-  }
-
-  if (!isEditable) {
+  if (!canSelect) {
     widgetStore.unselectAllWidgets(widget.value.space)
     return
   }
@@ -99,6 +101,7 @@ function handleWidgetClick() {
 <template>
   <template v-if="isRenderable">
     <component
+      ref="widgetComponent"
       :is="component"
       v-bind="$attrs"
       :widgetId="props.widgetId"

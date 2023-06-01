@@ -36,10 +36,6 @@ const isEditMode = computed(() => {
   return spaceStore.isEditMode
 })
 
-const isEditable = computed(() => {
-  return isEditMode.value || widget.value?.content?.isInteractive
-})
-
 const widget = computed((): TTextWidget => {
   return widgetStore.getWidgetById(props.widgetId) as TTextWidget;
 })
@@ -103,10 +99,6 @@ watchEffect(() => {
   }
 })
 
-watchEffect(() => {
-  props.editor.setEditable(isEditable.value)
-})
-
 watch(
   () => props.editor.getHTML() || '',
   (newValue: string, oldValue: string) => {
@@ -153,7 +145,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div v-if="isEditable && isSelected && hasFonts">
+  <div v-if="isSelected && hasFonts">
     <select @change="handleFontChange" v-model="widget.content.fontFamily">
       <option v-for="font in fontStore.fonts" :key="font.family" :value="font.family">
         {{ font.family }}
