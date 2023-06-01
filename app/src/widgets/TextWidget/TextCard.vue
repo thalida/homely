@@ -226,19 +226,20 @@ defineExpose({
   height: 0;
   pointer-events: none;
 }
-.text-widget.prose :where(ul):not(:where([class~="not-prose"] *)),
-.text-widget.prose :where(ol):not(:where([class~="not-prose"] *)),
-.text-widget.prose :where(p):not(:where([class~="not-prose"] *)) {
+.text-widget > .prose :where(ul):not(:where([class~="not-prose"] *)),
+.text-widget > .prose :where(ol):not(:where([class~="not-prose"] *)),
+.text-widget > .prose :where(p):not(:where([class~="not-prose"] *)) {
   margin-top: 0;
   margin-bottom: 0;
 }
 
-.text-widget.prose * {
+.text-widget > .prose * {
   font-weight: inherit;
   font-family: inherit;
+  color: inherit;
 }
 
-.text-widget.prose :where(strong):not(:where([class~="not-prose"] *)) {
+.text-widget > .prose :where(strong):not(:where([class~="not-prose"] *)) {
   font-weight: bolder;
 }
 </style>
