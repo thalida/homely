@@ -120,9 +120,10 @@ function handleWidgetClick() {
       :isPlaceholder="props.isPlaceholder"
       :placeholderWidget="props.placeholderWidget"
       @click="handleWidgetClick"
-      class="space-widget rounded-2xl w-full h-full overflow-auto"
+      class="space-widget rounded-2xl w-full h-full overflow-auto transition duration-200"
       :class="[{
-          'ring-4 ring-yellow-500 drop-shadow-lg': isSelected,
+          'ring-4 ring-yellow-500 shadow-2xl': isSelected,
+          'ring-0 ring-transparent shadow-none': !isSelected,
       }, widgetThemeClass]"
     />
     <teleport to="#space__shared-widget-menu">

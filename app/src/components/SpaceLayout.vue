@@ -35,7 +35,7 @@ provide('spaceGridRef', spaceGridRef)
 <template>
   <div
     ref="spaceRef"
-    class="space-layout flex bg-white dark:bg-slate-900"
+    class="space-layout flex bg-sky-50 dark:bg-slate-950"
     :class="{
       'is-editing': spaceStore.isEditMode,
     }"
