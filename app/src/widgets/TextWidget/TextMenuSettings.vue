@@ -1,12 +1,10 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref, watch, watchEffect } from 'vue'
+import { computed, ref } from 'vue'
 import { BoldIcon, ItalicIcon, UnderlineIcon, ListIcon, ListOrderedIcon } from 'lucide-vue-next'
 import { useWidgetStore } from '@/stores/widget'
-import { useSpaceStore } from '@/stores/space'
 import { useFontStore } from '@/stores/fonts'
 import type { TTextWidget } from './types'
 
-const spaceStore = useSpaceStore()
 const widgetStore = useWidgetStore()
 const fontStore = useFontStore()
 
@@ -24,16 +22,11 @@ const props = defineProps({
   },
 })
 
-const widgetId = ref<string | null>(null)
 const textAlignments = ref(['left', 'center', 'right'])
 const fontSizes = ref([10, 11, 12, 13, 14, 15, 16, 18, 20, 22, 24, 32, 36, 48, 64, 72, 96, 144])
 
 const isSelected = computed(() => {
   return widget.value?.state?.selected;
-})
-
-const isEditMode = computed(() => {
-  return spaceStore.isEditMode
 })
 
 const widget = computed((): TTextWidget => {
@@ -92,56 +85,6 @@ const menuItems = ref([
     isActive: () => props.editor.isActive("orderedList"),
   },
 ]);
-
-watchEffect(() => {
-  if (widget.value) {
-    widgetId.value = widget.value.uid
-  }
-})
-
-watch(
-  () => props.editor.getHTML() || '',
-  (newValue: string, oldValue: string) => {
-    if (typeof oldValue === 'undefined') return
-
-    if (!props.editor.isEditable) {
-      widgetStore.updateWidget(widget.value.uid, {
-        content: {
-          text: props.editor.getHTML() || ''
-        }
-      });
-      return
-    }
-
-    widgetStore.draftUpdateWidget(widget.value.uid, {
-      content: {
-        text: props.editor.getHTML() || ''
-      }
-    })
-
-    if (props.editor.isEditable && !isEditMode.value && newValue !== oldValue) {
-      widgetStore.markWidgetAsDirty(widget.value.uid)
-      widgetStore.debouncedSaveDirtyWidgets(widget.value.space)
-    }
-  }
-)
-
-onMounted(() => {
-  if (!widgetId.value) {
-    return
-  }
-
-  fontStore.connect(widgetId.value)
-})
-
-onBeforeUnmount(() => {
-  if (!widgetId.value) {
-    return
-  }
-
-  fontStore.disconnect(widgetId.value)
-})
-
 </script>
 
 <template>
