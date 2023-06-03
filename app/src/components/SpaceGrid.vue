@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref, watchEffect } from 'vue'
+import { onBeforeUnmount, onMounted, ref, watchEffect } from 'vue'
 import { debounce } from 'lodash'
 import type { GridStackNode, GridItemHTMLElement } from 'gridstack';
 import { useSpaceStore } from '@/stores/space'
@@ -23,7 +23,7 @@ const gridStackOptions = {
   acceptWidgets: true,
   minRow: 1,
 }
-const isResizingWindow = ref(false)
+const isResizingGrid = ref(false)
 
 defineExpose({
   gridStackRef,
@@ -36,18 +36,36 @@ onMounted(async () => {
     gridStackRef.value?.getGrid()?.load(widgetsStore.gridStackBySpace[props.spaceId])
   })
 
-  window.addEventListener('resize', resizeGrid);
+  window.addEventListener('resize', handleWindowResize);
 })
 
-function resizeGrid() {
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', handleWindowResize);
+})
+
+watchEffect(() => {
+  resizeGrid(spaceStore.isEditMode)
+})
+
+function handleWindowResize() {
+  resizeGrid(spaceStore.isEditMode)
+}
+
+function resizeGrid(isEditMode: boolean = false) {
   let grid = gridStackRef.value?.getGrid()
 
   if (!grid) return
 
-  isResizingWindow.value = true
+  const layout = 'move'
+  isResizingGrid.value = true
+
+  if (isEditMode) {
+    grid.column(12, layout);
+    isResizingGrid.value = false
+    return
+  }
 
   let width = document.body.clientWidth;
-  const layout = 'move'
   if (width < 700) {
     grid.column(1, layout);
   } else if (width < 850) {
@@ -64,7 +82,7 @@ function resizeGrid() {
 };
 
 function resizeEnd () {
-  isResizingWindow.value = false
+  isResizingGrid.value = false
 }
 
 const debouceOnResizeEnd = debounce(resizeEnd, 200)
@@ -154,7 +172,7 @@ function handleGridDropped(event: Event, previousWidget: GridStackNode, newWidge
 }
 
 function handleGridChange(event: Event, items: GridStackNode[]) {
-  if (isResizingWindow.value) {
+  if (isResizingGrid.value) {
     return
   }
 
