@@ -163,6 +163,8 @@ function handleGridChange(event: Event, items: GridStackNode[]) {
       continue
     }
 
+    console.log(item, item.x, item.y, item.w, item.h)
+
     widgetsStore.draftUpdateWidget(item.id, {
       layout: {
         x: item.x,

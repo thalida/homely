@@ -241,10 +241,11 @@ body {
 }
 
 .widget-theme-light,
-.dark .widget-theme-dynamic {
+.widget-theme-dynamic,
+.light .widget-theme-dynamic {
   &.widget-theme-bg,
   .widget-theme-bg {
-    background-color: theme(colors.slate.100);
+    background-color: theme(colors.slate.50);
   }
 
   &.widget-theme-text,
@@ -254,7 +255,7 @@ body {
 
   .widget-pill,
   .widget-pill-group {
-    background-color: theme(colors.slate.100);
+    background-color: theme(colors.slate.50);
     color: theme(colors.slate.900);
   }
 
@@ -264,11 +265,10 @@ body {
 }
 
 .widget-theme-dark,
-.widget-theme-dynamic,
-.light .widget-theme-dynamic {
+.dark .widget-theme-dynamic {
   &.widget-theme-bg,
   .widget-theme-bg {
-    background-color: theme(colors.slate.900);
+    background-color: theme(colors.slate.950);
   }
 
   &.widget-theme-text,
@@ -278,7 +278,7 @@ body {
 
   .widget-pill,
   .widget-pill-group {
-    background-color: theme(colors.slate.900);
+    background-color: theme(colors.slate.950);
     color: theme(colors.slate.100);
   }
 
@@ -378,7 +378,8 @@ body {
 }
 
 .widget-theme-light-gradient,
-.dark .widget-theme-dynamic-gradient {
+.widget-theme-dynamic-gradient
+.light .widget-theme-dynamic-gradient {
   &.widget-theme-bg,
   .widget-theme-bg {
     background: linear-gradient(140deg, theme(colors.lime.100), theme(colors.cyan.100), theme(colors.indigo.100));
@@ -401,8 +402,7 @@ body {
 }
 
 .widget-theme-dark-gradient,
-.widget-theme-dynamic-gradient,
-.light .widget-theme-dynamic-gradient {
+.dark .widget-theme-dynamic-gradient {
   &.widget-theme-bg,
   .widget-theme-bg {
     background: linear-gradient(140deg, theme(colors.indigo.950), theme(colors.violet.950), theme(colors.blue.900));

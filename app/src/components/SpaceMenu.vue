@@ -80,8 +80,8 @@ function handleEditModeStart() {
   startEditMode()
 }
 
-function handleEditModeSave() {
-  widgetsStore.saveDirtyWidgets(props.spaceId)
+async function handleEditModeSave() {
+  await widgetsStore.saveDirtyWidgets(props.spaceId)
   spaceStore.updateSpace(props.spaceId)
   stopEditMode();
 }
