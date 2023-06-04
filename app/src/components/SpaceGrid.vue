@@ -66,14 +66,10 @@ function resizeGrid(isEditMode: boolean = false) {
   }
 
   let width = document.body.clientWidth;
-  if (width < 700) {
+  if (width < 500) {
     grid.column(1, layout);
-  } else if (width < 850) {
-    grid.column(3, layout);
   } else if (width < 950) {
     grid.column(6, layout);
-  } else if (width < 1100) {
-    grid.column(8, layout);
   } else {
     grid.column(12, layout);
   }
