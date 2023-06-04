@@ -4,17 +4,14 @@ import { RouterView } from "vue-router";
 import { useFontStore } from './stores/fonts';
 import { useUserStore } from './stores/user';
 import { useThemeStore } from './stores/theme';
-import { useSpaceStore } from './stores/space';
 
 useThemeStore()
 
 const fontStore = useFontStore()
 const userStore = useUserStore()
-const spaceStore = useSpaceStore()
 const isLoading = ref(true)
 
 userStore.autoLogin().then(async () => {
-  await spaceStore.fetchHomepageSpaces()
   isLoading.value = false
 })
 </script>

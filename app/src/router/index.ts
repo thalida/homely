@@ -28,6 +28,8 @@ router.beforeEach(async (to) => {
   const userStore = useUserStore();
   const spaceStore = useSpaceStore();
 
+  await userStore.autoLogin();
+
   if (!userStore.isAuthenticated) {
     await spaceStore.fetchHomepageSpaces()
     const spaceUid = spaceStore.homepageSpaces[0].uid
