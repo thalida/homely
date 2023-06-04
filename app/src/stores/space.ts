@@ -1,6 +1,6 @@
 import { computed, ref, type Ref } from 'vue'
 import { defineStore } from 'pinia'
-import { cloneDeep, filter, omit } from 'lodash'
+import { cloneDeep, filter, omit, sortBy } from 'lodash'
 import { useWidgetStore } from '@/stores/widget'
 import { useUserStore } from '@/stores/user'
 import type { IWidgets } from '@/types/widget'
@@ -40,7 +40,8 @@ export const useSpaceStore = defineStore('space', () => {
     }
 
     const userId = user.pk
-    return filter(collection.value, (space) => space.owner === userId)
+    const mySpaces = filter(collection.value, (space) => space.owner === userId)
+    return sortBy(mySpaces, (space) => !space.is_default)
   })
 
   const myBookmarkedSpaces = computed(() => {
