@@ -98,7 +98,6 @@ const showingBothLocationAndDetails = computed(() => {
           <div class="glass-pane__streak"></div>
           <div class="glass-pane__streak"></div>
         </div>
-        <div class="glass-pane__texture"></div>
       </div>
 
       <div class="seams-wrapper">
@@ -166,18 +165,7 @@ const showingBothLocationAndDetails = computed(() => {
     position: absolute;
     top: 0;
     left: 0;
-
-    .glass-pane__texture {
-      z-index: 1;
-      width: 100%;
-      height: 100%;
-      position: absolute;
-      top: 0;
-      left: 0;
-      background-image: linear-gradient(45deg, rgb(255 247 153 / 20%) 45%, rgba(255,255,255,0.2) 100%), url("@/widgets/WeatherWidget/assets/grain.svg");
-      filter: contrast(145%) brightness(650%);
-      opacity: 0.5;
-    }
+    backdrop-filter: blur(0.8px);
 
     .glass-pane__streaks {
       display: flex;
@@ -190,6 +178,7 @@ const showingBothLocationAndDetails = computed(() => {
       position: absolute;
       top: 0;
       left: 0;
+      opacity: 0.5;
     }
 
     .glass-pane__streak {
