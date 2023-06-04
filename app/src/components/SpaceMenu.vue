@@ -3,19 +3,15 @@ import { computed, onBeforeUnmount, onMounted } from 'vue';
 import { filter } from 'lodash';
 import { SettingsIcon } from 'lucide-vue-next';
 import { RouterLink } from 'vue-router';
-import type { CallbackTypes } from "vue3-google-login";
 import { useUserStore } from '@/stores/user';
 import { useSpaceStore } from '@/stores/space';
 import { useWidgetStore } from '@/stores/widget';
-import { useThemeStore } from '@/stores/theme';
 import { widgetMenuBtnComponents } from '@/widgets'
-import { EAppTheme } from '@/constants/theme';
 import router from '@/router';
 
 const userStore = useUserStore();
 const spaceStore = useSpaceStore();
 const widgetsStore = useWidgetStore();
-const themeStore = useThemeStore();
 
 const props = defineProps({
   spaceId: {
@@ -64,10 +60,6 @@ const numSelectedWidgets = computed(() => {
   return selectedWidgets.value.length;
 });
 
-const supportedAppThemes = computed(() => {
-  return Object.values(EAppTheme);
-});
-
 function handlePageRefresh(e: BeforeUnloadEvent) {
   const isProduction = import.meta.env.PROD
   if (isProduction && spaceStore.isEditMode) {
@@ -109,35 +101,6 @@ async function handleDelete() {
     widgetsStore.draftDeleteWidget(widget);
   }
 }
-
-async function handleCreateSpace() {
-  const space = await spaceStore.createSpace()
-  router.push({ name: 'Space', params: { spaceUid: space.uid } })
-}
-
-async function handleCloneSpace() {
-  const space = await spaceStore.cloneSpace(props.spaceId)
-  router.push({ name: 'Space', params: { spaceUid: space.uid } })
-}
-
-async function handleDeleteSpace() {
-  await spaceStore.deleteSpace(props.spaceId)
-  await widgetsStore.deleteWidgetsBySpace(props.spaceId)
-  router.push({ name: 'Home' })
-}
-
-const handleLoginWithGoogle: CallbackTypes.TokenResponseCallback = (response) => {
-  userStore.loginWithGoogle(response.access_token)
-};
-
-function handleToggleBookmark() {
-  spaceStore.toggleBookmark(props.spaceId)
-}
-
-function handleToggleDefaultSpace() {
-  const spaceId = (space.value.is_default) ? props.spaceId : null
-  spaceStore.setDefaultSpace(spaceId)
-}
 </script>
 
 <template>
@@ -149,63 +112,10 @@ function handleToggleDefaultSpace() {
       'h-full w-80 p-4 m-0': spaceStore.isEditMode,
     }"
   >
-    <select v-model="themeStore.appTheme">
-      <option v-for="theme in supportedAppThemes" :key="theme" :value="theme">{{ theme }}</option>
-    </select>
-
-    <template v-if="isAuthenticated">
-      <button @click="userStore.logout()">Logout</button>
-    </template>
-    <template v-else>
-      <GoogleLogin :callback="handleLoginWithGoogle" popup-type="TOKEN">
-        <button>Login Using Google</button>
-      </GoogleLogin>
-    </template>
-
     <div>
       {{ space.name }}
       {{ space.description }}
     </div>
-
-    <template v-if="isAuthenticated && !spaceStore.isEditMode">
-      <details>
-        <summary>Spaces</summary>
-        <div class="space-x-2">
-          <RouterLink
-            v-for="space in spaceStore.mySpaces"
-            :key="space.uid"
-            :to="{ name: 'Space', params: { spaceUid: space.uid } }">
-            {{ space.name }}
-          </RouterLink>
-        </div>
-      </details>
-      <details>
-        <summary>Bookmarked Spaces</summary>
-        <div class="space-x-2">
-          <RouterLink
-            v-for="space in spaceStore.myBookmarkedSpaces"
-            :key="space.uid"
-            :to="{ name: 'Space', params: { spaceUid: space.uid } }">
-            {{ space.name }}
-          </RouterLink>
-        </div>
-      </details>
-      <div class="flex flex-col">
-        <button @click="handleCreateSpace">
-          Create Space
-        </button>
-        <button @click="handleCloneSpace">
-          Clone Space
-        </button>
-        <button @click="handleDeleteSpace" v-if="isSpaceOwner">
-          Delete Space
-        </button>
-        <label>
-          <span>Make Default</span>
-          <input type="checkbox" v-model="space.is_default" @change="handleToggleDefaultSpace" />
-        </label>
-      </div>
-    </template>
 
     <template v-if="isSpaceOwner">
       <template v-if="spaceStore.isEditMode">
@@ -240,12 +150,6 @@ function handleToggleDefaultSpace() {
             <SettingsIcon />
           </button>
       </template>
-    </template>
-    <template v-else-if="isAuthenticated">
-      <label>
-        <span>Bookmark</span>
-        <input type="checkbox" v-model="space.is_bookmarked" @change="handleToggleBookmark" />
-      </label>
     </template>
     <div id="space__shared-widget-menu"></div>
     <div id="space__widget-menu"></div>

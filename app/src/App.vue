@@ -20,20 +20,18 @@ userStore.autoLogin().then(async () => {
 </script>
 
 <template>
-  <main>
-    <template v-if="isLoading">
-      <div>
-        Loading&hellip;
-      </div>
-    </template>
-    <template v-else>
-      <teleport to="body">
-        <link rel="preconnect" href="https://fonts.gstatic.com" />
-        <link v-if="fontStore.fontsUrl" :key="fontStore.fontsUrl" :href="fontStore.fontsUrl" rel="stylesheet" type="text/css" />
-      </teleport>
-      <RouterView />
-    </template>
-  </main>
+  <template v-if="isLoading">
+    <main>
+      Loading&hellip;
+    </main>
+  </template>
+  <template v-else>
+    <teleport to="body">
+      <link rel="preconnect" href="https://fonts.gstatic.com" />
+      <link v-if="fontStore.fontsUrl" :key="fontStore.fontsUrl" :href="fontStore.fontsUrl" rel="stylesheet" type="text/css" />
+    </teleport>
+    <RouterView />
+  </template>
 </template>
 
 <style scoped>

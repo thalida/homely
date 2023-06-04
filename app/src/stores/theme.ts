@@ -12,6 +12,14 @@ export const useThemeStore = defineStore('theme', () => {
 
     return window.matchMedia('(prefers-color-scheme: dark)').matches ? EAppTheme.DARK : EAppTheme.LIGHT;
   });
+  const isDarkMode = computed({
+    get: () => activeTheme.value === EAppTheme.DARK,
+    set: (value: boolean) => {
+      appTheme.value = value ? EAppTheme.DARK : EAppTheme.LIGHT;
+
+      return value;
+    }
+  });
 
   watchEffect(() => {
     document.documentElement.classList.remove(EAppTheme.DARK, EAppTheme.LIGHT);
@@ -19,6 +27,7 @@ export const useThemeStore = defineStore('theme', () => {
   });
 
   return {
-    appTheme
+    appTheme,
+    isDarkMode,
   }
 });
