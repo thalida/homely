@@ -2,12 +2,10 @@
 import { computed, onBeforeUnmount, onMounted } from 'vue';
 import { filter } from 'lodash';
 import { SettingsIcon } from 'lucide-vue-next';
-import { RouterLink } from 'vue-router';
 import { useUserStore } from '@/stores/user';
 import { useSpaceStore } from '@/stores/space';
 import { useWidgetStore } from '@/stores/widget';
 import { widgetMenuBtnComponents } from '@/widgets'
-import router from '@/router';
 
 const userStore = useUserStore();
 const spaceStore = useSpaceStore();
@@ -35,10 +33,6 @@ onMounted(async () => {
 onBeforeUnmount(() => {
   window.removeEventListener('beforeunload', handlePageRefresh)
 })
-
-const isAuthenticated = computed(() => {
-  return userStore.isAuthenticated;
-});
 
 const space = computed(() => {
   return spaceStore.collection[props.spaceId];
@@ -112,11 +106,6 @@ async function handleDelete() {
       'h-full w-80 p-4 m-0': spaceStore.isEditMode,
     }"
   >
-    <div>
-      {{ space.name }}
-      {{ space.description }}
-    </div>
-
     <template v-if="isSpaceOwner">
       <template v-if="spaceStore.isEditMode">
         <button @click="handleEditModeCancel" class="p-2 bg-slate-400">Cancel</button>

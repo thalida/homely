@@ -35,7 +35,7 @@ provide('spaceGridRef', spaceGridRef)
 <template>
   <div
     ref="spaceRef"
-    class="space-layout flex relative"
+    class="space-layout flex relative w-full h-full"
     :class="{
       'is-editing': spaceStore.isEditMode,
     }"
@@ -53,11 +53,6 @@ provide('spaceGridRef', spaceGridRef)
 </template>
 
 <style scoped>
-.space-layout {
-  width: 100vw;
-  height: 100vh;
-  overflow: auto;
-}
 .is-editing .space-layout__grid {
   margin-right: 320px;
 }

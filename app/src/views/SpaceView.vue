@@ -98,9 +98,9 @@ function handleToggleBookmark() {
 </script>
 
 <template>
-  <div class="space-view">
+  <div class="space-view flex flex-col">
     <div class="space-view__background w-full h-full fixed top-0 left-0"></div>
-    <header class="sticky flex flex-row items-center dark:text-white">
+    <header class="sticky top-0 flex flex-row items-center dark:text-white z-50">
       <Dropdown
         v-model="selectedSpace"
         :options="availableSpaces"
@@ -160,7 +160,7 @@ function handleToggleBookmark() {
         <InputSwitch v-model="themeStore.isDarkMode" />
       </div>
     </header>
-    <main class="space-view relative">
+    <main class="relative flex grow">
       <SpaceLayout v-if="spaceUid" :key="spaceUid" :spaceId="spaceUid" />
     </main>
   </div>
