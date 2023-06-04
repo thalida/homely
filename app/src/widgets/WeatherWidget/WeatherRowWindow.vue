@@ -165,7 +165,6 @@ const showingBothLocationAndDetails = computed(() => {
     position: absolute;
     top: 0;
     left: 0;
-    backdrop-filter: blur(0.8px);
 
     .glass-pane__streaks {
       display: flex;
