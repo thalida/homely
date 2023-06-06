@@ -45,6 +45,7 @@ provide('spaceGridRef', spaceGridRef)
         :spaceId="props.spaceId" />
     </div>
     <SpaceMenu
+      v-if="spaceStore.isEditMode"
       ref="spaceMenuRef"
       class="space-layout__menu shrink-0"
       :spaceId="props.spaceId" />
