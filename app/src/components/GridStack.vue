@@ -143,7 +143,7 @@ defineExpose({
 </script>
 
 <template>
-  <div ref="gridEl" class="grid-stack grow shrink-0 w-full h-full"></div>
+  <div ref="gridEl" class="grid-stack grow shrink-0 w-screen h-screen"></div>
 </template>
 
 <style scoped>

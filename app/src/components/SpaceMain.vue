@@ -35,16 +35,15 @@ provide('spaceGridRef', spaceGridRef)
 <template>
   <main
     ref="spaceRef"
-    class="space-layout flex relative w-full h-full"
-    :class="{
-      'is-editing': spaceStore.isEditMode,
-    }"
+    class="space-layout flex flex-row relative w-full h-full overflow-auto"
     @click="handleSpaceClick"
   >
-    <SpaceGrid
-      ref="spaceGridRef"
-      class="space-layout__grid"
-      :spaceId="props.spaceId" />
+    <div class="overflow-auto grow">
+      <SpaceGrid
+        ref="spaceGridRef"
+        class="space-layout__grid"
+        :spaceId="props.spaceId" />
+    </div>
     <SpaceMenu
       ref="spaceMenuRef"
       class="space-layout__menu shrink-0"
@@ -53,8 +52,4 @@ provide('spaceGridRef', spaceGridRef)
 </template>
 
 <style scoped>
-.is-editing .space-layout__grid {
-  margin-right: 320px;
-}
-
 </style>

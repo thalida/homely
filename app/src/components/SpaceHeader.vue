@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import InputSwitch from 'primevue/inputswitch';
 import SplitButton from 'primevue/splitbutton';
 import Dropdown from 'primevue/dropdown';
+import { SettingsIcon } from 'lucide-vue-next';
 import type { CallbackTypes } from "vue3-google-login";
 import { useUserStore } from '@/stores/user';
 import { useThemeStore } from '@/stores/theme'
@@ -140,13 +141,46 @@ const menuItems = ref([
   },
 ]);
 
+onMounted(async () => {
+  if (spaceStore.isEditMode) {
+    handleEditModeStart()
+  }
+})
+
 function handleMenuClick() {
   router.push("/")
 }
+
+function handleEditModeStart() {
+  startEditMode()
+}
+
+async function handleEditModeSave() {
+  await widgetsStore.saveDirtyWidgets(props.spaceId)
+  spaceStore.updateSpace(props.spaceId)
+  stopEditMode();
+}
+
+function handleEditModeCancel() {
+  spaceStore.resetFromBackup()
+  stopEditMode()
+}
+
+function startEditMode() {
+  spaceStore.createBackup()
+  spaceStore.setEditMode(true)
+}
+
+function stopEditMode() {
+  widgetsStore.unselectAllWidgets(props.spaceId)
+  spaceStore.setEditMode(false)
+  spaceStore.deleteBackup()
+}
+
 </script>
 
 <template>
-  <header class="sticky top-0 grid grid-cols-3 items-center justify-between dark:text-white z-50 bg-white/80 dark:bg-black/80 backdrop-blur p-4">
+  <header class="sticky h-20 top-0 grid grid-cols-3 items-center justify-between dark:text-white z-50 bg-white/80 dark:bg-black/80 backdrop-blur p-4">
     <div class="flex flex-row space-x-4">
       <SplitButton :model="menuItems" icon="pi pi-plus" text>
         <button class="p-button p-component p-splitbutton-defaultbutton p-1" type="button" @click="handleMenuClick">
@@ -211,7 +245,20 @@ function handleMenuClick() {
       </Dropdown>
     </div>
 
-    <div>
+    <div class="flex flex-row items-center justify-end">
+      <template v-if="isSpaceOwner">
+        <template v-if="spaceStore.isEditMode">
+          <button @click="handleEditModeCancel" class="p-2 bg-slate-400">Cancel</button>
+          <button @click="handleEditModeSave" class="p-2 bg-green-300">
+            Save
+          </button>
+        </template>
+        <template v-else>
+            <button @click="handleEditModeStart" class="p-2 bg-green-300">
+              <SettingsIcon />
+            </button>
+        </template>
+      </template>
     </div>
   </header>
 </template>
