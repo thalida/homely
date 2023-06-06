@@ -3,7 +3,7 @@ import { EWidgetType } from '@/constants/widget';
 import { DEFAULT_WIDGET_COLOR } from '@/constants/theme';
 import { EImageWidgetBackgroundSize, EImageWidgetBackgroundPosition, EImageWidgetBackgroundRepeat } from './constants';
 import type { IBaseImageWidget } from './types';
-import SpaceMenuBtn from '@/components/SpaceMenuBtn.vue';
+import SpaceWidgetAddBtn from '@/components/SpaceWidgetAddBtn.vue';
 import { ImageIcon } from 'lucide-vue-next';
 
 const defaultWidget: IBaseImageWidget = {
@@ -27,14 +27,14 @@ const defaultWidget: IBaseImageWidget = {
 </script>
 
 <template>
-  <SpaceMenuBtn :defaultWidget="defaultWidget">
+  <SpaceWidgetAddBtn :defaultWidget="defaultWidget">
     <template #icon>
       <ImageIcon class="h-full w-auto" />
     </template>
     <template #label>
       Image
     </template>
-  </SpaceMenuBtn>
+  </SpaceWidgetAddBtn>
 </template>
 
 <style scoped></style>

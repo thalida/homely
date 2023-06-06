@@ -3,7 +3,7 @@ import { EWidgetType } from '@/constants/widget';
 import { DEFAULT_WIDGET_COLOR } from '@/constants/theme';
 import { ELinkWidgetStyle } from './constants';
 import type { IBaseLinkWidget } from './types';
-import SpaceMenuBtn from '@/components/SpaceMenuBtn.vue';
+import SpaceWidgetAddBtn from '@/components/SpaceWidgetAddBtn.vue';
 import { LinkIcon } from 'lucide-vue-next';
 
 const defaultWidget: IBaseLinkWidget = {
@@ -34,14 +34,14 @@ const defaultWidget: IBaseLinkWidget = {
 </script>
 
 <template>
-  <SpaceMenuBtn :defaultWidget="defaultWidget">
+  <SpaceWidgetAddBtn :defaultWidget="defaultWidget">
     <template #icon>
       <LinkIcon class="h-full w-auto" />
     </template>
     <template #label>
       Link
     </template>
-  </SpaceMenuBtn>
+  </SpaceWidgetAddBtn>
 </template>
 
 <style scoped></style>

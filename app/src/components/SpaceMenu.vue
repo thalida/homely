@@ -5,7 +5,7 @@ import { SettingsIcon } from 'lucide-vue-next';
 import { useUserStore } from '@/stores/user';
 import { useSpaceStore } from '@/stores/space';
 import { useWidgetStore } from '@/stores/widget';
-import { widgetMenuBtnComponents } from '@/widgets'
+import { widgetAddBtnComponents } from '@/widgets'
 
 const userStore = useUserStore();
 const spaceStore = useSpaceStore();
@@ -128,7 +128,7 @@ async function handleDelete() {
         <button @click="handleDelete" class="p-2 bg-red-400 disabled:opacity-50" :disabled="numSelectedWidgets === 0">Delete</button>
         <div v-if="numSelectedWidgets === 0" class="grid grid-cols-3 gap-2">
           <component
-            v-for="component in widgetMenuBtnComponents"
+            v-for="component in widgetAddBtnComponents"
             :key="component.name"
             :is="component"
           />
