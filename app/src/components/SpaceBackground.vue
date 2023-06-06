@@ -20,7 +20,7 @@
     width: 100%;
     height: 100%;
     background-size: 400% 400%;
-    animation: backgroundGradient 10s ease infinite;
+    animation: backgroundGradient 30s ease infinite;
   }
 }
 
