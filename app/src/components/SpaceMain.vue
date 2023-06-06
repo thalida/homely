@@ -1,11 +1,9 @@
 <script setup lang="ts">
 import { provide, ref } from 'vue'
-import { useSpaceStore } from '@/stores/space'
 import { useWidgetStore } from '@/stores/widget'
 import SpaceMenu from './SpaceMenu.vue'
 import SpaceGrid from './SpaceGrid.vue'
 
-const spaceStore = useSpaceStore()
 const widgetsStore = useWidgetStore()
 
 const props = defineProps({
@@ -21,10 +19,9 @@ const spaceMenuRef = ref<InstanceType<typeof SpaceMenu>>()
 
 function handleSpaceClick(e: Event) {
   const target = e.target as HTMLElement
-  const isSpaceLayout = target.classList.contains('space-layout')
-  const isSpaceGrid = target.classList.contains('space-layout__grid')
+  const isSpaceGrid = target.classList.contains('grid-stack')
 
-  if (isSpaceGrid || isSpaceLayout) {
+  if (isSpaceGrid) {
     widgetsStore.unselectAllWidgets(props.spaceId)
   }
 }
@@ -35,19 +32,14 @@ provide('spaceGridRef', spaceGridRef)
 <template>
   <main
     ref="spaceRef"
-    class="space-layout flex flex-row relative w-full h-full overflow-auto"
+    class="flex flex-row relative w-full h-full overflow-auto"
     @click="handleSpaceClick"
   >
-    <div class="overflow-auto grow">
-      <SpaceGrid
-        ref="spaceGridRef"
-        class="space-layout__grid"
-        :spaceId="props.spaceId" />
-    </div>
+    <SpaceGrid
+      ref="spaceGridRef"
+      :spaceId="props.spaceId" />
     <SpaceMenu
-      v-if="spaceStore.isEditMode"
       ref="spaceMenuRef"
-      class="space-layout__menu shrink-0"
       :spaceId="props.spaceId" />
   </main>
 </template>

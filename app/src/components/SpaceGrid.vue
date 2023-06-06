@@ -190,6 +190,7 @@ function handleGridChange(event: Event, items: GridStackNode[]) {
 </script>
 
 <template>
+  <div class="overflow-auto grow">
     <GridStack
       ref="gridStackRef"
       :editable="spaceStore.isEditMode"
@@ -200,6 +201,7 @@ function handleGridChange(event: Event, items: GridStackNode[]) {
       @resizestop="handleGridResizeStop"
       @dropped="handleGridDropped"
       @change="handleGridChange" />
+  </div>
 </template>
 
 <style>

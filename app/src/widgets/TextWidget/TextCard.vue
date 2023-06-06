@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref, watch, watchEffect, type PropType } from 'vue'
-import { useEditor, EditorContent } from '@tiptap/vue-3'
+import { useEditor, EditorContent, type Editor } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
 import LinkExtension from '@tiptap/extension-link'
 import PlaceholderExtension from '@tiptap/extension-placeholder'
@@ -10,13 +10,15 @@ import { useWidgetStore } from '@/stores/widget'
 import { useSpaceStore } from '@/stores/space'
 import { useFontStore } from '@/stores/fonts'
 import { useUserStore } from '@/stores/user'
+import { useEditorsStore } from '@/stores/editors'
 import type { TTextWidget } from './types'
-import TextMenuSettings from './TextMenuSettings.vue'
+
 
 const userStore = useUserStore()
 const spaceStore = useSpaceStore()
 const widgetStore = useWidgetStore()
 const fontStore = useFontStore()
+const editorsStore = useEditorsStore()
 
 fontStore.loadFonts()
 
@@ -178,6 +180,10 @@ onMounted(() => {
   }
 
   fontStore.connect(widgetId.value)
+
+  if (typeof editor.value !== 'undefined') {
+    editorsStore.connect(widgetId.value, editor.value)
+  }
 })
 
 onBeforeUnmount(() => {

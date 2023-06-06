@@ -3,10 +3,12 @@ import { computed, ref } from 'vue'
 import { BoldIcon, ItalicIcon, UnderlineIcon, ListIcon, ListOrderedIcon } from 'lucide-vue-next'
 import { useWidgetStore } from '@/stores/widget'
 import { useFontStore } from '@/stores/fonts'
+import { useEditorsStore } from '@/stores/editors'
 import type { TTextWidget } from './types'
 
 const widgetStore = useWidgetStore()
 const fontStore = useFontStore()
+const editorsStore = useEditorsStore()
 
 fontStore.loadFonts()
 
@@ -15,10 +17,6 @@ const props = defineProps({
     type: String,
     required: false,
     default: null
-  },
-  editor: {
-    type: Object,
-    required: true
   },
 })
 
@@ -31,6 +29,10 @@ const isSelected = computed(() => {
 
 const widget = computed((): TTextWidget => {
   return widgetStore.getWidgetById(props.widgetId) as TTextWidget;
+})
+
+const editor = computed(() => {
+  return editorsStore.editors[props.widgetId]
 })
 
 const hasFonts = computed(() => {
@@ -57,32 +59,32 @@ const menuItems = ref([
   {
     icon: BoldIcon,
     title: "Bold",
-    action: () => props.editor.chain().focus().toggleBold().run(),
-    isActive: () => props.editor.isActive("bold"),
+    action: () => editor.value.chain().focus().toggleBold().run(),
+    isActive: () => editor.value.isActive("bold"),
   },
   {
     icon: ItalicIcon,
     title: "Italic",
-    action: () => props.editor.chain().focus().toggleItalic().run(),
-    isActive: () => props.editor.isActive("italic"),
+    action: () => editor.value.chain().focus().toggleItalic().run(),
+    isActive: () => editor.value.isActive("italic"),
   },
   {
     icon: UnderlineIcon,
     title: "Underline",
-    action: () => props.editor.chain().focus().toggleUnderline().run(),
-    isActive: () => props.editor.isActive("underline"),
+    action: () => editor.value.chain().focus().toggleUnderline().run(),
+    isActive: () => editor.value.isActive("underline"),
   },
   {
     icon: ListIcon,
     title: "Bullet List",
-    action: () => props.editor.chain().focus().toggleBulletList().run(),
-    isActive: () => props.editor.isActive("bulletList"),
+    action: () => editor.value.chain().focus().toggleBulletList().run(),
+    isActive: () => editor.value.isActive("bulletList"),
   },
   {
     icon: ListOrderedIcon,
     title: "Ordered List",
-    action: () => props.editor.chain().focus().toggleOrderedList().run(),
-    isActive: () => props.editor.isActive("orderedList"),
+    action: () => editor.value.chain().focus().toggleOrderedList().run(),
+    isActive: () => editor.value.isActive("orderedList"),
   },
 ]);
 </script>
