@@ -7,7 +7,7 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: "/s/:spaceUid",
+      path: "/s/:spaceId",
       props: true,
       name: "Space",
       component: SpaceView,
@@ -21,7 +21,7 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to) => {
-  if (to.name === "Space" && to.params.spaceUid) {
+  if (to.name === "Space" && to.params.spaceId) {
     return;
   }
 
@@ -32,12 +32,12 @@ router.beforeEach(async (to) => {
 
   if (!userStore.isAuthenticated) {
     await spaceStore.fetchHomepageSpaces()
-    const spaceUid = spaceStore.homepageSpaces[0].uid
-    return { name: "Space", params: { spaceUid } }
+    const spaceId = spaceStore.homepageSpaces[0].uid
+    return { name: "Space", params: { spaceId } }
   }
 
-  const spaceUid = spaceStore.defaultSpace
-  return { name: "Space", params: { spaceUid } }
+  const spaceId = spaceStore.defaultSpace
+  return { name: "Space", params: { spaceId } }
 });
 
 export default router;

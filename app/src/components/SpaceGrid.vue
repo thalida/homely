@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref, watchEffect } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watchEffect } from 'vue'
 import { debounce } from 'lodash'
 import type { GridStackNode, GridItemHTMLElement } from 'gridstack';
 import { useSpaceStore } from '@/stores/space'
@@ -168,7 +168,7 @@ function handleGridDropped(event: Event, previousWidget: GridStackNode, newWidge
 }
 
 function handleGridChange(event: Event, items: GridStackNode[]) {
-  if (isResizingGrid.value) {
+  if (isResizingGrid.value || !spaceStore.isEditMode) {
     return
   }
 
@@ -176,8 +176,6 @@ function handleGridChange(event: Event, items: GridStackNode[]) {
     if (!item.id) {
       continue
     }
-
-    console.log(item, item.x, item.y, item.w, item.h)
 
     widgetsStore.draftUpdateWidget(item.id, {
       layout: {

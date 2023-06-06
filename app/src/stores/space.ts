@@ -147,24 +147,24 @@ export const useSpaceStore = defineStore('space', () => {
     isEditMode.value = value
   }
 
-  async function toggleBookmark(spaceUid: string) {
+  async function toggleBookmark(spaceId: string) {
     const user = userStore.user
     if (!user) {
       return
     }
 
-    await toggleSpaceBookmark(spaceUid)
+    await toggleSpaceBookmark(spaceId)
   }
 
-  async function setDefaultSpace(spaceUid: string | null) {
+  async function setDefaultSpace(spaceId: string | null) {
     updateUser({
-      default_space: spaceUid,
+      default_space: spaceId,
     })
 
     collection.value[defaultSpace.value].is_default = false
 
-    if (spaceUid !== null) {
-      collection.value[spaceUid].is_default = true
+    if (spaceId !== null) {
+      collection.value[spaceId].is_default = true
     }
   }
   return {

@@ -33,7 +33,7 @@ provide('spaceGridRef', spaceGridRef)
 </script>
 
 <template>
-  <div
+  <main
     ref="spaceRef"
     class="space-layout flex relative w-full h-full"
     :class="{
@@ -49,7 +49,7 @@ provide('spaceGridRef', spaceGridRef)
       ref="spaceMenuRef"
       class="space-layout__menu shrink-0"
       :spaceId="props.spaceId" />
-  </div>
+  </main>
 </template>
 
 <style scoped>
