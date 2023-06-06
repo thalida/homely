@@ -60,9 +60,6 @@ onBeforeUnmount(() => {
     class="flex flex-col">
     <DateTimeCardRow v-for="(datetime, index) in widget.content.items" :key="index" :widgetId="widgetId" :datetime="datetime" />
   </div>
-  <teleport to="#space__widget-menu">
-    <DateTimeMenuSettings v-if="widgetId" :widgetId="widgetId" />
-  </teleport>
 </template>
 
 <style scoped>

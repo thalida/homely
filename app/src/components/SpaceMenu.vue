@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted } from 'vue';
+import { computed, onBeforeUnmount, onMounted, type Component } from 'vue';
 import { filter } from 'lodash';
 import { useUserStore } from '@/stores/user';
 import { useSpaceStore } from '@/stores/space';
 import { useWidgetStore } from '@/stores/widget';
-import { widgetAddBtnComponents } from '@/widgets'
+import { widgetAddBtnComponents, widgetMenuSettingsComponentsByType } from '@/widgets'
+import SpaceWidgetGlobalSettings from '@/components/SpaceWidgetGlobalSettings.vue';
 
 const userStore = useUserStore();
 const spaceStore = useSpaceStore();
@@ -43,6 +44,17 @@ const selectedWidgets = computed(() => {
 
 const numSelectedWidgets = computed(() => {
   return selectedWidgets.value.length;
+});
+
+const selectedWidgetMenuComponents = computed(() => {
+  const components: Record<string, Component> = {};
+
+  for (const widgetId of selectedWidgets.value) {
+    const widget = widgetsStore.getWidgetById(widgetId);
+    components[widgetId] = widgetMenuSettingsComponentsByType[widget.widget_type];
+  }
+
+  return components;
 });
 
 function handlePageRefresh(e: BeforeUnloadEvent) {
@@ -90,9 +102,15 @@ async function handleDelete() {
           :is="component"
         />
       </div>
+
+      <div v-for="widgetId in selectedWidgets" :key="widgetId">
+        <SpaceWidgetGlobalSettings :widgetId="widgetId" />
+        <component
+          :is="selectedWidgetMenuComponents[widgetId]"
+          :widgetId="widgetId"
+        />
+      </div>
     </template>
-    <div id="space__shared-widget-menu"></div>
-    <div id="space__widget-menu"></div>
   </div>
 </template>
 

@@ -8,7 +8,7 @@ import WeatherMenuSettings from "./WeatherMenuSettings.vue";
 const widgetDefintion: IWidgetDefinition = {
   widgetType: EWidgetType.WEATHER,
   cardComponent: WeatherCard,
-  menuBtnComponent: WeatherAddBtn,
+  menuAddBtnComponent: WeatherAddBtn,
   menuSettingsComponent: WeatherMenuSettings,
 }
 

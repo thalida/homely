@@ -8,7 +8,7 @@ import LinkMenuSettings from "./LinkMenuSettings.vue";
 const widgetDefintion: IWidgetDefinition = {
   widgetType: EWidgetType.LINK,
   cardComponent: LinkCard,
-  menuBtnComponent: LinkAddBtn,
+  menuAddBtnComponent: LinkAddBtn,
   menuSettingsComponent: LinkMenuSettings,
 }
 

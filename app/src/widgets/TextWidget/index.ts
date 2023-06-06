@@ -8,7 +8,7 @@ import TextMenuSettings from "./TextMenuSettings.vue";
 const widgetDefintion: IWidgetDefinition = {
   widgetType: EWidgetType.TEXT,
   cardComponent: TextCard,
-  menuBtnComponent: TextAddBtn,
+  menuAddBtnComponent: TextAddBtn,
   menuSettingsComponent: TextMenuSettings,
 }
 

@@ -7,7 +7,7 @@ import DateTimeMenuSettings from "./DateTimeMenuSettings.vue";
 const widgetDefintion: IWidgetDefinition = {
   widgetType: EWidgetType.DATETIME,
   cardComponent: DateTimeCard,
-  menuBtnComponent: DateTimeAddBtn,
+  menuAddBtnComponent: DateTimeAddBtn,
   menuSettingsComponent: DateTimeMenuSettings,
 }
 

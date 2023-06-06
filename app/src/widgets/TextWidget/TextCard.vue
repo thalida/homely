@@ -207,9 +207,6 @@ defineExpose({
       }"
       :editor="editor"/>
   </div>
-  <teleport to="#space__widget-menu">
-    <TextMenuSettings v-if="editor && isEditable" :widgetId="widgetId" :editor="editor" />
-  </teleport>
 </template>
 
 <style>

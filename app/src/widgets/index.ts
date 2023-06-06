@@ -19,4 +19,9 @@ export const cardComponentsByType: Record<EWidgetType, Component> = supportedWid
   return acc
 }, {} as Record<EWidgetType, Component>)
 
-export const widgetAddBtnComponents = supportedWidgets.map((widget) => widget.menuBtnComponent)
+export const widgetMenuSettingsComponentsByType: Record<EWidgetType, Component> = supportedWidgets.reduce((acc, widget) => {
+  acc[widget.widgetType] = widget.menuSettingsComponent
+  return acc
+}, {} as Record<EWidgetType, Component>)
+
+export const widgetAddBtnComponents = supportedWidgets.map((widget) => widget.menuAddBtnComponent)

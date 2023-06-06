@@ -2,7 +2,6 @@
 import { computed, onBeforeUnmount, ref, watch, type PropType, type Ref } from 'vue'
 import { useSpaceStore } from '@/stores/space';
 import { useWidgetStore } from '@/stores/widget'
-import { ESpaceTheme } from '@/constants/theme';
 import { cardComponentsByType } from '@/widgets'
 import type { IWidget } from '@/types/widget';
 
@@ -51,7 +50,6 @@ const isRenderable = computed(() => {
   return component.value !== null && !isDeleted.value
 })
 
-const supportedColors = ref(Object.values(ESpaceTheme))
 
 const widgetThemeClass = computed(() => {
   return `widget-theme-${widget.value?.card_style.background_color}`
@@ -111,41 +109,21 @@ function handleWidgetClick() {
 </script>
 
 <template>
-  <template v-if="isRenderable">
-    <component
-      ref="widgetComponent"
-      :is="component"
-      v-bind="$attrs"
-      :widgetId="props.widgetId"
-      :isPlaceholder="props.isPlaceholder"
-      :placeholderWidget="props.placeholderWidget"
-      @click="handleWidgetClick"
-      class="space-widget rounded-2xl w-full h-full overflow-auto transition duration-200"
-      :class="[{
-          'ring-4 ring-yellow-500 shadow-2xl': isSelected,
-          'ring-0 ring-transparent shadow-none': !isSelected,
-      }, widgetThemeClass]"
-    />
-    <teleport to="#space__shared-widget-menu">
-      <div v-if="!isPlaceholder && isSelected">
-        <label>
-          <span>Card Color</span>
-          <select
-            v-model="widget.card_style.background_color"
-            class="block w-full mt-1"
-          >
-            <option
-              v-for="color in supportedColors"
-              :key="color"
-              :value="color"
-            >
-              {{ color }}
-            </option>
-          </select>
-        </label>
-      </div>
-    </teleport>
-  </template>
+  <component
+    v-if="isRenderable"
+    ref="widgetComponent"
+    :is="component"
+    v-bind="$attrs"
+    :widgetId="props.widgetId"
+    :isPlaceholder="props.isPlaceholder"
+    :placeholderWidget="props.placeholderWidget"
+    @click="handleWidgetClick"
+    class="space-widget rounded-2xl w-full h-full overflow-auto transition duration-200"
+    :class="[{
+        'ring-4 ring-yellow-500 shadow-2xl': isSelected,
+        'ring-0 ring-transparent shadow-none': !isSelected,
+    }, widgetThemeClass]"
+  />
 </template>
 
 <style scoped>

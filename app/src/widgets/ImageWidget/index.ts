@@ -7,7 +7,7 @@ import ImageMenuSettings from "./ImageMenuSettings.vue";
 const widgetDefintion: IWidgetDefinition = {
   widgetType: EWidgetType.IMAGE,
   cardComponent: ImageCard,
-  menuBtnComponent: ImageAddBtn,
+  menuAddBtnComponent: ImageAddBtn,
   menuSettingsComponent: ImageMenuSettings,
 }
 

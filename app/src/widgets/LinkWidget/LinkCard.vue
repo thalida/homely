@@ -120,9 +120,6 @@ watchEffect(() => {
       </div>
     </template>
   </component>
-  <teleport to="#space__widget-menu">
-    <LinkMenuSettings v-if="widgetId" :widgetId="props.widgetId" />
-  </teleport>
 </template>
 
 <style scoped>

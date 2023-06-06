@@ -74,9 +74,6 @@ onBeforeUnmount(() => {
       Loading...
     </template>
   </div>
-  <teleport to="#space__widget-menu">
-    <WeatherMenuSettings v-if="widgetId" :widgetId="widgetId" />
-  </teleport>
 </template>
 
 <style scoped>

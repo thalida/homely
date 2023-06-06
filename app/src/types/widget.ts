@@ -5,7 +5,7 @@ import type { Component } from 'vue'
 export interface IWidgetDefinition {
   widgetType: EWidgetType
   cardComponent: Component
-  menuBtnComponent: Component
+  menuAddBtnComponent: Component
   menuSettingsComponent: Component
 }
 

@@ -63,9 +63,6 @@ const hasImage = computed(() => {
       <ImageOffIcon v-if="!hasImage" />
     </div>
   </div>
-  <teleport to="#space__widget-menu">
-    <ImageMenuSettings v-if="widgetId" :widgetId="widgetId" />
-  </teleport>
 </template>
 
 <style scoped>
