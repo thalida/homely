@@ -79,26 +79,6 @@ async function handleCreateSpace() {
   router.push({ name: 'Space', params: { spaceId: space.uid } })
 }
 
-async function handleCloneSpace() {
-  const space = await spaceStore.cloneSpace(selectedSpace.value)
-  router.push({ name: 'Space', params: { spaceId: space.uid } })
-}
-
-async function handleDeleteSpace() {
-  await spaceStore.deleteSpace(selectedSpace.value)
-  await widgetsStore.deleteWidgetsBySpace(selectedSpace.value)
-  router.push({ name: 'Home' })
-}
-
-function handleToggleDefaultSpace() {
-  const spaceId = (space.value.is_default) ? selectedSpace.value : null
-  spaceStore.setDefaultSpace(spaceId)
-}
-
-function handleToggleBookmark() {
-  spaceStore.toggleBookmark(selectedSpace.value)
-}
-
 const menuItems = ref([
   {
     label: "Demo Spaces",
@@ -217,24 +197,6 @@ function stopEditMode() {
         <template #optiongroup="slotProps">
           <div class="flex align-items-center">
             <div>{{ slotProps.option.label }}</div>
-          </div>
-        </template>
-        <template #footer="slotProps">
-          <div class="flex flex-row flex-wrap">
-            <button @click="handleCloneSpace">
-              Clone Space
-            </button>
-            <button @click="handleDeleteSpace" v-if="isSpaceOwner">
-              Delete Space
-            </button>
-            <label v-if="isSpaceOwner">
-              <span>Make Default</span>
-              <input type="checkbox" v-model="space.is_default" @change="handleToggleDefaultSpace" />
-            </label>
-            <label v-else>
-              <span>Bookmark</span>
-              <input type="checkbox" v-model="space.is_bookmarked" @change="handleToggleBookmark" />
-            </label>
           </div>
         </template>
       </Dropdown>

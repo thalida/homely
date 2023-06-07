@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onBeforeUnmount, onMounted, ref } from 'vue'
 import SpaceMenu from './SpaceMenu.vue'
 import SpaceWidgetMenu from './SpaceWidgetMenu.vue'
 import { ESidebarSection } from '@/constants/ui';
@@ -15,6 +15,24 @@ const props = defineProps({
 const spaceStore = useSpaceStore()
 const spaceMenuRef = ref<InstanceType<typeof SpaceMenu>>()
 const spaceWidgetMenuRef = ref<InstanceType<typeof SpaceWidgetMenu>>()
+
+onMounted(async () => {
+  window.addEventListener('beforeunload', handlePageRefresh)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('beforeunload', handlePageRefresh)
+})
+
+
+function handlePageRefresh(e: BeforeUnloadEvent) {
+  const isProduction = import.meta.env.PROD
+  if (isProduction && spaceStore.isEditMode) {
+    e.preventDefault()
+    e.returnValue = ''
+  }
+}
+
 </script>
 
 <template>

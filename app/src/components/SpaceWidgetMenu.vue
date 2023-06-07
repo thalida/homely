@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, type Component } from 'vue';
+import { computed, type Component } from 'vue';
 import { filter } from 'lodash';
 import { useUserStore } from '@/stores/user';
 import { useSpaceStore } from '@/stores/space';
@@ -17,14 +17,6 @@ const props = defineProps({
     required: true
   }
 });
-
-onMounted(async () => {
-  window.addEventListener('beforeunload', handlePageRefresh)
-})
-
-onBeforeUnmount(() => {
-  window.removeEventListener('beforeunload', handlePageRefresh)
-})
 
 const space = computed(() => {
   return spaceStore.collection[props.spaceId];
@@ -56,14 +48,6 @@ const selectedWidgetMenuComponents = computed(() => {
 
   return components;
 });
-
-function handlePageRefresh(e: BeforeUnloadEvent) {
-  const isProduction = import.meta.env.PROD
-  if (isProduction && spaceStore.isEditMode) {
-    e.preventDefault()
-    e.returnValue = ''
-  }
-}
 
 async function handleDelete() {
   for (const widget of selectedWidgets.value) {

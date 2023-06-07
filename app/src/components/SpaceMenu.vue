@@ -1,10 +1,13 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted } from 'vue';
+import { computed } from 'vue';
 import { useUserStore } from '@/stores/user';
 import { useSpaceStore } from '@/stores/space';
+import { useWidgetStore } from '@/stores/widget';
+import router from '@/router';
 
 const userStore = useUserStore();
 const spaceStore = useSpaceStore();
+const widgetsStore = useWidgetStore();
 
 const props = defineProps({
   spaceId: {
@@ -12,14 +15,6 @@ const props = defineProps({
     required: true
   }
 });
-
-onMounted(async () => {
-  window.addEventListener('beforeunload', handlePageRefresh)
-})
-
-onBeforeUnmount(() => {
-  window.removeEventListener('beforeunload', handlePageRefresh)
-})
 
 const space = computed(() => {
   return spaceStore.collection[props.spaceId];
@@ -29,12 +24,24 @@ const isSpaceOwner = computed(() => {
   return userStore.user?.pk === space.value?.owner;
 });
 
-function handlePageRefresh(e: BeforeUnloadEvent) {
-  const isProduction = import.meta.env.PROD
-  if (isProduction && spaceStore.isEditMode) {
-    e.preventDefault()
-    e.returnValue = ''
-  }
+async function handleCloneSpace() {
+  const newSpace = await spaceStore.cloneSpace(props.spaceId)
+  router.push({ name: 'Space', params: { spaceId: newSpace.uid } })
+}
+
+async function handleDeleteSpace() {
+  await spaceStore.deleteSpace(props.spaceId)
+  await widgetsStore.deleteWidgetsBySpace(props.spaceId)
+  router.push({ name: 'Home' })
+}
+
+function handleToggleDefaultSpace() {
+  const spaceId = (space.value.is_default) ? props.spaceId : null
+  spaceStore.setDefaultSpace(spaceId)
+}
+
+function handleToggleBookmark() {
+  spaceStore.toggleBookmark(props.spaceId)
 }
 </script>
 
@@ -58,6 +65,22 @@ function handlePageRefresh(e: BeforeUnloadEvent) {
       <span>Space Description</span>
       <input type="text" v-model="space.description" />
     </label>
+    <div class="flex flex-col flex-wrap">
+      <button @click="handleCloneSpace">
+        Clone Space
+      </button>
+      <button @click="handleDeleteSpace" v-if="isSpaceOwner">
+        Delete Space
+      </button>
+      <label v-if="isSpaceOwner">
+        <span>Make Default</span>
+        <input type="checkbox" v-model="space.is_default" @change="handleToggleDefaultSpace" />
+      </label>
+      <label v-else>
+        <span>Bookmark</span>
+        <input type="checkbox" v-model="space.is_bookmarked" @change="handleToggleBookmark" />
+      </label>
+    </div>
   </div>
 </template>
 
