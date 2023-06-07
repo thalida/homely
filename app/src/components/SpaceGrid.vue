@@ -11,7 +11,7 @@ const props = defineProps({
     required: true
   }
 })
-const widgetsStore = useWidgetStore()
+const widgetStore = useWidgetStore()
 const gridStackRef = ref<InstanceType<typeof GridStack>>()
 const gridStackOptions = {
   margin: 12,
@@ -36,19 +36,19 @@ onBeforeUnmount(() => {
 })
 
 watchEffect(() => {
-  if (!widgetsStore.gridStackBySpace[props.spaceId]) {
+  if (!widgetStore.gridStackBySpace[props.spaceId]) {
     return
   }
 
-  gridStackRef.value?.getGrid()?.load(widgetsStore.gridStackBySpace[props.spaceId])
+  gridStackRef.value?.getGrid()?.load(widgetStore.gridStackBySpace[props.spaceId])
 })
 
 watchEffect(() => {
-  resizeGrid(widgetsStore.isEditing[props.spaceId])
+  resizeGrid(widgetStore.isEditing[props.spaceId])
 })
 
 function handleWindowResize() {
-  resizeGrid(widgetsStore.isEditing[props.spaceId])
+  resizeGrid(widgetStore.isEditing[props.spaceId])
 }
 
 function resizeGrid(isWidgetEditMode: boolean = false) {
@@ -90,8 +90,8 @@ function handleGridDragStart(event: Event, el: GridItemHTMLElement) {
     return
   }
 
-  widgetsStore.unselectAllWidgets(props.spaceId)
-  widgetsStore.selectWidgetById(widgetId)
+  widgetStore.unselectAllWidgets(props.spaceId)
+  widgetStore.selectWidgetById(widgetId)
 }
 
 function handleGridDragStop(event: Event, el: GridItemHTMLElement) {
@@ -105,7 +105,7 @@ function handleGridDragStop(event: Event, el: GridItemHTMLElement) {
     return
   }
 
-  widgetsStore.draftUpdateWidget(node.id, {
+  widgetStore.draftUpdateWidget(node.id, {
     layout: {
       x: node.x,
       y: node.y,
@@ -122,8 +122,8 @@ function handleGridResizeStart(event: Event, el: GridItemHTMLElement) {
     return
   }
 
-  widgetsStore.unselectAllWidgets(props.spaceId)
-  widgetsStore.selectWidgetById(widgetId)
+  widgetStore.unselectAllWidgets(props.spaceId)
+  widgetStore.selectWidgetById(widgetId)
 }
 
 function handleGridResizeStop(event: Event, el: GridItemHTMLElement) {
@@ -137,7 +137,7 @@ function handleGridResizeStop(event: Event, el: GridItemHTMLElement) {
     return
   }
 
-  widgetsStore.draftUpdateWidget(node.id, {
+  widgetStore.draftUpdateWidget(node.id, {
     layout: {
       x: node.x,
       y: node.y,
@@ -164,11 +164,11 @@ function handleGridDropped(event: Event, previousWidget: GridStackNode, newWidge
   newWidgetSettings.layout.w = newWidget.w
   newWidgetSettings.layout.h = newWidget.h
 
-  widgetsStore.draftCreateWidget(props.spaceId, newWidgetSettings)
+  widgetStore.draftCreateWidget(props.spaceId, newWidgetSettings)
 }
 
 function handleGridChange(event: Event, items: GridStackNode[]) {
-  if (isResizingGrid.value || !widgetsStore.isEditing[props.spaceId]) {
+  if (isResizingGrid.value || !widgetStore.isEditing[props.spaceId]) {
     return
   }
 
@@ -177,7 +177,7 @@ function handleGridChange(event: Event, items: GridStackNode[]) {
       continue
     }
 
-    widgetsStore.draftUpdateWidget(item.id, {
+    widgetStore.draftUpdateWidget(item.id, {
       layout: {
         x: item.x,
         y: item.y,
@@ -193,7 +193,7 @@ function handleGridChange(event: Event, items: GridStackNode[]) {
   <div class="overflow-auto grow">
     <GridStack
       ref="gridStackRef"
-      :editable="widgetsStore.isEditing[props.spaceId]"
+      :editable="widgetStore.isEditing[props.spaceId]"
       :options="gridStackOptions"
       @dragstart="handleGridDragStart"
       @dragstop="handleGridDragStop"

@@ -4,7 +4,7 @@ import { useWidgetStore } from '@/stores/widget'
 import SpaceSidebar from './SpaceSidebar.vue'
 import SpaceGrid from './SpaceGrid.vue'
 
-const widgetsStore = useWidgetStore()
+const widgetStore = useWidgetStore()
 
 const props = defineProps({
   spaceId: {
@@ -22,7 +22,7 @@ function handleSpaceClick(e: Event) {
   const isSpaceGrid = target.classList.contains('grid-stack')
 
   if (isSpaceGrid) {
-    widgetsStore.unselectAllWidgets(props.spaceId)
+    widgetStore.unselectAllWidgets(props.spaceId)
   }
 }
 

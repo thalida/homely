@@ -48,7 +48,6 @@ onMounted(() => {
         <slot name="label"></slot>
       </span>
     </div>
-
     <div class="ghost absolute top-0 left-0 w-screen h-screen gs-id-0" :class="[numGridColsClass]">
       <div
         class="grid-stack-item"
