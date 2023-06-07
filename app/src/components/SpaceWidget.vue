@@ -64,7 +64,7 @@ watch(() => widget.value?.content, (after, before) => {
     return
   }
 
-  if (!spaceStore.isEditing[widget.value?.space]) {
+  if (!widgetStore.isEditing[widget.value?.space]) {
     return
   }
 
@@ -78,7 +78,7 @@ watch(() => widget.value?.card_style, (after, before) => {
     return
   }
 
-  if (!spaceStore.isEditing[widget.value?.space]) {
+  if (!widgetStore.isEditing[widget.value?.space]) {
     return
   }
 

@@ -35,7 +35,7 @@ onBeforeUnmount(() => {
 
 function handlePageRefresh(e: BeforeUnloadEvent) {
   const isProduction = import.meta.env.PROD
-  if (isProduction && widgetStore.isEditing[props.spaceId]) {
+  if (isProduction && (widgetStore.isEditing[props.spaceId] || spaceStore.isEditing[props.spaceId])) {
     e.preventDefault()
     e.returnValue = ''
   }
@@ -62,10 +62,9 @@ function handleSaveChanges() {
 }
 
 function handleDiscardChanges() {
-  spaceStore.discardAndStopEditMode(props.spaceId)
   widgetStore.discardAndStopEditMode(props.spaceId)
+  spaceStore.discardAndStopEditMode(props.spaceId)
 }
-
 
 async function handleCloneSpace() {
   const newSpace = await spaceStore.cloneSpace(props.spaceId)
