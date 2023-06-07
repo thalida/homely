@@ -95,7 +95,7 @@ function handleWidgetClick() {
   const canSelect = (
     (widgetComponent.value && 'canSelect' in widgetComponent.value)
     ? widgetComponent.value.canSelect
-    : widgetStore.isEditingBySpace[widget.value.space]
+    : widgetStore.isEditing[widget.value.space]
   )
 
   if (!canSelect) {

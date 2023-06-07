@@ -44,11 +44,11 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
-  resizeGrid(widgetsStore.isEditingBySpace[props.spaceId])
+  resizeGrid(widgetsStore.isEditing[props.spaceId])
 })
 
 function handleWindowResize() {
-  resizeGrid(widgetsStore.isEditingBySpace[props.spaceId])
+  resizeGrid(widgetsStore.isEditing[props.spaceId])
 }
 
 function resizeGrid(isWidgetEditMode: boolean = false) {
@@ -168,7 +168,7 @@ function handleGridDropped(event: Event, previousWidget: GridStackNode, newWidge
 }
 
 function handleGridChange(event: Event, items: GridStackNode[]) {
-  if (isResizingGrid.value || !widgetsStore.isEditingBySpace[props.spaceId]) {
+  if (isResizingGrid.value || !widgetsStore.isEditing[props.spaceId]) {
     return
   }
 
@@ -193,7 +193,7 @@ function handleGridChange(event: Event, items: GridStackNode[]) {
   <div class="overflow-auto grow">
     <GridStack
       ref="gridStackRef"
-      :editable="widgetsStore.isEditingBySpace[props.spaceId]"
+      :editable="widgetsStore.isEditing[props.spaceId]"
       :options="gridStackOptions"
       @dragstart="handleGridDragStart"
       @dragstop="handleGridDragStop"

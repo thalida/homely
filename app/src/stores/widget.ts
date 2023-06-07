@@ -11,7 +11,7 @@ export const useWidgetStore = defineStore('widget', () => {
   const backupCollectionBySpace: Ref<Record<string, IWidgets>> = ref({})
 
   const isSaving = ref(false)
-  const isEditingBySpace: Ref<Record<string, boolean>> = ref({})
+  const isEditing: Ref<Record<string, boolean>> = ref({})
   const spaces = ref<string[]>([])
   const getWidgetById = computed(() => (uid: string) => collection.value[uid])
   const allWidgetsBySpace = computed(() => {
@@ -81,8 +81,8 @@ export const useWidgetStore = defineStore('widget', () => {
   });
 
 
-  function setIsEditing(spaceId: string, isEditing: boolean) {
-    isEditingBySpace.value[spaceId] = isEditing
+  function setIsEditing(spaceId: string, state: boolean) {
+    isEditing.value[spaceId] = state
   }
 
 
@@ -324,7 +324,7 @@ export const useWidgetStore = defineStore('widget', () => {
     selectWidgetById,
     unselectWidgetById,
 
-    isEditingBySpace,
+    isEditing,
     setIsEditing,
 
     startEditMode,

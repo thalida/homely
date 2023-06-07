@@ -15,6 +15,8 @@ export interface ISpace {
   is_bookmarked: boolean
   num_bookmarks: number
   num_clones: number
+
+  fetchedWidgets?: boolean
 }
 
 export interface ISpaceResponse extends ISpace {

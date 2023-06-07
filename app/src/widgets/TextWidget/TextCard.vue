@@ -43,7 +43,7 @@ const props = defineProps({
 const widgetId = ref<string | null>(null)
 
 const isEditMode = computed(() => {
-  return widgetStore.isEditingBySpace[widget.value?.space]
+  return widgetStore.isEditing[widget.value?.space]
 })
 
 const widget = computed((): TTextWidget => {

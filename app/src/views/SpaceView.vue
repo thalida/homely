@@ -19,7 +19,7 @@ const fetchError = ref(false);
 watchEffect(async () => {
   try {
     isLoading.value = true
-    await spaceStore.fetchSpace(props.spaceId)
+    await spaceStore.getSpace(props.spaceId)
   } catch (error) {
     fetchError.value = true
   } finally {

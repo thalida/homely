@@ -1,11 +1,11 @@
 import { computed, ref, type Ref } from 'vue'
 import { defineStore } from 'pinia'
-import { filter, omit, sortBy } from 'lodash'
+import { cloneDeep, filter, omit, sortBy } from 'lodash'
 import { useWidgetStore } from '@/stores/widget'
 import { useUserStore } from '@/stores/user'
 import type { ISpace, ISpaceResponse, ISpaces } from '@/types/space'
 import {
-  getSpace,
+  getSpace as getSpaceReq,
   getSpaces,
   createSpace as createSpaceReq,
   updateSpace as updateSpaceReq,
@@ -21,6 +21,7 @@ export const useSpaceStore = defineStore('space', () => {
   const widgetStore = useWidgetStore()
   const userStore = useUserStore()
   const collection: Ref<ISpaces> = ref({})
+  const backupCollection: Ref<ISpaces> = ref({})
   const homepageSpaces = ref<ISpace[]>([])
   const defaultSpace = computed(() => {
     const foundDefault = Object.values(collection.value).find((space) => space.is_default)
@@ -60,8 +61,16 @@ export const useSpaceStore = defineStore('space', () => {
     }
   }
 
+  async function getSpace(spaceId: string) {
+    if (!collection.value[spaceId] || collection.value[spaceId].fetchedWidgets === false) {
+      return fetchSpace(spaceId)
+    }
+
+    return collection.value[spaceId]
+  }
+
   async function fetchSpace(spaceId: string) {
-    const spaceRes = await getSpace(spaceId)
+    const spaceRes = await getSpaceReq(spaceId)
     addSpace(spaceRes)
   }
 
@@ -76,11 +85,15 @@ export const useSpaceStore = defineStore('space', () => {
     return collection.value[spaceRes.uid]
   }
 
-  async function updateSpace(spaceId: string) {
+  async function saveSpace(spaceId: string) {
     const spaceRes = await updateSpaceReq(spaceId, collection.value[spaceId])
     addSpace(spaceRes)
 
     return collection.value[spaceRes.uid]
+  }
+
+  function discardSpace(spaceId: string) {
+    resetSpaceFromBackup(spaceId)
   }
 
   async function cloneSpace(spaceId: string) {
@@ -99,6 +112,8 @@ export const useSpaceStore = defineStore('space', () => {
     collection.value[space.uid] = {
       ...omit(space, ['widgets']),
     }
+
+    collection.value[space.uid].fetchedWidgets = Array.isArray(space.widgets)
 
     if (typeof space.widgets !== 'undefined' && space.widgets !== null) {
       const widgets = space.widgets.map((widget: any) => {
@@ -143,6 +158,40 @@ export const useSpaceStore = defineStore('space', () => {
     isEditing.value[spaceId] = value
   }
 
+
+  function createSpaceBackup(spaceId: string) {
+    backupCollection.value[spaceId] = cloneDeep(collection.value[spaceId])
+  }
+
+  function deleteSpaceBackup(spaceId: string) {
+    delete backupCollection.value[spaceId]
+  }
+
+  function resetSpaceFromBackup(spaceId: string) {
+    collection.value[spaceId] = cloneDeep(backupCollection.value[spaceId])
+    deleteSpaceBackup(spaceId)
+  }
+
+  function startEditMode(spaceId: string) {
+    createSpaceBackup(spaceId)
+    setIsEditing(spaceId, true)
+  }
+
+  function stopEditMode(spaceId: string) {
+    deleteSpaceBackup(spaceId)
+    setIsEditing(spaceId, false)
+  }
+
+  function saveAndStopEditMode(spaceId: string) {
+    saveSpace(spaceId)
+    stopEditMode(spaceId)
+  }
+
+  function discardAndStopEditMode(spaceId: string) {
+    discardSpace(spaceId)
+    stopEditMode(spaceId)
+  }
+
   return {
     collection,
     defaultSpace,
@@ -152,14 +201,26 @@ export const useSpaceStore = defineStore('space', () => {
     mySpaces,
     myBookmarkedSpaces,
     initSpaces,
+    getSpace,
     fetchSpace,
     createSpace,
-    updateSpace,
     cloneSpace,
     deleteSpace,
     toggleBookmark,
 
     isEditing,
     setIsEditing,
+
+    startEditMode,
+    stopEditMode,
+
+    createSpaceBackup,
+    deleteSpaceBackup,
+    resetSpaceFromBackup,
+
+    saveSpace,
+    discardSpace,
+    saveAndStopEditMode,
+    discardAndStopEditMode,
   }
 })

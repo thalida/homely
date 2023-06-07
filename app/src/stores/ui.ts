@@ -6,7 +6,7 @@ import type { ESidebarSection } from '@/constants/ui';
 
 export const useUIStore = defineStore('ui', () => {
   const appTheme: Ref<string> = useLocalStorage('homely/space/appTheme', EAppTheme.SYSTEM);
-  const activeSidebar: Ref<Record<string, ESidebarSection | null>> = ref({})
+  const isSidebarOpen = ref(false);
   const activeTheme = computed(() => {
     if (appTheme.value === EAppTheme.LIGHT || appTheme.value === EAppTheme.DARK) {
       return appTheme.value;
@@ -23,18 +23,15 @@ export const useUIStore = defineStore('ui', () => {
     }
   });
 
-  function setActiveSidebar(spaceId:string, section: ESidebarSection | null) {
-    activeSidebar.value[spaceId] = section
+  function setIsSidebarOpen(value: boolean) {
+    isSidebarOpen.value = value
+
+    return isSidebarOpen.value
   }
 
-  function toggleActiveSidebar(spaceId: string, section: ESidebarSection) {
-    if (activeSidebar.value[spaceId] === section) {
-      activeSidebar.value[spaceId] = null
-    } else {
-      activeSidebar.value[spaceId] = section
-    }
-
-    return activeSidebar.value[spaceId]
+  function toggleIsSidebarOpen() {
+    isSidebarOpen.value = !isSidebarOpen.value
+    return isSidebarOpen.value
   }
 
   watchEffect(() => {
@@ -46,8 +43,8 @@ export const useUIStore = defineStore('ui', () => {
     appTheme,
     isDarkMode,
 
-    activeSidebar,
-    setActiveSidebar,
-    toggleActiveSidebar,
+    isSidebarOpen,
+    setIsSidebarOpen,
+    toggleIsSidebarOpen,
   }
 });

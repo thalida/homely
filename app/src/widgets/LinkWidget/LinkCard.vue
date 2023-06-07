@@ -31,7 +31,7 @@ const widget = computed(() => {
 })
 
 const isEditing = computed(() => {
-  return widgetStore.isEditingBySpace[widget.value?.space]
+  return widgetStore.isEditing[widget.value?.space]
 })
 
 const metadata = computed(() => {

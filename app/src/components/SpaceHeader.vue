@@ -7,11 +7,9 @@ import { SettingsIcon } from 'lucide-vue-next';
 import type { CallbackTypes } from "vue3-google-login";
 import { useUserStore } from '@/stores/user';
 import { useUIStore } from '@/stores/ui'
-import { useWidgetStore } from '@/stores/widget';
 import { useSpaceStore } from '@/stores/space';
 import router from '@/router';
 import HomelyLogo from '@/components/HomelyLogo.vue';
-import { ESidebarSection } from '@/constants/ui';
 import type { ISpace } from '@/types/space';
 
 const props = defineProps({
@@ -24,7 +22,6 @@ const props = defineProps({
 const uiStore = useUIStore()
 const userStore = useUserStore()
 const spaceStore = useSpaceStore()
-const widgetStore = useWidgetStore()
 
 const selectedSpace = ref(props.spaceId)
 
@@ -119,14 +116,6 @@ const menuItems = ref([
 function handleMenuClick() {
   router.push("/")
 }
-
-function toggleOpenSidebar(sidebarSection: ESidebarSection) {
-  const activeSidebar = uiStore.toggleActiveSidebar(props.spaceId, sidebarSection)
-
-  if (activeSidebar === null) {
-    widgetStore.discardAndStopEditMode(props.spaceId)
-  }
-}
 </script>
 
 <template>
@@ -178,7 +167,7 @@ function toggleOpenSidebar(sidebarSection: ESidebarSection) {
     </div>
 
     <div class="flex flex-row items-center justify-end">
-      <button @click="toggleOpenSidebar(ESidebarSection.SPACE)" class="flex flex-row p-2 bg-blue-300">
+      <button @click="uiStore.toggleIsSidebarOpen" class="flex flex-row p-2 bg-blue-300">
         <SettingsIcon />
       </button>
     </div>
