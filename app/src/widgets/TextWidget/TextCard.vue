@@ -200,7 +200,7 @@ defineExpose({
 </script>
 
 <template>
-  <div class="widget-theme-bg widget-theme-text text-widget p-4" v-bind="$attrs">
+  <div class="widget-theme-bg widget-theme-text text-widget p-4">
     <editor-content
       class="cursor-auto flex flex-col prose prose-base max-w-none widget-theme-text focus:outline-none"
       :style="{

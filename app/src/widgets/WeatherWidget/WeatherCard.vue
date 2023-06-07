@@ -60,7 +60,6 @@ onBeforeUnmount(() => {
 
 <template>
   <div
-    v-bind="$attrs"
     class="flex flex-col"
   >
     <template v-if="isReady">

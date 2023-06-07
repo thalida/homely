@@ -64,7 +64,6 @@ watchEffect(() => {
   <component
     :is="isEditing ? 'div' : 'a'"
     ref="linkEl"
-    v-bind="$attrs"
     class="widget-theme-bg widget-theme-text flex cursor-pointer"
     :class="{
       'justify-center items-center p-8': widget.content.style === ELinkWidgetStyle.ICON,

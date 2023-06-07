@@ -378,7 +378,7 @@ body {
 }
 
 .widget-theme-light-gradient,
-.widget-theme-dynamic-gradient
+.widget-theme-dynamic-gradient,
 .light .widget-theme-dynamic-gradient {
   &.widget-theme-bg,
   .widget-theme-bg {

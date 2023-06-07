@@ -56,7 +56,6 @@ onBeforeUnmount(() => {
 
 <template>
   <div
-    v-bind="$attrs"
     class="flex flex-col">
     <DateTimeCardRow v-for="(datetime, index) in widget.content.items" :key="index" :widgetId="widgetId" :datetime="datetime" />
   </div>

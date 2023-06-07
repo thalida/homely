@@ -38,7 +38,6 @@ const hasImage = computed(() => {
 
 <template>
   <div
-    v-bind="$attrs"
     class="widget-theme-bg widget-theme-text flex flex-col items-center justify-center"
   >
     <div

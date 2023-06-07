@@ -113,7 +113,6 @@ function handleWidgetClick() {
     v-if="isRenderable"
     ref="widgetComponent"
     :is="component"
-    v-bind="$attrs"
     :widgetId="props.widgetId"
     :isPlaceholder="props.isPlaceholder"
     :placeholderWidget="props.placeholderWidget"
