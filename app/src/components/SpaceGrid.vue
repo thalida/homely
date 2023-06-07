@@ -16,6 +16,7 @@ const gridStackRef = ref<InstanceType<typeof GridStack>>()
 const gridStackOptions = {
   margin: 12,
   cellHeight: 100 + (12 * 2),
+  animate: false,
   float: true,
   disableOneColumnMode: true,
   acceptWidgets: true,
