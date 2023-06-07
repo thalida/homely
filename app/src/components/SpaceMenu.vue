@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import { computed } from 'vue';
+import { useUIStore } from '@/stores/ui';
 import { useUserStore } from '@/stores/user';
 import { useSpaceStore } from '@/stores/space';
 import { useWidgetStore } from '@/stores/widget';
 import router from '@/router';
+import { ESidebarSection } from '@/constants/ui';
 
+const uiStore = useUIStore();
 const userStore = useUserStore();
 const spaceStore = useSpaceStore();
 const widgetsStore = useWidgetStore();
@@ -43,27 +46,25 @@ function handleToggleDefaultSpace() {
 function handleToggleBookmark() {
   spaceStore.toggleBookmark(props.spaceId)
 }
+function handleEditWidgetsClick() {
+  uiStore.setActiveSidebar(props.spaceId, ESidebarSection.WIDGET)
+  widgetsStore.startEditMode(props.spaceId)
+}
 </script>
 
 <template>
-  <div
-    v-if="isSpaceOwner && spaceStore.isEditMode"
-    ref="menuRef"
-    class="space-x-2 overflow-auto bg-slate-200 z-10 bg-opacity-90 shrink-0"
-    :class="{
-      'h-auto w-auto p-0 m-4': !spaceStore.isEditMode,
-      'h-full w-80 p-4 m-0': spaceStore.isEditMode,
-    }"
-  >
+  <div>
     <h2 class="font-bold">Space</h2>
     <label>
       <span>Space Name</span>
-      <input type="text" v-model="space.name" />
+      <input v-if="isSpaceOwner" type="text" v-model="space.name" />
+      <p v-else>{{ space.name }}</p>
     </label>
     <br />
     <label>
       <span>Space Description</span>
-      <input type="text" v-model="space.description" />
+      <input v-if="isSpaceOwner" type="text" v-model="space.description" />
+      <p v-else>{{ space.description }}</p>
     </label>
     <div class="flex flex-col flex-wrap">
       <button @click="handleCloneSpace">
@@ -80,6 +81,7 @@ function handleToggleBookmark() {
         <span>Bookmark</span>
         <input type="checkbox" v-model="space.is_bookmarked" @change="handleToggleBookmark" />
       </label>
+      <button @click="handleEditWidgetsClick">Edit Widgets</button>
     </div>
   </div>
 </template>

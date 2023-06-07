@@ -1,17 +1,18 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { computed, ref } from 'vue';
 import InputSwitch from 'primevue/inputswitch';
 import SplitButton from 'primevue/splitbutton';
 import Dropdown from 'primevue/dropdown';
 import { SettingsIcon } from 'lucide-vue-next';
 import type { CallbackTypes } from "vue3-google-login";
 import { useUserStore } from '@/stores/user';
-import { useThemeStore } from '@/stores/theme'
-import { useSpaceStore } from '@/stores/space';
+import { useUIStore } from '@/stores/ui'
 import { useWidgetStore } from '@/stores/widget';
+import { useSpaceStore } from '@/stores/space';
 import router from '@/router';
 import HomelyLogo from '@/components/HomelyLogo.vue';
 import { ESidebarSection } from '@/constants/ui';
+import type { ISpace } from '@/types/space';
 
 const props = defineProps({
   spaceId: {
@@ -20,19 +21,12 @@ const props = defineProps({
   }
 });
 
-const themeStore = useThemeStore()
+const uiStore = useUIStore()
 const userStore = useUserStore()
 const spaceStore = useSpaceStore()
-const widgetsStore = useWidgetStore()
+const widgetStore = useWidgetStore()
 
 const selectedSpace = ref(props.spaceId)
-const space = computed(() => {
-  return spaceStore.collection[selectedSpace.value];
-});
-
-const isSpaceOwner = computed(() => {
-  return userStore.user?.pk === space.value?.owner;
-});
 
 const isAuthenticated = computed(() => {
   return userStore.isAuthenticated;
@@ -46,7 +40,7 @@ const availableSpaces = computed(() => {
   return [
     {
       label: 'My Spaces',
-      items: spaceStore.mySpaces.map((space) => {
+      items: spaceStore.mySpaces.map((space: ISpace) => {
         return {
           label: space.name,
           value: space.uid
@@ -55,7 +49,7 @@ const availableSpaces = computed(() => {
     },
     {
       label: 'Bookmarked Spaces',
-      items: spaceStore.myBookmarkedSpaces.map((space) => {
+      items: spaceStore.myBookmarkedSpaces.map((space: ISpace) => {
         return {
           label: space.name,
           value: space.uid
@@ -126,35 +120,13 @@ function handleMenuClick() {
   router.push("/")
 }
 
-function handleEditModeStart(sidebarSection = ESidebarSection.WIDGET) {
-  spaceStore.sidebarOpenState[sidebarSection] = true
-  startEditMode()
-}
+function toggleOpenSidebar(sidebarSection: ESidebarSection) {
+  const activeSidebar = uiStore.toggleActiveSidebar(props.spaceId, sidebarSection)
 
-async function handleEditModeSave() {
-  await widgetsStore.saveDirtyWidgets(props.spaceId)
-  spaceStore.updateSpace(props.spaceId)
-  stopEditMode();
+  if (activeSidebar === null) {
+    widgetStore.discardAndStopEditMode(props.spaceId)
+  }
 }
-
-function handleEditModeCancel() {
-  spaceStore.resetFromBackup()
-  stopEditMode()
-}
-
-function startEditMode() {
-  spaceStore.createBackup()
-  spaceStore.setEditMode(true)
-}
-
-function stopEditMode() {
-  spaceStore.sidebarOpenState[ESidebarSection.WIDGET] = false
-  spaceStore.sidebarOpenState[ESidebarSection.SPACE] = false
-  widgetsStore.unselectAllWidgets(props.spaceId)
-  spaceStore.setEditMode(false)
-  spaceStore.deleteBackup()
-}
-
 </script>
 
 <template>
@@ -166,7 +138,7 @@ function stopEditMode() {
         </button>
       </SplitButton>
       <div class="flex flex-row items-center justify-center space-x-2">
-        <InputSwitch v-model="themeStore.isDarkMode" />
+        <InputSwitch v-model="uiStore.isDarkMode" />
       </div>
       <GoogleLogin v-if="!isAuthenticated" :callback="handleLoginWithGoogle" popup-type="TOKEN">
         <button>Login Using Google</button>
@@ -206,22 +178,9 @@ function stopEditMode() {
     </div>
 
     <div class="flex flex-row items-center justify-end">
-      <template v-if="isSpaceOwner">
-        <template v-if="spaceStore.isEditMode">
-          <button @click="handleEditModeCancel" class="p-2 bg-slate-400">Cancel</button>
-          <button @click="handleEditModeSave" class="p-2 bg-green-300">
-            Save
-          </button>
-        </template>
-        <template v-else>
-          <button @click="handleEditModeStart('space')" class="flex flex-row p-2 bg-blue-300">
-            Space <SettingsIcon />
-          </button>
-          <button @click="handleEditModeStart('widget')" class="flex flex-row p-2 bg-green-300">
-            Widget <SettingsIcon />
-          </button>
-        </template>
-      </template>
+      <button @click="toggleOpenSidebar(ESidebarSection.SPACE)" class="flex flex-row p-2 bg-blue-300">
+        <SettingsIcon />
+      </button>
     </div>
   </header>
 </template>

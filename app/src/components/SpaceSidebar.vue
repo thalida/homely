@@ -3,7 +3,8 @@ import { onBeforeUnmount, onMounted, ref } from 'vue'
 import SpaceMenu from './SpaceMenu.vue'
 import SpaceWidgetMenu from './SpaceWidgetMenu.vue'
 import { ESidebarSection } from '@/constants/ui';
-import { useSpaceStore } from '@/stores/space';
+import { useUIStore } from '@/stores/ui'
+import { useWidgetStore } from '@/stores/widget';
 
 const props = defineProps({
   spaceId: {
@@ -12,7 +13,8 @@ const props = defineProps({
   }
 })
 
-const spaceStore = useSpaceStore()
+const uiStore = useUIStore()
+const widgetStore = useWidgetStore()
 const spaceMenuRef = ref<InstanceType<typeof SpaceMenu>>()
 const spaceWidgetMenuRef = ref<InstanceType<typeof SpaceWidgetMenu>>()
 
@@ -27,7 +29,7 @@ onBeforeUnmount(() => {
 
 function handlePageRefresh(e: BeforeUnloadEvent) {
   const isProduction = import.meta.env.PROD
-  if (isProduction && spaceStore.isEditMode) {
+  if (isProduction && widgetStore.isEditingBySpace[props.spaceId]) {
     e.preventDefault()
     e.returnValue = ''
   }
@@ -36,13 +38,16 @@ function handlePageRefresh(e: BeforeUnloadEvent) {
 </script>
 
 <template>
-  <div>
+  <div
+    v-if="uiStore.activeSidebar[spaceId]"
+    class="space-x-2 overflow-auto bg-slate-200 z-10 bg-opacity-90 shrink-0 h-full w-80 p-4 m-0"
+  >
     <SpaceMenu
-      v-if="spaceStore.sidebarOpenState[ESidebarSection.SPACE]"
+      v-if="uiStore.activeSidebar[spaceId] === ESidebarSection.SPACE"
       ref="spaceMenuRef"
       :spaceId="props.spaceId" />
     <SpaceWidgetMenu
-      v-else-if="spaceStore.sidebarOpenState[ESidebarSection.WIDGET]"
+      v-else-if="uiStore.activeSidebar[spaceId] === ESidebarSection.WIDGET"
       ref="spaceWidgetMenuRef"
       :spaceId="props.spaceId" />
   </div>

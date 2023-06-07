@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref, watch, watchEffect, type PropType } from 'vue'
-import { useEditor, EditorContent, type Editor } from '@tiptap/vue-3'
+import { useEditor, EditorContent } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
 import LinkExtension from '@tiptap/extension-link'
 import PlaceholderExtension from '@tiptap/extension-placeholder'
@@ -43,7 +43,7 @@ const props = defineProps({
 const widgetId = ref<string | null>(null)
 
 const isEditMode = computed(() => {
-  return spaceStore.isEditMode
+  return widgetStore.isEditingBySpace[widget.value?.space]
 })
 
 const widget = computed((): TTextWidget => {

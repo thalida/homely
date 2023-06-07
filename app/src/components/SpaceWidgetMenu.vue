@@ -57,32 +57,39 @@ async function handleDelete() {
 </script>
 
 <template>
-  <div
-    v-if="isSpaceOwner && spaceStore.isEditMode"
-    ref="menuRef"
-    class="space-x-2 overflow-auto bg-slate-200 z-10 bg-opacity-90 shrink-0"
-    :class="{
-      'h-auto w-auto p-0 m-4': !spaceStore.isEditMode,
-      'h-full w-80 p-4 m-0': spaceStore.isEditMode,
-    }"
-  >
+  <div>
     <h2 class="font-bold">Widgets</h2>
-    <button @click="handleDelete" class="p-2 bg-red-400 disabled:opacity-50" :disabled="numSelectedWidgets === 0">Delete</button>
-    <div v-if="numSelectedWidgets === 0" class="grid grid-cols-3 gap-2">
-      <component
-        v-for="component in widgetAddBtnComponents"
-        :key="component.name"
-        :is="component"
-      />
-    </div>
+    <template v-if="isSpaceOwner">
+      <template v-if="widgetsStore.isEditingBySpace[spaceId]">
+        <button @click="widgetsStore.discardDirtyWidgets(spaceId)" class="p-2 bg-slate-400">Reset</button>
+        <button @click="widgetsStore.saveDirtyWidgets(spaceId)" class="p-2 bg-green-300">
+          Save
+        </button>
+      </template>
+      <template v-else>
+        <button @click="widgetsStore.startEditMode(spaceId)" class="p-2 bg-green-300">
+          Edit
+        </button>
+      </template>
+    </template>
+    <template v-if="widgetsStore.isEditingBySpace[spaceId]">
+      <button @click="handleDelete" class="p-2 bg-red-400 disabled:opacity-50" :disabled="numSelectedWidgets === 0">Delete</button>
+      <div v-if="numSelectedWidgets === 0" class="grid grid-cols-3 gap-2">
+        <component
+          v-for="component in widgetAddBtnComponents"
+          :key="component.name"
+          :is="component"
+        />
+      </div>
 
-    <div v-for="widgetId in selectedWidgets" :key="widgetId">
-      <SpaceWidgetGlobalSettings :widgetId="widgetId" />
-      <component
-        :is="selectedWidgetMenuComponents[widgetId]"
-        :widgetId="widgetId"
-      />
-    </div>
+      <div v-for="widgetId in selectedWidgets" :key="widgetId">
+        <SpaceWidgetGlobalSettings :widgetId="widgetId" />
+        <component
+          :is="selectedWidgetMenuComponents[widgetId]"
+          :widgetId="widgetId"
+        />
+      </div>
+    </template>
   </div>
 </template>
 

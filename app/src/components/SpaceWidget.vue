@@ -64,7 +64,7 @@ watch(() => widget.value?.content, (after, before) => {
     return
   }
 
-  if (!spaceStore.isEditMode) {
+  if (!spaceStore.isEditing[widget.value?.space]) {
     return
   }
 
@@ -78,7 +78,7 @@ watch(() => widget.value?.card_style, (after, before) => {
     return
   }
 
-  if (!spaceStore.isEditMode) {
+  if (!spaceStore.isEditing[widget.value?.space]) {
     return
   }
 
@@ -95,7 +95,7 @@ function handleWidgetClick() {
   const canSelect = (
     (widgetComponent.value && 'canSelect' in widgetComponent.value)
     ? widgetComponent.value.canSelect
-    : spaceStore.isEditMode
+    : widgetStore.isEditingBySpace[widget.value.space]
   )
 
   if (!canSelect) {

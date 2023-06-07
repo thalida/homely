@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { RouterView } from "vue-router";
 import { useFontStore } from './stores/fonts';
-import { useThemeStore } from './stores/theme';
+import { useUIStore } from './stores/ui';
 import { useUserStore } from './stores/user';
 import { useSpaceStore } from './stores/space';
 import { onMounted, ref } from "vue";
 
-useThemeStore()
+useUIStore()
 
 const isLoading = ref(true);
 const fontStore = useFontStore()

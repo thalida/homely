@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, watchEffect, type PropType } from 'vue'
 import { useWidgetStore } from '@/stores/widget'
-import { useSpaceStore } from '@/stores/space'
-import LinkMenuSettings from './LinkMenuSettings.vue'
 import { ELinkWidgetStyle } from './constants'
 import type { TLinkWidget } from './types'
 
@@ -24,7 +22,6 @@ const props = defineProps({
   },
 })
 
-const spaceStore = useSpaceStore()
 const widgetStore = useWidgetStore()
 
 const linkEl = ref(null)
@@ -34,7 +31,7 @@ const widget = computed(() => {
 })
 
 const isEditing = computed(() => {
-  return spaceStore.isEditMode
+  return widgetStore.isEditingBySpace[widget.value?.space]
 })
 
 const metadata = computed(() => {

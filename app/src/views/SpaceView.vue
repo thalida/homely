@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref, watchEffect } from 'vue'
+import { ref, watchEffect } from 'vue'
 import SpaceHeader from '@/components/SpaceHeader.vue'
 import SpaceMain from '@/components/SpaceMain.vue'
 import SpaceBackground from '@/components/SpaceBackground.vue'

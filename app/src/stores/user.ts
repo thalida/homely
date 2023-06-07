@@ -92,7 +92,6 @@ export const useUserStore = defineStore('user', () => {
     accessToken.value = null
     refreshToken.value = null
     user.value = null
-    spaceStore.isEditMode = false
 
     window.location.href = '/'
   }

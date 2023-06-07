@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref, watchEffect } from 'vue'
+import { onBeforeUnmount, onMounted, ref, watchEffect } from 'vue'
 import { debounce } from 'lodash'
 import type { GridStackNode, GridItemHTMLElement } from 'gridstack';
-import { useSpaceStore } from '@/stores/space'
 import { useWidgetStore } from '@/stores/widget'
 import GridStack from './GridStack.vue'
 
@@ -12,7 +11,6 @@ const props = defineProps({
     required: true
   }
 })
-const spaceStore = useSpaceStore()
 const widgetsStore = useWidgetStore()
 const gridStackRef = ref<InstanceType<typeof GridStack>>()
 const gridStackOptions = {
@@ -46,14 +44,14 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
-  resizeGrid(spaceStore.isEditMode)
+  resizeGrid(widgetsStore.isEditingBySpace[props.spaceId])
 })
 
 function handleWindowResize() {
-  resizeGrid(spaceStore.isEditMode)
+  resizeGrid(widgetsStore.isEditingBySpace[props.spaceId])
 }
 
-function resizeGrid(isEditMode: boolean = false) {
+function resizeGrid(isWidgetEditMode: boolean = false) {
   let grid = gridStackRef.value?.getGrid()
 
   if (!grid) return
@@ -61,7 +59,7 @@ function resizeGrid(isEditMode: boolean = false) {
   const layout = 'move'
   isResizingGrid.value = true
 
-  if (isEditMode) {
+  if (isWidgetEditMode) {
     grid.column(12, layout);
     isResizingGrid.value = false
     return
@@ -170,7 +168,7 @@ function handleGridDropped(event: Event, previousWidget: GridStackNode, newWidge
 }
 
 function handleGridChange(event: Event, items: GridStackNode[]) {
-  if (isResizingGrid.value || !spaceStore.isEditMode) {
+  if (isResizingGrid.value || !widgetsStore.isEditingBySpace[props.spaceId]) {
     return
   }
 
@@ -195,7 +193,7 @@ function handleGridChange(event: Event, items: GridStackNode[]) {
   <div class="overflow-auto grow">
     <GridStack
       ref="gridStackRef"
-      :editable="spaceStore.isEditMode"
+      :editable="widgetsStore.isEditingBySpace[props.spaceId]"
       :options="gridStackOptions"
       @dragstart="handleGridDragStart"
       @dragstop="handleGridDragStop"

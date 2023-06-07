@@ -1,15 +1,17 @@
-import { computed, ref } from 'vue'
+import { computed, ref, type Ref } from 'vue'
 import { defineStore } from 'pinia'
 import { v4 as uuidv4 } from 'uuid'
 import type { PartialDeep } from 'type-fest'
-import { debounce, merge, omit } from 'lodash'
+import { cloneDeep, debounce, merge, omit } from 'lodash'
 import type { IWidgets, IWidget } from '@/types/widget';
 import { createWidget as createWidgetReq, deleteWidget as deleteWidgetReq, updateWidget as updateWidgetReq } from '@/api/widget';
 
 export const useWidgetStore = defineStore('widget', () => {
   const collection = ref<IWidgets>({})
+  const backupCollectionBySpace: Ref<Record<string, IWidgets>> = ref({})
 
   const isSaving = ref(false)
+  const isEditingBySpace: Ref<Record<string, boolean>> = ref({})
   const spaces = ref<string[]>([])
   const getWidgetById = computed(() => (uid: string) => collection.value[uid])
   const allWidgetsBySpace = computed(() => {
@@ -77,6 +79,45 @@ export const useWidgetStore = defineStore('widget', () => {
 
     return res
   });
+
+
+  function setIsEditing(spaceId: string, isEditing: boolean) {
+    isEditingBySpace.value[spaceId] = isEditing
+  }
+
+
+  function createWidgetsBackup(spaceId: string) {
+    const widgets = allWidgetsBySpace.value[spaceId];
+
+    if (typeof widgets === 'undefined') {
+      return
+    }
+
+    backupCollectionBySpace.value[spaceId] = {}
+    for (const widgetId of widgets) {
+      backupCollectionBySpace.value[spaceId][widgetId] = collection.value[widgetId]
+    }
+  }
+
+  function deleteWidgetsBackup(spaceId: string) {
+    delete backupCollectionBySpace.value[spaceId]
+  }
+
+  function resetWidgetsFromBackup(spaceId: string) {
+    const currrent = allWidgetsBySpace.value[spaceId]
+    const backup = backupCollectionBySpace.value[spaceId]
+
+    for (const widgetId of currrent) {
+      if (typeof backup === 'undefined' || backup === null || typeof backup[widgetId] === 'undefined' || backup[widgetId] === null) {
+        delete collection.value[widgetId]
+        continue
+      }
+
+      collection.value[widgetId] = cloneDeep(backup[widgetId])
+    }
+
+    deleteWidgetsBackup(spaceId)
+  }
 
   function setSpaceWidgets(spaceId: string, widgets: IWidget[]) {
     if (spaces.value.indexOf(spaceId) === -1) {
@@ -232,6 +273,31 @@ export const useWidgetStore = defineStore('widget', () => {
 
   const debouncedSaveDirtyWidgets = debounce(saveDirtyWidgets, 500)
 
+  function discardDirtyWidgets(spaceId: string) {
+    resetWidgetsFromBackup(spaceId)
+  }
+
+  function startEditMode(spaceId: string) {
+    createWidgetsBackup(spaceId)
+    setIsEditing(spaceId, true)
+  }
+
+  function stopEditMode(spaceId: string) {
+    unselectAllWidgets(spaceId)
+    deleteWidgetsBackup(spaceId)
+    setIsEditing(spaceId, false)
+  }
+
+  function saveAndStopEditMode(spaceId: string) {
+    saveDirtyWidgets(spaceId)
+    stopEditMode(spaceId)
+  }
+
+  function discardAndStopEditMode(spaceId: string) {
+    discardDirtyWidgets(spaceId)
+    stopEditMode(spaceId)
+  }
+
   function deleteWidgetsBySpace(spaceId: string) {
     const spaceWidgets = allWidgetsBySpace.value[spaceId]
 
@@ -246,7 +312,6 @@ export const useWidgetStore = defineStore('widget', () => {
     debouncedSaveDirtyWidgets(spaceId)
   }
 
-
   return {
     collection,
 
@@ -259,9 +324,23 @@ export const useWidgetStore = defineStore('widget', () => {
     selectWidgetById,
     unselectWidgetById,
 
+    isEditingBySpace,
+    setIsEditing,
+
+    startEditMode,
+    stopEditMode,
+
+    createWidgetsBackup,
+    deleteWidgetsBackup,
+    resetWidgetsFromBackup,
+
     markWidgetAsDirty,
     saveDirtyWidgets,
+    discardDirtyWidgets,
     debouncedSaveDirtyWidgets,
+
+    saveAndStopEditMode,
+    discardAndStopEditMode,
 
     updateWidget,
     draftUpdateWidget,

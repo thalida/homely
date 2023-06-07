@@ -1,9 +1,8 @@
 import { computed, ref, type Ref } from 'vue'
 import { defineStore } from 'pinia'
-import { cloneDeep, filter, omit, sortBy } from 'lodash'
+import { filter, omit, sortBy } from 'lodash'
 import { useWidgetStore } from '@/stores/widget'
 import { useUserStore } from '@/stores/user'
-import type { IWidgets } from '@/types/widget'
 import type { ISpace, ISpaceResponse, ISpaces } from '@/types/space'
 import {
   getSpace,
@@ -17,25 +16,17 @@ import {
 import { randomItemFromArray } from '@/utils/array'
 import { HOME_TERMS, SPACE_TERMS } from '@/constants/space'
 import { updateUser } from '@/api/user'
-import { ESidebarSection } from '@/constants/ui'
 
 export const useSpaceStore = defineStore('space', () => {
   const widgetStore = useWidgetStore()
   const userStore = useUserStore()
   const collection: Ref<ISpaces> = ref({})
-  const backupSpaces: Ref<ISpaces> = ref({})
-  const backupWidgets: Ref<IWidgets> = ref({})
   const homepageSpaces = ref<ISpace[]>([])
   const defaultSpace = computed(() => {
     const foundDefault = Object.values(collection.value).find((space) => space.is_default)
     return foundDefault ? foundDefault.uid : Object.keys(collection.value)[0]
   });
-  const isEditMode = ref(false)
-  const sidebarOpenState = ref({
-    [ESidebarSection.SPACE]: false,
-    [ESidebarSection.WIDGET]: false,
-  })
-
+  const isEditing: Ref<Record<string, boolean>> = ref({})
 
   const mySpaces = computed(() => {
     const user = userStore.user
@@ -125,31 +116,6 @@ export const useSpaceStore = defineStore('space', () => {
 
       widgetStore.setSpaceWidgets(space.uid, widgets)
     }
-
-  }
-
-  function createBackup() {
-    backupSpaces.value = cloneDeep(collection.value)
-    backupWidgets.value = cloneDeep(widgetStore.collection)
-  }
-
-  function deleteBackup() {
-    backupSpaces.value = {}
-    backupWidgets.value = {}
-  }
-
-  function resetFromBackup() {
-    collection.value = cloneDeep(backupSpaces.value)
-    widgetStore.collection = cloneDeep(backupWidgets.value)
-    deleteBackup()
-  }
-
-  function toggleEditMode() {
-    isEditMode.value = !isEditMode.value
-  }
-
-  function setEditMode(value: boolean) {
-    isEditMode.value = value
   }
 
   async function toggleBookmark(spaceId: string) {
@@ -172,10 +138,12 @@ export const useSpaceStore = defineStore('space', () => {
       collection.value[spaceId].is_default = true
     }
   }
+
+  function setIsEditing(spaceId: string, value: boolean) {
+    isEditing.value[spaceId] = value
+  }
+
   return {
-    isEditMode,
-    setEditMode,
-    toggleEditMode,
     collection,
     defaultSpace,
     setDefaultSpace,
@@ -189,11 +157,9 @@ export const useSpaceStore = defineStore('space', () => {
     updateSpace,
     cloneSpace,
     deleteSpace,
-    createBackup,
-    deleteBackup,
-    resetFromBackup,
     toggleBookmark,
 
-    sidebarOpenState,
+    isEditing,
+    setIsEditing,
   }
 })
