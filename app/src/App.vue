@@ -1,26 +1,28 @@
 <script setup lang="ts">
-import { ref } from 'vue';
 import { RouterView } from "vue-router";
 import { useFontStore } from './stores/fonts';
-import { useUserStore } from './stores/user';
 import { useThemeStore } from './stores/theme';
+import { useUserStore } from './stores/user';
+import { useSpaceStore } from './stores/space';
+import { onMounted, ref } from "vue";
 
 useThemeStore()
 
+const isLoading = ref(true);
 const fontStore = useFontStore()
-const userStore = useUserStore()
-const isLoading = ref(true)
+const userStore = useUserStore();
+const spaceStore = useSpaceStore();
 
-userStore.autoLogin().then(async () => {
+onMounted(async () => {
+  await userStore.autoLogin();
+  await spaceStore.fetchHomepageSpaces()
   isLoading.value = false
 })
 </script>
 
 <template>
   <template v-if="isLoading">
-    <main>
-      Loading&hellip;
-    </main>
+    Loading &hellip;
   </template>
   <template v-else>
     <teleport to="body">

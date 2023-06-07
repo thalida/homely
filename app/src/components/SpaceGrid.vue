@@ -30,17 +30,19 @@ defineExpose({
 })
 
 onMounted(async () => {
-  await spaceStore.fetchSpace(props.spaceId)
-
-  watchEffect(() => {
-    gridStackRef.value?.getGrid()?.load(widgetsStore.gridStackBySpace[props.spaceId])
-  })
-
   window.addEventListener('resize', handleWindowResize);
 })
 
 onBeforeUnmount(() => {
   window.removeEventListener('resize', handleWindowResize);
+})
+
+watchEffect(() => {
+  if (!widgetsStore.gridStackBySpace[props.spaceId]) {
+    return
+  }
+
+  gridStackRef.value?.getGrid()?.load(widgetsStore.gridStackBySpace[props.spaceId])
 })
 
 watchEffect(() => {

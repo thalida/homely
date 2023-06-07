@@ -142,6 +142,7 @@ const menuItems = ref([
 ]);
 
 onMounted(async () => {
+  console.log('SpaceHeader mounted')
   if (spaceStore.isEditMode) {
     handleEditModeStart()
   }
@@ -254,9 +255,9 @@ function stopEditMode() {
           </button>
         </template>
         <template v-else>
-            <button @click="handleEditModeStart" class="p-2 bg-green-300">
-              <SettingsIcon />
-            </button>
+          <button @click="handleEditModeStart" class="p-2 bg-green-300">
+            <SettingsIcon />
+          </button>
         </template>
       </template>
     </div>
