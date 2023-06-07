@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { provide, ref } from 'vue'
 import { useWidgetStore } from '@/stores/widget'
-import SpaceMenu from './SpaceMenu.vue'
+import SpaceSidebar from './SpaceSidebar.vue'
 import SpaceGrid from './SpaceGrid.vue'
 
 const widgetsStore = useWidgetStore()
@@ -15,7 +15,7 @@ const props = defineProps({
 
 const spaceRef = ref<HTMLElement>()
 const spaceGridRef = ref<InstanceType<typeof SpaceGrid>>()
-const spaceMenuRef = ref<InstanceType<typeof SpaceMenu>>()
+const spaceSidebarRef = ref<InstanceType<typeof SpaceSidebar>>()
 
 function handleSpaceClick(e: Event) {
   const target = e.target as HTMLElement
@@ -27,6 +27,7 @@ function handleSpaceClick(e: Event) {
 }
 
 provide('spaceGridRef', spaceGridRef)
+provide('spaceSidebarRef', spaceSidebarRef)
 </script>
 
 <template>
@@ -38,8 +39,8 @@ provide('spaceGridRef', spaceGridRef)
     <SpaceGrid
       ref="spaceGridRef"
       :spaceId="props.spaceId" />
-    <SpaceMenu
-      ref="spaceMenuRef"
+    <SpaceSidebar
+      ref="spaceSidebarRef"
       :spaceId="props.spaceId" />
   </main>
 </template>

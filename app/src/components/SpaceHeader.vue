@@ -11,6 +11,7 @@ import { useSpaceStore } from '@/stores/space';
 import { useWidgetStore } from '@/stores/widget';
 import router from '@/router';
 import HomelyLogo from '@/components/HomelyLogo.vue';
+import { ESidebarSection } from '@/constants/ui';
 
 const props = defineProps({
   spaceId: {
@@ -141,18 +142,12 @@ const menuItems = ref([
   },
 ]);
 
-onMounted(async () => {
-  console.log('SpaceHeader mounted')
-  if (spaceStore.isEditMode) {
-    handleEditModeStart()
-  }
-})
-
 function handleMenuClick() {
   router.push("/")
 }
 
-function handleEditModeStart() {
+function handleEditModeStart(sidebarSection = ESidebarSection.WIDGET) {
+  spaceStore.sidebarOpenState[sidebarSection] = true
   startEditMode()
 }
 
@@ -173,6 +168,8 @@ function startEditMode() {
 }
 
 function stopEditMode() {
+  spaceStore.sidebarOpenState[ESidebarSection.WIDGET] = false
+  spaceStore.sidebarOpenState[ESidebarSection.SPACE] = false
   widgetsStore.unselectAllWidgets(props.spaceId)
   spaceStore.setEditMode(false)
   spaceStore.deleteBackup()
@@ -196,7 +193,7 @@ function stopEditMode() {
       </GoogleLogin>
     </div>
 
-    <div class="flex flex-col items-center justify-center">
+    <div class="flex flex-row items-center justify-center">
       <Dropdown
         v-if="isAuthenticated"
         v-model="selectedSpace"
@@ -224,9 +221,6 @@ function stopEditMode() {
         </template>
         <template #footer="slotProps">
           <div class="flex flex-row flex-wrap">
-            <button @click="handleCreateSpace">
-              Create Space
-            </button>
             <button @click="handleCloneSpace">
               Clone Space
             </button>
@@ -244,6 +238,9 @@ function stopEditMode() {
           </div>
         </template>
       </Dropdown>
+      <button @click="handleCreateSpace">
+        + Create Space
+      </button>
     </div>
 
     <div class="flex flex-row items-center justify-end">
@@ -255,8 +252,11 @@ function stopEditMode() {
           </button>
         </template>
         <template v-else>
-          <button @click="handleEditModeStart" class="p-2 bg-green-300">
-            <SettingsIcon />
+          <button @click="handleEditModeStart('space')" class="flex flex-row p-2 bg-blue-300">
+            Space <SettingsIcon />
+          </button>
+          <button @click="handleEditModeStart('widget')" class="flex flex-row p-2 bg-green-300">
+            Widget <SettingsIcon />
           </button>
         </template>
       </template>

@@ -17,6 +17,7 @@ import {
 import { randomItemFromArray } from '@/utils/array'
 import { HOME_TERMS, SPACE_TERMS } from '@/constants/space'
 import { updateUser } from '@/api/user'
+import { ESidebarSection } from '@/constants/ui'
 
 export const useSpaceStore = defineStore('space', () => {
   const widgetStore = useWidgetStore()
@@ -24,12 +25,16 @@ export const useSpaceStore = defineStore('space', () => {
   const collection: Ref<ISpaces> = ref({})
   const backupSpaces: Ref<ISpaces> = ref({})
   const backupWidgets: Ref<IWidgets> = ref({})
-  const isEditMode = ref(false)
   const homepageSpaces = ref<ISpace[]>([])
   const defaultSpace = computed(() => {
     const foundDefault = Object.values(collection.value).find((space) => space.is_default)
     return foundDefault ? foundDefault.uid : Object.keys(collection.value)[0]
   });
+  const isEditMode = ref(false)
+  const sidebarOpenState = ref({
+    [ESidebarSection.SPACE]: false,
+    [ESidebarSection.WIDGET]: false,
+  })
 
 
   const mySpaces = computed(() => {
@@ -188,5 +193,7 @@ export const useSpaceStore = defineStore('space', () => {
     deleteBackup,
     resetFromBackup,
     toggleBookmark,
+
+    sidebarOpenState,
   }
 })
