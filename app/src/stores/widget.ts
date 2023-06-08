@@ -85,6 +85,10 @@ export const useWidgetStore = defineStore('widget', () => {
     isEditing.value[spaceId] = state
   }
 
+  function toggleIsEditing(spaceId: string) {
+    isEditing.value[spaceId] = !isEditing.value[spaceId]
+  }
+
 
   function createWidgetsBackup(spaceId: string) {
     const widgets = allWidgetsBySpace.value[spaceId];
@@ -121,7 +125,7 @@ export const useWidgetStore = defineStore('widget', () => {
         continue
       }
 
-      collection.value[widgetId] = backupCopy
+      collection.value[widgetId] = { ...backupCopy }
     }
 
     if (typeof backup !== 'undefined' && backup !== null) {
@@ -129,7 +133,6 @@ export const useWidgetStore = defineStore('widget', () => {
         collection.value[widgetId] = backup[widgetId]
       }
     }
-
 
     deleteWidgetsBackup(spaceId)
   }
@@ -288,10 +291,6 @@ export const useWidgetStore = defineStore('widget', () => {
 
   const debouncedSaveDirtyWidgets = debounce(saveDirtyWidgets, 500)
 
-  function discardDirtyWidgets(spaceId: string) {
-    resetWidgetsFromBackup(spaceId)
-  }
-
   function startEditMode(spaceId: string) {
     createWidgetsBackup(spaceId)
     setIsEditing(spaceId, true)
@@ -309,7 +308,7 @@ export const useWidgetStore = defineStore('widget', () => {
   }
 
   function discardAndStopEditMode(spaceId: string) {
-    discardDirtyWidgets(spaceId)
+    resetWidgetsFromBackup(spaceId)
     stopEditMode(spaceId)
   }
 
@@ -341,6 +340,7 @@ export const useWidgetStore = defineStore('widget', () => {
 
     isEditing,
     setIsEditing,
+    toggleIsEditing,
 
     startEditMode,
     stopEditMode,
@@ -351,7 +351,6 @@ export const useWidgetStore = defineStore('widget', () => {
 
     markWidgetAsDirty,
     saveDirtyWidgets,
-    discardDirtyWidgets,
     debouncedSaveDirtyWidgets,
 
     saveAndStopEditMode,

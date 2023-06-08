@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, type Component } from 'vue'
+import { computed, onBeforeUnmount, onMounted, type Component, watchEffect } from 'vue'
 import { useUIStore } from '@/stores/ui'
 import { useUserStore } from '@/stores/user'
 import { useSpaceStore } from '@/stores/space'
@@ -41,14 +41,16 @@ function handlePageRefresh(e: BeforeUnloadEvent) {
   }
 }
 
-
-
 const isSpaceOwner = computed(() => {
   return userStore.user?.pk === space.value?.owner;
 });
 
-const isEditing = computed(() => {
-  return isSpaceOwner.value && (widgetStore.isEditing[props.spaceId] || spaceStore.isEditing[props.spaceId]);
+const isEditingSpace = computed(() => {
+  return isSpaceOwner.value && spaceStore.isEditing[props.spaceId];
+});
+
+const isEditingWidgets = computed(() => {
+  return isSpaceOwner.value && widgetStore.isEditing[props.spaceId];
 });
 
 function handleEditSpace() {
@@ -56,14 +58,22 @@ function handleEditSpace() {
   widgetStore.startEditMode(props.spaceId);
 }
 
-function handleSaveChanges() {
+function handleSaveSpaceChanges() {
   spaceStore.saveAndStopEditMode(props.spaceId);
-  widgetStore.saveAndStopEditMode(props.spaceId);
 }
 
-function handleDiscardChanges() {
-  widgetStore.discardAndStopEditMode(props.spaceId)
+function handleDiscardSpaceChanges() {
   spaceStore.discardAndStopEditMode(props.spaceId)
+}
+
+function handleSaveWidgetChanges() {
+  widgetStore.saveDirtyWidgets(props.spaceId);
+  widgetStore.startEditMode(props.spaceId);
+}
+
+function handleDiscardWidgetChanges() {
+  widgetStore.resetWidgetsFromBackup(props.spaceId);
+  widgetStore.startEditMode(props.spaceId);
 }
 
 async function handleCloneSpace() {
@@ -119,12 +129,13 @@ async function handleDelete() {
 
 <template>
   <div
-    v-if="uiStore.isSidebarOpen"
+    v-if="uiStore.isWidgetSidebarOpen || uiStore.isSpaceSidebarOpen"
     class="space-x-2 overflow-auto bg-slate-200 z-10 bg-opacity-90 shrink-0 h-full w-80 p-4 m-0"
   >
-    <template v-if="isEditing">
-      <button @click="handleDiscardChanges" class="p-2 bg-slate-400">Reset</button>
-      <button @click="handleSaveChanges" class="p-2 bg-green-300">
+  <div v-if="uiStore.isSpaceSidebarOpen">
+    <template v-if="isEditingSpace">
+      <button @click="handleDiscardSpaceChanges" class="p-2 bg-slate-400">Reset</button>
+      <button @click="handleSaveSpaceChanges" class="p-2 bg-green-300">
         Save
       </button>
     </template>
@@ -132,16 +143,16 @@ async function handleDelete() {
       <h2 class="font-bold">Space</h2>
       <label>
         <span>Space Name</span>
-        <input v-if="isEditing" type="text" v-model="space.name" />
+        <input v-if="isEditingSpace" type="text" v-model="space.name" />
         <p v-else>{{ space.name }}</p>
       </label>
       <br />
       <label>
         <span>Space Description</span>
-        <input v-if="isEditing" type="text" v-model="space.description" />
+        <input v-if="isEditingSpace" type="text" v-model="space.description" />
         <p v-else>{{ space.description }}</p>
       </label>
-      <div  v-if="!isEditing" class="flex flex-col flex-wrap">
+      <div  v-if="!isEditingSpace" class="flex flex-col flex-wrap">
         <button @click="handleEditSpace">
           Edit
         </button>
@@ -161,7 +172,15 @@ async function handleDelete() {
         </label>
       </div>
     </div>
-    <div v-if="isEditing">
+  </div>
+  <div v-if="uiStore.isWidgetSidebarOpen">
+    <template v-if="isEditingWidgets">
+      <button @click="handleDiscardWidgetChanges" class="p-2 bg-slate-400">Reset</button>
+      <button @click="handleSaveWidgetChanges" class="p-2 bg-green-300">
+        Save
+      </button>
+    </template>
+    <div v-if="isEditingWidgets">
       <h2 class="font-bold">Widgets</h2>
       <button @click="handleDelete" class="p-2 bg-red-400 disabled:opacity-50" :disabled="numSelectedWidgets === 0">Delete</button>
       <div v-if="numSelectedWidgets === 0" class="grid grid-cols-3 gap-2">
@@ -179,6 +198,7 @@ async function handleDelete() {
         />
       </div>
     </div>
+  </div>
   </div>
 </template>
 

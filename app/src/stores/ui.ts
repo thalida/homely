@@ -6,7 +6,8 @@ import type { ESidebarSection } from '@/constants/ui';
 
 export const useUIStore = defineStore('ui', () => {
   const appTheme: Ref<string> = useLocalStorage('homely/space/appTheme', EAppTheme.SYSTEM);
-  const isSidebarOpen = ref(false);
+  const isWidgetSidebarOpen = ref(false);
+  const isSpaceSidebarOpen = ref(false);
   const activeTheme = computed(() => {
     if (appTheme.value === EAppTheme.LIGHT || appTheme.value === EAppTheme.DARK) {
       return appTheme.value;
@@ -23,15 +24,28 @@ export const useUIStore = defineStore('ui', () => {
     }
   });
 
-  function setIsSidebarOpen(value: boolean) {
-    isSidebarOpen.value = value
+  function setIsWidgetSidebarOpen(value: boolean) {
+    isWidgetSidebarOpen.value = value;
 
-    return isSidebarOpen.value
+    return isWidgetSidebarOpen.value;
   }
 
-  function toggleIsSidebarOpen() {
-    isSidebarOpen.value = !isSidebarOpen.value
-    return isSidebarOpen.value
+  function toggleIsWidgetSidebarOpen() {
+    isWidgetSidebarOpen.value = !isWidgetSidebarOpen.value;
+
+    return isWidgetSidebarOpen.value;
+  }
+
+  function setIsSpaceSidebarOpen(value: boolean) {
+    isSpaceSidebarOpen.value = value;
+
+    return isSpaceSidebarOpen.value;
+  }
+
+  function toggleIsSpaceSidebarOpen() {
+    isSpaceSidebarOpen.value = !isSpaceSidebarOpen.value;
+
+    return isSpaceSidebarOpen.value;
   }
 
   watchEffect(() => {
@@ -43,8 +57,12 @@ export const useUIStore = defineStore('ui', () => {
     appTheme,
     isDarkMode,
 
-    isSidebarOpen,
-    setIsSidebarOpen,
-    toggleIsSidebarOpen,
+    isWidgetSidebarOpen,
+    setIsWidgetSidebarOpen,
+    toggleIsWidgetSidebarOpen,
+
+    isSpaceSidebarOpen,
+    setIsSpaceSidebarOpen,
+    toggleIsSpaceSidebarOpen,
   }
 });

@@ -40,8 +40,6 @@ const props = defineProps({
   },
 })
 
-const widgetId = ref<string | null>(null)
-
 const isEditMode = computed(() => {
   return widgetStore.isEditing[widget.value?.space]
 })
@@ -64,6 +62,10 @@ const isEditable = computed(() => {
   }
 
   if (!widget.value.content) {
+    return false
+  }
+
+  if (props.isPlaceholder) {
     return false
   }
 
@@ -138,13 +140,20 @@ const editor = useEditor({
 })
 
 watchEffect(() => {
-  if (widget.value) {
-    widgetId.value = widget.value.uid
+  if (props.isPlaceholder) {
+    return
   }
+
+  editor.value?.setEditable(isEditable.value)
 })
 
 watchEffect(() => {
-  editor.value?.setEditable(isEditable.value)
+  const isSame = widget.value?.content?.text === editor.value?.getHTML()
+  if (isSame || props.isPlaceholder) {
+    return
+  }
+
+  editor.value?.commands.setContent(widget.value?.content?.text || '', false)
 })
 
 watch(
@@ -175,23 +184,23 @@ watch(
 )
 
 onMounted(() => {
-  if (!widgetId.value) {
+  if (!props.widgetId) {
     return
   }
 
-  fontStore.connect(widgetId.value)
+  fontStore.connect(props.widgetId)
 
   if (typeof editor.value !== 'undefined') {
-    editorsStore.connect(widgetId.value, editor.value)
+    editorsStore.connect(props.widgetId, editor.value)
   }
 })
 
 onBeforeUnmount(() => {
-  if (!widgetId.value) {
+  if (!props.widgetId) {
     return
   }
 
-  fontStore.disconnect(widgetId.value)
+  fontStore.disconnect(props.widgetId)
 })
 
 defineExpose({

@@ -3,7 +3,7 @@ import { computed, ref } from 'vue';
 import InputSwitch from 'primevue/inputswitch';
 import SplitButton from 'primevue/splitbutton';
 import Dropdown from 'primevue/dropdown';
-import { SettingsIcon } from 'lucide-vue-next';
+import { LayoutDashboardIcon, InfoIcon } from 'lucide-vue-next';
 import type { CallbackTypes } from "vue3-google-login";
 import { useUserStore } from '@/stores/user';
 import { useUIStore } from '@/stores/ui'
@@ -11,6 +11,7 @@ import { useSpaceStore } from '@/stores/space';
 import router from '@/router';
 import HomelyLogo from '@/components/HomelyLogo.vue';
 import type { ISpace } from '@/types/space';
+import { useWidgetStore } from '@/stores/widget';
 
 const props = defineProps({
   spaceId: {
@@ -22,6 +23,7 @@ const props = defineProps({
 const uiStore = useUIStore()
 const userStore = useUserStore()
 const spaceStore = useSpaceStore()
+const widgetStore = useWidgetStore()
 
 const selectedSpace = ref(props.spaceId)
 
@@ -116,6 +118,22 @@ const menuItems = ref([
 function handleMenuClick() {
   router.push("/")
 }
+
+function handleManageSpaceBtn() {
+  uiStore.setIsWidgetSidebarOpen(false)
+  uiStore.toggleIsSpaceSidebarOpen()
+}
+
+function handleManageWidgetsBtn() {
+  uiStore.setIsSpaceSidebarOpen(false)
+  const isOpen = uiStore.toggleIsWidgetSidebarOpen()
+
+  if (isOpen) {
+    widgetStore.startEditMode(props.spaceId);
+  } else {
+    widgetStore.discardAndStopEditMode(props.spaceId);
+  }
+}
 </script>
 
 <template>
@@ -167,8 +185,11 @@ function handleMenuClick() {
     </div>
 
     <div class="flex flex-row items-center justify-end">
-      <button @click="uiStore.toggleIsSidebarOpen" class="flex flex-row p-2 bg-blue-300">
-        <SettingsIcon />
+      <button @click="handleManageSpaceBtn" class="flex flex-row p-2 bg-blue-300">
+        <InfoIcon />
+      </button>
+      <button @click="handleManageWidgetsBtn" class="flex flex-row p-2 bg-blue-300">
+        <LayoutDashboardIcon />
       </button>
     </div>
   </header>
