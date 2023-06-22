@@ -129,9 +129,6 @@ export const useWidgetStore = defineStore('widget', () => {
     const dirtyWidgets = dirtyWidgetsBySpace.value[spaceId]
     const backupWidgets = backupCollectionBySpace.value[spaceId]
 
-    console.log('dirtyWidgets', dirtyWidgets)
-    console.log('backupWidgets', backupWidgets)
-
     for (const widgetId of dirtyWidgets) {
       const widget = collection.value[widgetId]
 
@@ -147,36 +144,7 @@ export const useWidgetStore = defineStore('widget', () => {
       }
 
       collection.value[widgetId] = cloneDeep(backupWidget)
-      console.log('collection.value[widgetId]', collection.value[widgetId].state)
     }
-
-    // const currrent = allWidgetsBySpace.value[spaceId]
-    // const backup = backupCollectionBySpace.value[spaceId]
-
-    // for (const widgetId of currrent) {
-    //   if (typeof backup === 'undefined' || backup === null) {
-    //     delete collection.value[widgetId]
-    //     continue
-    //   }
-
-    //   const backupCopy = cloneDeep(backup[widgetId])
-    //   delete backup[widgetId]
-
-    //   if (typeof backupCopy === 'undefined' || backupCopy === null) {
-    //     delete collection.value[widgetId]
-    //     continue
-    //   }
-
-    //   collection.value[widgetId] = backupCopy
-    // }
-
-    // if (typeof backup !== 'undefined' && backup !== null) {
-    //   for (const widgetId of Object.keys(backup)) {
-    //     collection.value[widgetId] = backup[widgetId]
-    //   }
-    // }
-
-    // deleteWidgetsBackup(spaceId)
   }
 
   function setSpaceWidgets(spaceId: string, widgets: IWidget[]) {

@@ -139,36 +139,6 @@ const editor = useEditor({
     },
   },
   content: widget.value?.content?.text || '',
-  // onUpdate({ editor }) {
-  //   const canUndo = editor.can().undo()
-  //   const canRedo = editor.can().redo()
-  //   const hasChanges = canUndo || canRedo
-  //   if (!hasChanges) {
-  //     return
-  //   }
-
-  //   console.log('updating widget', widget.value.uid, widget.value?.content?.text, editor.getHTML(), editor, editor.can().undo())
-
-  //   if (!editor.isEditable) {
-  //     widgetStore.updateWidget(widget.value.uid, {
-  //       content: {
-  //         text: editor?.getHTML() || ''
-  //       }
-  //     });
-  //     return
-  //   }
-
-  //   console.log('updating widget', widget.value.uid)
-  //   widgetStore.draftUpdateWidget(widget.value.uid, {
-  //     content: {
-  //       text: editor?.getHTML() || ''
-  //     }
-  //   })
-
-  //   if (!isEditMode.value) {
-  //     widgetStore.debouncedSaveDirtyWidgets(widget.value.space)
-  //   }
-  // },
 })
 
 watchEffect(() => {
@@ -200,8 +170,6 @@ watch(
       return
     }
 
-    console.log('updating widget', widget.value.uid, widget.value?.content?.text, editor.value?.getHTML(), editor.value, editor.value?.can().undo())
-
     if (!editor.value?.isEditable) {
       widgetStore.updateWidget(widget.value.uid, {
         content: {
@@ -211,7 +179,6 @@ watch(
       return
     }
 
-    console.log('updating widget', widget.value.uid)
     widgetStore.draftUpdateWidget(widget.value.uid, {
       content: {
         text: editor.value?.getHTML() || ''
