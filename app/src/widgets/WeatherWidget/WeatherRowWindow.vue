@@ -139,11 +139,11 @@ const showingBothLocationAndDetails = computed(() => {
 
 <style scoped>
 .weather-window {
-  --weather-window-seam-width: 0.4cqmin;
+  --weather-window-seam-width: 0.5cqmin;
   --weather-window-border: #000;
 
-  width: 100%;
-  height: 100%;
+  flex-grow: 1;
+  aspect-ratio: 1;
   border-radius: 50% 50%  16px 16px;
   overflow: hidden;
   position: relative;

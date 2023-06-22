@@ -27,7 +27,7 @@ const dirtyWidgets = computed(() => {
 });
 
 const hasDirtyWidgets = computed(() => {
-  return dirtyWidgets.value.length > 0;
+  return dirtyWidgets.value && dirtyWidgets.value.length > 0;
 });
 
 const isSpaceOwner = computed(() => {
