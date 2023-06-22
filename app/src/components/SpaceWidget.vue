@@ -59,34 +59,6 @@ onBeforeUnmount(() => {
   widgetStore.unselectWidgetById(props.widgetId)
 })
 
-watch(() => widget.value?.content, (after, before) => {
-  if (typeof before === 'undefined' || typeof after === 'undefined') {
-    return
-  }
-
-  if (!widgetStore.isEditing[widget.value?.space]) {
-    return
-  }
-
-  widgetStore.markWidgetAsDirty(props.widgetId)
-}, {
-  deep: true
-})
-
-watch(() => widget.value?.card_style, (after, before) => {
-  if (typeof before === 'undefined' || typeof after === 'undefined') {
-    return
-  }
-
-  if (!widgetStore.isEditing[widget.value?.space]) {
-    return
-  }
-
-  widgetStore.markWidgetAsDirty(props.widgetId)
-}, {
-  deep: true
-})
-
 function handleWidgetClick() {
   if (!widget.value) {
     return

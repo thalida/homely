@@ -56,11 +56,22 @@ async function handleUrlChange() {
     widget.link = null
     widget.original_link = null
   }
+
+  markAsDirty()
 }
 
 function handleResetMetadata() {
   const widget = widgetStore.getWidgetById(props.widgetId) as TLinkWidget
   widget.content.metadata = cloneDeep(widget.original_link?.metadata || {})
+  markAsDirty()
+}
+
+function markAsDirty() {
+  if (!props.widgetId) {
+    return
+  }
+
+  widgetStore.markWidgetAsDirty(props.widgetId)
 }
 </script>
 
@@ -72,49 +83,49 @@ function handleResetMetadata() {
       </label>
       <label>
         <span>Style</span>
-        <select v-model="widget.content.style" class="border border-gray-200">
+        <select v-model="widget.content.style" @change="markAsDirty" class="border border-gray-200">
           <option v-for="style in styleOptions" :key="style" :value="style">{{ style }}</option>
         </select>
       </label>
       <label>
         <span>Custom Metadata</span>
-        <input type="checkbox" v-model="widget.content.showCustomMetadata" />
+        <input type="checkbox" v-model="widget.content.showCustomMetadata" @change="markAsDirty" />
       </label>
       <div v-if="widget.content.showCustomMetadata" class="flex flex-col">
         <label>
           <span>Icon</span>
-          <input type="url" class="border border-gray-200" v-model="widget.content.metadata.icon" />
+          <input type="url" class="border border-gray-200" v-model="widget.content.metadata.icon" @change="markAsDirty" />
         </label>
         <label>
           <span>Title</span><br />
-          <input type="text" class="border border-gray-200" v-model="widget.content.metadata.title" />
+          <input type="text" class="border border-gray-200" v-model="widget.content.metadata.title" @change="markAsDirty" />
         </label>
         <label>
           <span>Description</span><br />
-          <textarea class="border border-gray-200" v-model="widget.content.metadata.description"></textarea>
+          <textarea class="border border-gray-200" v-model="widget.content.metadata.description" @change="markAsDirty"></textarea>
         </label>
         <button @click="handleResetMetadata">Reset</button>
       </div>
       <div v-if="widget.content.style !== ELinkWidgetStyle.ICON" class="flex flex-col">
         <label>
           <span>Show Icon</span>
-          <input type="checkbox" v-model="widget.content.showIcon" />
+          <input type="checkbox" v-model="widget.content.showIcon" @change="markAsDirty" />
         </label>
         <label>
           <span>Show image</span>
-          <input type="checkbox" v-model="widget.content.showImage" />
+          <input type="checkbox" v-model="widget.content.showImage" @change="markAsDirty" />
         </label>
         <label>
           <span>Show title</span>
-          <input type="checkbox" v-model="widget.content.showTitle" />
+          <input type="checkbox" v-model="widget.content.showTitle" @change="markAsDirty" />
         </label>
         <label>
           <span>Show description</span>
-          <input type="checkbox" v-model="widget.content.showDescription" />
+          <input type="checkbox" v-model="widget.content.showDescription" @change="markAsDirty" />
         </label>
         <label>
           <span>Show URL</span>
-          <input type="checkbox" v-model="widget.content.showUrl" />
+          <input type="checkbox" v-model="widget.content.showUrl" @change="markAsDirty" />
         </label>
       </div>
     </div>

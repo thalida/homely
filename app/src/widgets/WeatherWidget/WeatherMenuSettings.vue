@@ -61,11 +61,13 @@ onBeforeUnmount(() => {
 
 function handlePlaceChange(weatherRow: IWeatherWidgetItem, location: ILocation) {
   weatherRow.location = location
+  markAsDirty()
 }
 
 function handleRemoveWeatherItem(e: Event, weatherRow: IWeatherWidgetItem, index: number) {
   e.preventDefault()
   widget.value.content.items.splice(index, 1)
+  markAsDirty()
 }
 
 async function handleAddWeatherItem() {
@@ -93,6 +95,7 @@ async function handleAddWeatherItem() {
   widget.value.content.items.push(newWidget)
 
   await weatherStore.updateWeatherByWidget(widget.value.uid)
+  markAsDirty()
 }
 
 function handleItemMoveUp(e: Event, weatherItem: IWeatherWidgetItem, index: number) {
@@ -101,6 +104,7 @@ function handleItemMoveUp(e: Event, weatherItem: IWeatherWidgetItem, index: numb
   }
 
   moveItemInArray(widget.value.content.items, index, index - 1)
+  markAsDirty()
 }
 
 function handleItemMoveDown(e: Event, weatherItem: IWeatherWidgetItem, index: number) {
@@ -109,6 +113,15 @@ function handleItemMoveDown(e: Event, weatherItem: IWeatherWidgetItem, index: nu
   }
 
   moveItemInArray(widget.value.content.items, index, index + 1)
+  markAsDirty()
+}
+
+function markAsDirty() {
+  if (!props.widgetId) {
+    return
+  }
+
+  widgetStore.markWidgetAsDirty(props.widgetId)
 }
 </script>
 
@@ -117,7 +130,7 @@ function handleItemMoveDown(e: Event, weatherItem: IWeatherWidgetItem, index: nu
     <div v-for="(weatherRow, index) in widget.content.items" :key="index" class="flex flex-col">
       <label>
         <span>Style</span>
-        <select v-model="weatherRow.style">
+        <select v-model="weatherRow.style" @change="markAsDirty">
           <option v-for="style in supportedStyles" :key="style" :value="style">
             {{ style }}
           </option>
@@ -125,11 +138,11 @@ function handleItemMoveDown(e: Event, weatherItem: IWeatherWidgetItem, index: nu
       </label>
       <label v-if="weatherRow.style === EWeatherWidgetStyle.FORECAST">
         <span>Num Forecast Days</span>
-        <input type="number" v-model.number="weatherRow.showNumForecastDays" min="1" max="8" step="1" />
+        <input type="number" v-model.number="weatherRow.showNumForecastDays" @change="markAsDirty" min="1" max="8" step="1" />
       </label>
       <label>
         <span>Use Current Location</span>
-        <input type="checkbox" v-model="weatherRow.useCurrentLocation" />
+        <input type="checkbox" v-model="weatherRow.useCurrentLocation" @change="markAsDirty" />
       </label>
       <label v-if="!weatherRow.useCurrentLocation">
         <span>Location</span>
@@ -137,19 +150,19 @@ function handleItemMoveDown(e: Event, weatherItem: IWeatherWidgetItem, index: nu
       </label>
       <label>
         <span>Show Location</span>
-        <input type="checkbox" v-model="weatherRow.showLocation" />
+        <input type="checkbox" v-model="weatherRow.showLocation" @change="markAsDirty" />
       </label>
       <label v-if="weatherRow.style !== EWeatherWidgetStyle.FORECAST">
         <span>Show Temperature</span>
-        <input type="checkbox" v-model="weatherRow.showTemperature" />
+        <input type="checkbox" v-model="weatherRow.showTemperature" @change="markAsDirty" />
       </label>
       <label v-if="weatherRow.showTemperature">
         <span>Show Units</span>
-        <input type="checkbox" v-model="weatherRow.showUnits" />
+        <input type="checkbox" v-model="weatherRow.showUnits" @change="markAsDirty" />
       </label>
       <label v-if="weatherRow.showTemperature">
         <span>Units</span>
-        <select v-model="weatherRow.units">
+        <select v-model="weatherRow.units" @change="markAsDirty">
           <option v-for="unit in supportedUnits" :key="unit" :value="unit">
             {{ unit }} ({{ unitsSymbolMap[unit] }})
           </option>
@@ -157,15 +170,15 @@ function handleItemMoveDown(e: Event, weatherItem: IWeatherWidgetItem, index: nu
       </label>
       <label v-if="weatherRow.style !== EWeatherWidgetStyle.WINDOW">
         <span>Show Icon</span>
-        <input type="checkbox" v-model="weatherRow.showIcon" />
+        <input type="checkbox" v-model="weatherRow.showIcon" @change="markAsDirty" />
       </label>
       <label v-if="weatherRow.style !== EWeatherWidgetStyle.FORECAST">
         <span>Show Description</span>
-        <input type="checkbox" v-model="weatherRow.showDescription" />
+        <input type="checkbox" v-model="weatherRow.showDescription" @change="markAsDirty" />
       </label>
       <label v-if="weatherRow.style === EWeatherWidgetStyle.WINDOW">
         <span>Show Time</span>
-        <input type="checkbox" v-model="weatherRow.showTime" />
+        <input type="checkbox" v-model="weatherRow.showTime" @change="markAsDirty" />
       </label>
       <div>
         <button v-if="index > 0" @click="handleItemMoveUp($event, weatherRow, index)">Move Up</button>

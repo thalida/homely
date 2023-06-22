@@ -6,6 +6,8 @@ import LinkExtension from '@tiptap/extension-link'
 import PlaceholderExtension from '@tiptap/extension-placeholder'
 import TypographyExtension from '@tiptap/extension-typography'
 import UnderlineExtension from '@tiptap/extension-underline'
+import { EditorState } from '@tiptap/pm/state'
+import { ChangeSet } from "@tiptap/pm/changeset"
 import { useWidgetStore } from '@/stores/widget'
 import { useSpaceStore } from '@/stores/space'
 import { useFontStore } from '@/stores/fonts'
@@ -137,6 +139,36 @@ const editor = useEditor({
     },
   },
   content: widget.value?.content?.text || '',
+  // onUpdate({ editor }) {
+  //   const canUndo = editor.can().undo()
+  //   const canRedo = editor.can().redo()
+  //   const hasChanges = canUndo || canRedo
+  //   if (!hasChanges) {
+  //     return
+  //   }
+
+  //   console.log('updating widget', widget.value.uid, widget.value?.content?.text, editor.getHTML(), editor, editor.can().undo())
+
+  //   if (!editor.isEditable) {
+  //     widgetStore.updateWidget(widget.value.uid, {
+  //       content: {
+  //         text: editor?.getHTML() || ''
+  //       }
+  //     });
+  //     return
+  //   }
+
+  //   console.log('updating widget', widget.value.uid)
+  //   widgetStore.draftUpdateWidget(widget.value.uid, {
+  //     content: {
+  //       text: editor?.getHTML() || ''
+  //     }
+  //   })
+
+  //   if (!isEditMode.value) {
+  //     widgetStore.debouncedSaveDirtyWidgets(widget.value.space)
+  //   }
+  // },
 })
 
 watchEffect(() => {
@@ -153,13 +185,22 @@ watchEffect(() => {
     return
   }
 
-  editor.value?.commands.setContent(widget.value?.content?.text || '', false)
+  editor.value?.commands.setContent(widget.value?.content?.text || '')
 })
 
 watch(
   () => editor.value?.getHTML() || '',
   (newValue: string, oldValue: string) => {
     if (typeof oldValue === 'undefined') return
+
+    const canUndo = editor.value?.can().undo()
+    const canRedo = editor.value?.can().redo()
+    const hasChanges = canUndo || canRedo
+    if (!hasChanges) {
+      return
+    }
+
+    console.log('updating widget', widget.value.uid, widget.value?.content?.text, editor.value?.getHTML(), editor.value, editor.value?.can().undo())
 
     if (!editor.value?.isEditable) {
       widgetStore.updateWidget(widget.value.uid, {
@@ -170,6 +211,7 @@ watch(
       return
     }
 
+    console.log('updating widget', widget.value.uid)
     widgetStore.draftUpdateWidget(widget.value.uid, {
       content: {
         text: editor.value?.getHTML() || ''
@@ -177,7 +219,6 @@ watch(
     })
 
     if (editor.value?.isEditable && !isEditMode.value && newValue !== oldValue) {
-      widgetStore.markWidgetAsDirty(widget.value.uid)
       widgetStore.debouncedSaveDirtyWidgets(widget.value.space)
     }
   }

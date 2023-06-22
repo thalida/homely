@@ -30,6 +30,7 @@ function handleRemoveDateTime(e: Event, datetime: IDateTime, index: number) {
   }
 
   widget.value.content.items.splice(index, 1)
+  markAsDirty()
 }
 
 function handleItemMoveUp(e: Event, datetime: IDateTime, index: number) {
@@ -38,6 +39,7 @@ function handleItemMoveUp(e: Event, datetime: IDateTime, index: number) {
   }
 
   moveItemInArray(widget.value.content.items, index, index - 1)
+  markAsDirty()
 }
 
 function handleItemMoveDown(e: Event, datetime: IDateTime, index: number) {
@@ -46,6 +48,7 @@ function handleItemMoveDown(e: Event, datetime: IDateTime, index: number) {
   }
 
   moveItemInArray(widget.value.content.items, index, index + 1)
+  markAsDirty()
 }
 
 async function handlePlaceChange(datetime: IDateTime, location: ILocation) {
@@ -57,6 +60,7 @@ async function handlePlaceChange(datetime: IDateTime, location: ILocation) {
 
   datetime.location = location
   datetime.timezone = timezone
+  markAsDirty()
 }
 
 function handleAddDateTime() {
@@ -84,6 +88,15 @@ function handleAddDateTime() {
   newDatetime.useCurrentLocation = true
 
   widget.value.content.items.push(newDatetime)
+  markAsDirty()
+}
+
+function markAsDirty() {
+  if (!props.widgetId) {
+    return
+  }
+
+  widgetStore.markWidgetAsDirty(props.widgetId)
 }
 </script>
 
@@ -92,7 +105,7 @@ function handleAddDateTime() {
     <div v-for="(datetime, index) in widget.content.items" :key="index" class="flex flex-col">
       <label>
         <span>Use Local Time</span>
-        <input type="checkbox" v-model="datetime.useCurrentLocation" />
+        <input type="checkbox" v-model="datetime.useCurrentLocation" @change="markAsDirty" />
       </label>
       <label v-if="!datetime.useCurrentLocation">
         <span>Location</span>
@@ -100,31 +113,31 @@ function handleAddDateTime() {
       </label>
       <label>
         <span>Show Location</span>
-        <input type="checkbox" v-model="datetime.showLocation" />
+        <input type="checkbox" v-model="datetime.showLocation" @change="markAsDirty" />
       </label>
       <label>
         <span>Show Line 1</span>
-        <input type="checkbox" v-model="datetime.showLine1" />
+        <input type="checkbox" v-model="datetime.showLine1" @change="markAsDirty" />
       </label>
       <label v-if="datetime.showLine1">
         <span>Format Line 1</span>
-        <input type="text" v-model="datetime.formatLine1" />
+        <input type="text" v-model="datetime.formatLine1" @change="markAsDirty" />
       </label>
       <label>
         <span>Show Line 2</span>
-        <input type="checkbox" v-model="datetime.showLine2" />
+        <input type="checkbox" v-model="datetime.showLine2" @change="markAsDirty" />
       </label>
       <label v-if="datetime.showLine2">
         <span>Format Line 2</span>
-        <input type="text" v-model="datetime.formatLine2" />
+        <input type="text" v-model="datetime.formatLine2" @change="markAsDirty" />
       </label>
       <label>
         <span>Show Dynamic Icon</span>
-        <input type="checkbox" v-model="datetime.showDynamicIcon" />
+        <input type="checkbox" v-model="datetime.showDynamicIcon" @change="markAsDirty" />
       </label>
       <label>
         <span>Show Dynamic Background</span>
-        <input type="checkbox" v-model="datetime.showDynamicBackground" />
+        <input type="checkbox" v-model="datetime.showDynamicBackground" @change="markAsDirty" />
       </label>
       <div>
         <button v-if="index > 0" @click="handleItemMoveUp($event, datetime, index)">Move Up</button>

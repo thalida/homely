@@ -18,6 +18,14 @@ const widget = computed(() => {
 })
 
 const supportedColors = ref(Object.values(ESpaceTheme))
+
+function markAsDirty() {
+  if (!props.widgetId) {
+    return
+  }
+
+  widgetStore.markWidgetAsDirty(props.widgetId)
+}
 </script>
 
 <template>
@@ -26,6 +34,7 @@ const supportedColors = ref(Object.values(ESpaceTheme))
       <span>Card Color</span>
       <select
         v-model="widget.card_style.background_color"
+        @change="markAsDirty"
         class="block w-full mt-1"
       >
         <option

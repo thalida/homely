@@ -21,6 +21,14 @@ const space = computed(() => {
   return spaceStore.collection[props.spaceId];
 });
 
+const dirtyWidgets = computed(() => {
+  return widgetStore.dirtyWidgetsBySpace[props.spaceId];
+});
+
+const hasDirtyWidgets = computed(() => {
+  return dirtyWidgets.value.length > 0;
+});
+
 onMounted(async () => {
   window.addEventListener('beforeunload', handlePageRefresh)
 })
@@ -46,14 +54,13 @@ const isEditingWidgets = computed(() => {
   return isSpaceOwner.value && widgetStore.isEditing[props.spaceId];
 });
 
-function handleSaveWidgetChanges() {
-  widgetStore.saveDirtyWidgets(props.spaceId);
+async function handleSaveWidgetChanges() {
+  await widgetStore.saveDirtyWidgets(props.spaceId);
   widgetStore.startEditMode(props.spaceId);
 }
 
 function handleDiscardWidgetChanges() {
   widgetStore.resetWidgetsFromBackup(props.spaceId);
-  widgetStore.startEditMode(props.spaceId);
 }
 
 const selectedWidgets = computed(() => {
@@ -88,9 +95,10 @@ async function handleDelete() {
 
 <template>
   <div>
+    {{ hasDirtyWidgets }} {{ dirtyWidgets }}
     <template v-if="isEditingWidgets">
-      <button @click="handleDiscardWidgetChanges" class="p-2 bg-slate-400">Reset</button>
-      <button @click="handleSaveWidgetChanges" class="p-2 bg-green-300">
+      <button @click="handleDiscardWidgetChanges" class="p-2 bg-slate-400 disabled:opacity-50" :disabled="!hasDirtyWidgets">Reset</button>
+      <button @click="handleSaveWidgetChanges" class="p-2 bg-green-300 disabled:opacity-50" :disabled="!hasDirtyWidgets">
         Save
       </button>
     </template>

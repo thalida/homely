@@ -25,29 +25,37 @@ const backgroundPositions = computed(() => {
 const backgroundRepeats = computed(() => {
   return Object.values(EImageWidgetBackgroundRepeat)
 })
+
+function markAsDirty() {
+  if (!props.widgetId) {
+    return
+  }
+
+  widgetStore.markWidgetAsDirty(props.widgetId)
+}
 </script>
 
 <template>
     <div v-if="widget.state.selected">
       <label>
         <span>URL</span>
-        <input type="url" class="border border-gray-200" v-model="widget.content.url" />
+        <input type="url" class="border border-gray-200" v-model="widget.content.url" @change="markAsDirty" />
       </label>
       <label>
         <span>Background Size</span>
-        <select v-model="widget.content.backgroundSize" class="border border-gray-200">
+        <select v-model="widget.content.backgroundSize" @change="markAsDirty" class="border border-gray-200">
           <option v-for="size in backgroundSizes" :value="size" :key="size">{{ size }}</option>
         </select>
       </label>
       <label>
         <span>Background Position</span>
-        <select v-model="widget.content.backgroundPosition" class="border border-gray-200">
+        <select v-model="widget.content.backgroundPosition" @change="markAsDirty" class="border border-gray-200">
           <option v-for="position in backgroundPositions" :value="position" :key="position">{{ position }}</option>
         </select>
       </label>
       <label>
         <span>Background Repeat</span>
-        <select v-model="widget.content.backgroundRepeat" class="border border-gray-200">
+        <select v-model="widget.content.backgroundRepeat" @change="markAsDirty" class="border border-gray-200">
           <option v-for="repeat in backgroundRepeats" :value="repeat" :key="repeat">{{ repeat }}</option>
         </select>
       </label>

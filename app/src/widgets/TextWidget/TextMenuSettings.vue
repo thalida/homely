@@ -40,6 +40,7 @@ const hasFonts = computed(() => {
 })
 
 function handleFontChange() {
+  markAsDirty()
   if (widget.value.content.fontFamily === null || widget.value.content.fontVariant === null) {
     return null
   }
@@ -87,6 +88,14 @@ const menuItems = ref([
     isActive: () => editor.value.isActive("orderedList"),
   },
 ]);
+
+function markAsDirty() {
+  if (!props.widgetId) {
+    return
+  }
+
+  widgetStore.markWidgetAsDirty(props.widgetId)
+}
 </script>
 
 <template>
@@ -96,7 +105,7 @@ const menuItems = ref([
         {{ font.family }}
       </option>
     </select>
-    <select v-model="widget.content.fontVariant">
+    <select v-model="widget.content.fontVariant" @change="markAsDirty">
       <option
         v-for="variant in fontStore.fontsByFamily[widget.content.fontFamily].variants"
         :key="variant"
@@ -104,19 +113,19 @@ const menuItems = ref([
         {{ variant }}
       </option>
     </select>
-    <select v-model="widget.content.fontSize">
+    <select v-model="widget.content.fontSize" @change="markAsDirty">
       <option v-for="size in fontSizes" :key="size" :value="size">
         {{ size }}
       </option>
     </select>
-    <select v-model="widget.content.textAlign">
+    <select v-model="widget.content.textAlign" @change="markAsDirty">
       <option v-for="alignment in textAlignments" :key="alignment" :value="alignment">
         {{ alignment }}
       </option>
     </select>
     <label>
       <span>Line Height</span>
-      <input type="number" v-model="widget.content.lineHeight" step="0.1" max="2" />
+      <input type="number" v-model="widget.content.lineHeight" @change="markAsDirty" step="0.1" max="2" />
     </label>
     <template v-for="(item, index) in menuItems" :key="index">
       <button
@@ -131,7 +140,7 @@ const menuItems = ref([
     </template>
     <label>
       <span>Is Interactive?</span>
-      <input type="checkbox" v-model="widget.content.isInteractive" />
+      <input type="checkbox" v-model="widget.content.isInteractive" @change="markAsDirty" />
     </label>
   </div>
 </template>
