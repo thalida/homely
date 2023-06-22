@@ -72,53 +72,6 @@ async function handleCreateSpace() {
   router.push({ name: 'Space', params: { spaceId: space.uid } })
 }
 
-const menuItems = ref([
-  {
-    label: "Demo Spaces",
-    items: [
-      {
-        label: "Homepage",
-        command: async () => {
-          await spaceStore.fetchHomepageSpaces()
-          const homepage = spaceStore.homepageSpaces[0].uid
-          router.push({
-            name: 'Space',
-            params: {
-              spaceId: homepage
-            }
-          })
-        }
-      },
-      {
-        label: "All Widgets",
-      },
-      {
-        label: "Daily Dashboard",
-      },
-      {
-        label: "Work Space",
-      },
-      {
-        label: "Brainstorming",
-      },
-    ],
-  },
-  {
-    separator: true
-  },
-  {
-    label: 'Logout',
-    icon: 'pi pi-refresh',
-    command: () => {
-      userStore.logout()
-    }
-  },
-]);
-
-function handleMenuClick() {
-  router.push("/")
-}
-
 function handleManageSpaceBtn() {
   uiStore.setIsWidgetSidebarOpen(false)
   uiStore.toggleIsSpaceSidebarOpen()
@@ -139,16 +92,12 @@ function handleManageWidgetsBtn() {
 <template>
   <header class="sticky h-20 top-0 grid grid-cols-3 items-center justify-between dark:text-white z-50 bg-white/80 dark:bg-black/80 backdrop-blur p-4">
     <div class="flex flex-row space-x-4">
-      <SplitButton :model="menuItems" icon="pi pi-plus" text>
-        <button class="p-button p-component p-splitbutton-defaultbutton p-1" type="button" @click="handleMenuClick">
-          <HomelyLogo class="w-8 h-8" />
-        </button>
-      </SplitButton>
-      <div class="flex flex-row items-center justify-center space-x-2">
-        <InputSwitch v-model="uiStore.isDarkMode" />
-      </div>
-      <GoogleLogin v-if="!isAuthenticated" :callback="handleLoginWithGoogle" popup-type="TOKEN">
-        <button>Login Using Google</button>
+      <a href="/">
+        <HomelyLogo class="w-8 h-8" />
+      </a>
+      <button v-if="isAuthenticated" @click="userStore.logout">Logout</button>
+      <GoogleLogin v-else :callback="handleLoginWithGoogle" popup-type="TOKEN">
+        <button>Signup / Login</button>
       </GoogleLogin>
     </div>
 
@@ -191,6 +140,9 @@ function handleManageWidgetsBtn() {
       <button @click="handleManageWidgetsBtn" class="flex flex-row p-2 bg-blue-300">
         <LayoutDashboardIcon />
       </button>
+      <div class="flex flex-row items-center justify-center space-x-2">
+        <InputSwitch v-model="uiStore.isDarkMode" />
+      </div>
     </div>
   </header>
 </template>
