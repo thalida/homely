@@ -17,10 +17,10 @@ Including another URLconf
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import include, path
+from django.urls import include, path, re_path
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView
 from rest_framework import routers
-from authentication.views import GoogleLogin
+from authentication.views import UserViewSet
 from links.views import LinkViewSet
 from spaces.views import SpaceViewSet, WidgetViewSet
 
@@ -28,13 +28,16 @@ router = routers.SimpleRouter()
 router.register(r'spaces', SpaceViewSet)
 router.register(r'widgets', WidgetViewSet)
 router.register(r'links', LinkViewSet)
+router.register(r'users', UserViewSet)
 
 
 urlpatterns = [
     path("api/", include(router.urls)),
-    path('api/auth/', include('dj_rest_auth.urls')),
-    path('api/auth/registration/', include('dj_rest_auth.registration.urls')),
-    path('api/auth/google/', GoogleLogin.as_view(), name='google_login'),
+    # path('api/auth/', include('dj_rest_auth.urls')),
+    # path('api/auth/registration/', include('dj_rest_auth.registration.urls')),
+    # path('api/auth/google/', GoogleLogin.as_view(), name='google_login'),
+    # path("api/auth/", include("allauth.urls")),
+    re_path(r'^api/auth/', include('drf_social_oauth2.urls', namespace='drf')),
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
     path("api/docs/", SpectacularRedocView.as_view(url_name="schema"), name="redoc"),
     path("admin/", admin.site.urls),

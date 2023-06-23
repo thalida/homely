@@ -15,7 +15,7 @@ import {
 } from '@/api/space'
 import { randomItemFromArray } from '@/utils/array'
 import { HOME_TERMS, SPACE_TERMS } from '@/constants/space'
-import { updateUser } from '@/api/user'
+import { updateMe } from '@/api/user'
 
 export const useSpaceStore = defineStore('space', () => {
   const widgetStore = useWidgetStore()
@@ -36,13 +36,14 @@ export const useSpaceStore = defineStore('space', () => {
       return []
     }
 
-    const userId = user.pk
+    const userId = user.uid
     const mySpaces = filter(collection.value, (space) => space.owner === userId)
     return sortBy(mySpaces, (space) => !space.is_default)
   })
 
   const myBookmarkedSpaces = computed(() => {
-    return filter(collection.value, (space) => space.is_bookmarked)
+    const myBookmarkedSpaces = filter(collection.value, (space) => space.is_bookmarked)
+    return myBookmarkedSpaces
   })
 
 
@@ -143,7 +144,7 @@ export const useSpaceStore = defineStore('space', () => {
   }
 
   async function setDefaultSpace(spaceId: string | null) {
-    updateUser({
+    updateMe({
       default_space: spaceId,
     })
 

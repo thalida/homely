@@ -1,7 +1,7 @@
 import type { ISpace } from "./space";
 
 export interface IUser {
-  pk: string,
+  uid: string,
   username: string,
   email: string,
   first_name: string,
@@ -12,7 +12,7 @@ export interface IUser {
 
 
 export interface IGoogleResponse {
-  access: string,
-  refresh: string,
+  access_token: string,
+  refresh_token: string,
   user: IUser,
 }

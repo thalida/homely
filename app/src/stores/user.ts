@@ -3,7 +3,7 @@ import { useLocalStorage } from '@vueuse/core';
 import { defineStore } from 'pinia';
 import type { IUser } from '@/types/user';
 import {
-  getUser as getUserReq,
+  getMe as getMeReq,
   verifyAccessToken as verifyAccessTokenReq,
   verifyRefreshToken as verifyRefreshTokenReq,
   loginWithGoogle as loginWithGoogleReq,
@@ -18,16 +18,17 @@ export const useUserStore = defineStore('user', () => {
   const user: Ref<IUser | null> = ref(null)
   const isAuthenticated = ref(false)
 
-  async function getUser() {
+  async function getMe() {
     if (!accessToken.value) {
       return;
     }
 
-    const userRes = await getUserReq()
+    const userRes = await getMeReq()
 
     user.value = userRes
 
     spaceStore.initSpaces(userRes.spaces)
+    return user.value;
   }
 
   async function verifyAccessToken(): Promise<boolean> {
@@ -54,18 +55,9 @@ export const useUserStore = defineStore('user', () => {
   }
 
   async function autoLogin() {
-    const isValidAccessToken = await verifyAccessToken()
+    await getMe()
 
-    if (isValidAccessToken) {
-      await getUser()
-      isAuthenticated.value = true
-      return isAuthenticated.value;
-    }
-
-    const isValidRefreshToken = await verifyRefreshToken()
-
-    if (isValidRefreshToken) {
-      await getUser()
+    if (user.value) {
       isAuthenticated.value = true
       return isAuthenticated.value;
     }
@@ -79,9 +71,9 @@ export const useUserStore = defineStore('user', () => {
   async function loginWithGoogle(googleToken: string) {
     const res = await loginWithGoogleReq(googleToken)
 
-    accessToken.value = res.access
-    refreshToken.value = res.refresh
-    await getUser()
+    accessToken.value = res.access_token
+    refreshToken.value = res.refresh_token
+    await getMe()
     isAuthenticated.value = true
   }
 

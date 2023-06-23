@@ -31,7 +31,7 @@ const hasDirtyWidgets = computed(() => {
 });
 
 const isSpaceOwner = computed(() => {
-  return userStore.user?.pk === space.value?.owner;
+  return userStore.user?.uid === space.value?.owner;
 });
 
 async function handleSaveWidgetChanges() {

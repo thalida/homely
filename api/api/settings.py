@@ -75,13 +75,19 @@ INSTALLED_APPS = [
     "drf_spectacular",
     "django_filters",
     "rest_framework",
-    "rest_framework.authtoken",
-    "dj_rest_auth",
-    "allauth",
-    "allauth.account",
-    "dj_rest_auth.registration",
-    "allauth.socialaccount",
-    "allauth.socialaccount.providers.google",
+
+
+    "oauth2_provider",
+    "social_django",
+    "drf_social_oauth2",
+
+    # "rest_framework.authtoken",
+    # "dj_rest_auth",
+    # "dj_rest_auth.registration",
+    # "allauth",
+    # "allauth.account",
+    # "allauth.socialaccount",
+    # "allauth.socialaccount.providers.google",
 
     "authentication.apps.AuthenticationConfig",
     "common.apps.CommonConfig",
@@ -116,7 +122,9 @@ TEMPLATES = [
                 "django.contrib.messages.context_processors.messages",
 
                 # `allauth` needs this from django
-                "django.template.context_processors.request",
+                # "django.template.context_processors.request",
+                "social_django.context_processors.backends",
+                "social_django.context_processors.login_redirect",
             ],
         },
     },
@@ -149,8 +157,10 @@ REST_FRAMEWORK = {
     # YOUR SETTINGS
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     "DEFAULT_AUTHENTICATION_CLASSES": [
-        "dj_rest_auth.jwt_auth.JWTCookieAuthentication",
+        # "dj_rest_auth.jwt_auth.JWTCookieAuthentication",
         "rest_framework.authentication.BasicAuthentication",
+        "oauth2_provider.contrib.rest_framework.OAuth2Authentication",  # django-oauth-toolkit >= 1.0.0
+        "drf_social_oauth2.authentication.SocialAuthentication",
     ],
 }
 
@@ -163,40 +173,52 @@ SIMPLE_JWT = {
 }
 
 AUTHENTICATION_BACKENDS = (
+    "social_core.backends.google.GoogleOAuth2",
+    "drf_social_oauth2.backends.DjangoOAuth2",
     "django.contrib.auth.backends.ModelBackend",
-    "allauth.account.auth_backends.AuthenticationBackend",
+    # "allauth.account.auth_backends.AuthenticationBackend",
 )
 
-REST_AUTH = {
-    "USE_JWT": True,
-    "JWT_AUTH_HTTPONLY": False,
-    "JWT_AUTH_COOKIE": "homely-api-auth",
-    "JWT_AUTH_REFRESH_COOKIE": "homely-api-refresh-token",
-    "USER_DETAILS_SERIALIZER": "authentication.serializers.UserSerializer",
-}
+ACTIVATE_JWT = True
+# Google configuration
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.environ.get("GOOGLE_OAUTH2_CLIENT_ID")
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.environ.get("GOOGLE_OAUTH2_SECRET")
 
-ACCOUNT_AUTHENTICATION_METHOD = "email"
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_EMAIL_VERIFICATION = "none"
-SOCIALACCOUNT_PROVIDERS = {
-    "google": {
-        # For each OAuth based provider, either add a ``SocialApp``
-        # (``socialaccount`` app) containing the required client
-        # credentials, or list them here:
-        "APP": {
-            "client_id": os.environ.get("GOOGLE_OAUTH2_CLIENT_ID"),
-            "secret": os.environ.get("GOOGLE_OAUTH2_SECRET"),
-            "key": ""
-        },
-        "SCOPE": [
-            "profile",
-            "email",
-        ],
-        "AUTH_PARAMS": {
-            "access_type": "offline",
-        },
-    }
-}
+# Define SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE to get extra permissions from Google.
+SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [
+    'https://www.googleapis.com/auth/userinfo.email',
+    'https://www.googleapis.com/auth/userinfo.profile',
+]
+
+# REST_AUTH = {
+#     "USE_JWT": True,
+#     "JWT_AUTH_HTTPONLY": False,
+#     "JWT_AUTH_COOKIE": "homely-api-auth",
+#     "JWT_AUTH_REFRESH_COOKIE": "homely-api-refresh-token",
+#     "USER_DETAILS_SERIALIZER": "authentication.serializers.UserSerializer",
+# }
+
+# ACCOUNT_AUTHENTICATION_METHOD = "email"
+# ACCOUNT_EMAIL_REQUIRED = True
+# ACCOUNT_EMAIL_VERIFICATION = "none"
+# # ACCOUNT_LOGOUT_ON_GET = True
+# # SOCIALACCOUNT_LOGIN_ON_GET = True
+# SOCIALACCOUNT_PROVIDERS = {
+#     "google": {
+#         "APP": {
+#             "client_id": os.environ.get("GOOGLE_OAUTH2_CLIENT_ID"),
+#             "secret": os.environ.get("GOOGLE_OAUTH2_SECRET"),
+#             "key": ""
+#         },
+#         "SCOPE": [
+#             "profile",
+#             "email",
+#         ],
+#         "AUTH_PARAMS": {
+#             "access_type": "offline",
+#         },
+#     }
+# }
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -307,12 +329,12 @@ UNFOLD = {
                     "title": _("All Groups"),
                     "link": reverse_lazy("admin:auth_group_changelist"),
                 },
-                {
-                    "title": _("All Social Accounts"),
-                    "link": reverse_lazy(
-                        "admin:socialaccount_socialaccount_changelist"
-                    ),
-                },
+                # {
+                #     "title": _("All Social Accounts"),
+                #     "link": reverse_lazy(
+                #         "admin:socialaccount_socialaccount_changelist"
+                #     ),
+                # },
             ],
         },
         {

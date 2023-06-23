@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import InputSwitch from 'primevue/inputswitch';
-import SplitButton from 'primevue/splitbutton';
 import Dropdown from 'primevue/dropdown';
 import { LayoutDashboardIcon, InfoIcon } from 'lucide-vue-next';
 import type { CallbackTypes } from "vue3-google-login";
@@ -110,12 +109,12 @@ function handleManageWidgetsBtn() {
         optionValue="value"
         optionGroupLabel="label"
         optionGroupChildren="items"
-        placeholder="Select a City"
+        placeholder="Select a Space"
         class="w-64"
         @change="handleSelectSpaceChange"
       >
         <template #value="slotProps">
-          <div v-if="slotProps.value" class="flex align-items-center">
+          <div v-if="slotProps.value && spaceStore.collection[slotProps.value]" class="flex align-items-center">
             <div>{{ spaceStore.collection[slotProps.value].name }}</div>
           </div>
           <span v-else>

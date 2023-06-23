@@ -55,7 +55,7 @@ const space = computed(() => {
 })
 
 const isSpaceOwner = computed(() => {
-  return space.value?.owner === userStore.user?.pk
+  return space.value?.owner === userStore.user?.uid
 })
 
 const isEditable = computed(() => {

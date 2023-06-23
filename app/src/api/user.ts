@@ -3,8 +3,8 @@ import { API_URL, getConfig } from "@/api/index";
 import type { IGoogleResponse, IUser } from "@/types/user";
 
 
-export async function getUser() {
-  const url = `${API_URL}/auth/user/`;
+export async function getMe() {
+  const url = `${API_URL}/users/me/`;
   const config = getConfig()
 
   const res = await axios.get<never, AxiosResponse<IUser>>(url, config)
@@ -12,8 +12,8 @@ export async function getUser() {
   return res.data
 }
 
-export async function updateUser(data: Partial<IUser>) {
-  const url = `${API_URL}/auth/user/`;
+export async function updateMe(data: Partial<IUser>) {
+  const url = `${API_URL}/users/me/`;
   const config = getConfig()
 
   const res = await axios.patch<Partial<IUser>, AxiosResponse<IUser>>(url, data, config)
@@ -59,20 +59,27 @@ export async function verifyRefreshToken(refreshToken: string): Promise<string |
 
 
 export async function loginWithGoogle (googleToken: string) {
-  const url = `${API_URL}/auth/google/`;
+  // const url = `${API_URL}/auth/google/`;
+  const url = `${API_URL}/auth/convert-token/`;
 
   const res = await axios.post<{access_token: string}, AxiosResponse<IGoogleResponse>>(url, {
-    access_token: googleToken,
+    token: googleToken,
+    grant_type: 'convert_token',
+    backend: 'google-oauth2',
+    client_id: '7GktguvFMAVlehjYzlHvgAGkkQ49jwCFvfCGzdxQ',
+    client_secret: 'KgkvY3g0TVORQUV3LLkPWNq4AhDucLWHuWTVMaEzp4hO15mVXv2MzT9ydI6bhFy6ZARhEsjOdgdIb1PBvUyaHOkuE8z5KXrXUNIiB8PdHJJTsSU9iasdB8VT3P8D6NGO',
   })
 
   return res.data
 }
 
 export async function logout() {
-  const url = `${API_URL}/auth/logout/`;
+  const url = `${API_URL}/auth/invalidate-sessions/`;
   const config = getConfig()
 
-  const res = await axios.post(url, {}, config)
+  const res = await axios.post(url, {
+    client_id: '7GktguvFMAVlehjYzlHvgAGkkQ49jwCFvfCGzdxQ',
+  }, config)
 
   return res.data
 }
