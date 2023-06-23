@@ -76,18 +76,9 @@ INSTALLED_APPS = [
     "django_filters",
     "rest_framework",
 
-
     "oauth2_provider",
     "social_django",
     "drf_social_oauth2",
-
-    # "rest_framework.authtoken",
-    # "dj_rest_auth",
-    # "dj_rest_auth.registration",
-    # "allauth",
-    # "allauth.account",
-    # "allauth.socialaccount",
-    # "allauth.socialaccount.providers.google",
 
     "authentication.apps.AuthenticationConfig",
     "common.apps.CommonConfig",
@@ -121,8 +112,6 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
 
-                # `allauth` needs this from django
-                # "django.template.context_processors.request",
                 "social_django.context_processors.backends",
                 "social_django.context_processors.login_redirect",
             ],
@@ -154,12 +143,10 @@ DATABASES = {
 # REST Framework
 
 REST_FRAMEWORK = {
-    # YOUR SETTINGS
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     "DEFAULT_AUTHENTICATION_CLASSES": [
-        # "dj_rest_auth.jwt_auth.JWTCookieAuthentication",
         "rest_framework.authentication.BasicAuthentication",
-        "oauth2_provider.contrib.rest_framework.OAuth2Authentication",  # django-oauth-toolkit >= 1.0.0
+        "oauth2_provider.contrib.rest_framework.OAuth2Authentication",
         "drf_social_oauth2.authentication.SocialAuthentication",
     ],
 }
@@ -176,7 +163,6 @@ AUTHENTICATION_BACKENDS = (
     "social_core.backends.google.GoogleOAuth2",
     "drf_social_oauth2.backends.DjangoOAuth2",
     "django.contrib.auth.backends.ModelBackend",
-    # "allauth.account.auth_backends.AuthenticationBackend",
 )
 
 ACTIVATE_JWT = True
@@ -186,8 +172,6 @@ SOCIAL_AUTH_JSONFIELD_ENABLED = True
 # Google configuration
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.environ.get("GOOGLE_OAUTH2_CLIENT_ID")
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.environ.get("GOOGLE_OAUTH2_SECRET")
-
-# Define SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE to get extra permissions from Google.
 SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [
     'https://www.googleapis.com/auth/userinfo.email',
     'https://www.googleapis.com/auth/userinfo.profile',
