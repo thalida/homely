@@ -180,6 +180,9 @@ AUTHENTICATION_BACKENDS = (
 )
 
 ACTIVATE_JWT = True
+
+SOCIAL_AUTH_JSONFIELD_ENABLED = True
+
 # Google configuration
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.environ.get("GOOGLE_OAUTH2_CLIENT_ID")
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.environ.get("GOOGLE_OAUTH2_SECRET")
@@ -189,36 +192,6 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [
     'https://www.googleapis.com/auth/userinfo.email',
     'https://www.googleapis.com/auth/userinfo.profile',
 ]
-
-# REST_AUTH = {
-#     "USE_JWT": True,
-#     "JWT_AUTH_HTTPONLY": False,
-#     "JWT_AUTH_COOKIE": "homely-api-auth",
-#     "JWT_AUTH_REFRESH_COOKIE": "homely-api-refresh-token",
-#     "USER_DETAILS_SERIALIZER": "authentication.serializers.UserSerializer",
-# }
-
-# ACCOUNT_AUTHENTICATION_METHOD = "email"
-# ACCOUNT_EMAIL_REQUIRED = True
-# ACCOUNT_EMAIL_VERIFICATION = "none"
-# # ACCOUNT_LOGOUT_ON_GET = True
-# # SOCIALACCOUNT_LOGIN_ON_GET = True
-# SOCIALACCOUNT_PROVIDERS = {
-#     "google": {
-#         "APP": {
-#             "client_id": os.environ.get("GOOGLE_OAUTH2_CLIENT_ID"),
-#             "secret": os.environ.get("GOOGLE_OAUTH2_SECRET"),
-#             "key": ""
-#         },
-#         "SCOPE": [
-#             "profile",
-#             "email",
-#         ],
-#         "AUTH_PARAMS": {
-#             "access_type": "offline",
-#         },
-#     }
-# }
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -318,7 +291,7 @@ UNFOLD = {
             "models": [
                 "authentication.user",
                 "auth.group",
-                "socialaccount.socialaccount",
+                "social_django.usersocialauth",
             ],
             "items": [
                 {
@@ -329,12 +302,12 @@ UNFOLD = {
                     "title": _("All Groups"),
                     "link": reverse_lazy("admin:auth_group_changelist"),
                 },
-                # {
-                #     "title": _("All Social Accounts"),
-                #     "link": reverse_lazy(
-                #         "admin:socialaccount_socialaccount_changelist"
-                #     ),
-                # },
+                {
+                    "title": _("All Social Accounts"),
+                    "link": reverse_lazy(
+                        "admin:social_django_usersocialauth_changelist"
+                    ),
+                },
             ],
         },
         {
